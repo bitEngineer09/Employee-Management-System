@@ -7,6 +7,7 @@ datasource db {
   provider = "mysql"
 }
 
+// enums data
 enum AttendanceStatus {
   PRESENT
   ABSENT
@@ -21,6 +22,21 @@ enum AttendanceAction {
   UPDATE
 }
 
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum LeaveType {
+  CASUAL
+  SICK
+  PAID
+  UNPAID
+}
+
+
+// models
 model user {
   id             Int             @id @default(autoincrement())
   name           String
@@ -36,6 +52,8 @@ model user {
   session        session[]
   attendances    Attendance[]
   attendanceLogs AttendanceLog[] @relation("changedBy")
+  leaves         Leave[]
+  leaveBalance   LeaveBalance[]
 }
 
 model session {
@@ -87,4 +105,36 @@ model AttendanceLog {
   updatedAt DateTime @updatedAt
 
   @@index([attendanceId])
+}
+
+model Holiday {
+  id        Int      @id @default(autoincrement())
+  name      String
+  date      DateTime @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Leave {
+  id         Int         @id @default(autoincrement())
+  employeeId Int
+  fromDate   DateTime    @db.Date
+  toDate     DateTime    @db.Date
+  type       LeaveType
+  reason     String?
+  status     LeaveStatus @default(PENDING)
+  approvedBy Int?
+  employee   user        @relation(fields: [employeeId], references: [id])
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model LeaveBalance {
+  id         Int  @id @default(autoincrement())
+  employeeId Int
+  year       Int
+  casualLeft Int  @default(12)
+  employee   user @relation(fields: [employeeId], references: [id])
+
+  @@unique([employeeId, year])
 }

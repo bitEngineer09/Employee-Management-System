@@ -79,7 +79,7 @@ export const createEmployee = async (req, res) => {
             error: error.message
         })
     }
-}
+};
 
 // get all emp data
 export const getAllEmployees = async (req, res) => {
@@ -113,7 +113,7 @@ export const getAllEmployees = async (req, res) => {
             error: error.message,
         })
     }
-}
+};
 
 // get emp data by id
 export const getAllEmployeeById = async (req, res) => {
@@ -160,7 +160,7 @@ export const getAllEmployeeById = async (req, res) => {
             error: error.message,
         })
     }
-}
+};
 
 // update emp data
 export const updateEmployee = async (req, res) => {
@@ -206,7 +206,7 @@ export const updateEmployee = async (req, res) => {
             error: error.message,
         })
     }
-}
+};
 
 // update emp status
 export const updateEmployeeStatus = async (req, res) => {
@@ -248,7 +248,7 @@ export const updateEmployeeStatus = async (req, res) => {
             error: error.message,
         });
     }
-}
+};
 
 // update attendance admin
 export const adminAttendance = async (req, res) => {
@@ -346,7 +346,7 @@ export const getEmpAttendance = async (req, res) => {
             error: error.message,
         });
     }
-}
+};
 
 // get monthly attendance summary 
 export const getMonthlyAttendanceSummary = async (req, res) => {
@@ -421,5 +421,157 @@ export const getMonthlyAttendanceSummary = async (req, res) => {
             error: error.message,
         });
     }
+};
+
+// create holiyday leave
+export const createHoliday = async (req, res) => {
+    try {
+        const { date, name } = req.body;
+        if (!date || !name) return res.status(400).json({
+            success: false,
+            message: "Please provide all fields",
+        });
+
+        const holiday = await prisma.holiday.create({
+            data: {
+                date: new Date(date),
+                name
+            }
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Holiday created successfully",
+            holiday
+        });
+
+    } catch (error) {
+        console.error("createHoliday error", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+};
+
+// delete holiday
+export const deleteHoliday = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id) return res.status(400).json({
+            success: false,
+            message: "Please provide holiday id",
+        });
+
+        const deleted = await prisma.holiday.delete({
+            where: { id: Number(id) }
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Holiday deleted successfully",
+            deleted
+        })
+    } catch (error) {
+        console.error("deleteHoliday error", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
 }
 
+// get holidays
+export const getHolidays = async (req, res) => {
+    try {
+        const holidays = await prisma.holiday.findMany({
+            orderBy: {
+                date: "asc"
+            }
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Holidays fetched successfully",
+            holidays
+        });
+
+    } catch (error) {
+        console.error("createHoliday error", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+}
+
+// get all leaves (admin ko saari leaves dikhani hai)
+export const getAllLeaves = async (req, res) => {
+    try {
+        const leaves = await prisma.leave.findMany({
+            include: {
+                employee: {
+                    select: {
+                        name: true, employeeId: true
+                    }
+                },
+            },
+            orderBy: {
+                createdAt: "desc"
+            }
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "All leaves fetched successfully",
+            leaves
+        });
+
+    } catch (error) {
+        console.error("getAllLeaves error", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+}
+
+// approve/reject leaves
+export const approveRejectLeave = async (req, res) => {
+    try {
+        const adminId = req.user.id;
+        const { status } = req.body;
+
+        if (!["APPROVED", "REJECTED"].includes(status)) return res.status(400).json({
+            success: false,
+            message: "Invalid status",
+        });
+
+        const leave = await prisma.leave.update({
+            where: {
+                id: Number(req.params.id),
+            },
+            data: {
+                status,
+                approvedBy: adminId
+            },
+        });
+
+        return res.status(200).json({
+            success: true,
+            leave,
+        });
+
+    } catch (error) {
+        console.error("approveRejectLeave error", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+}

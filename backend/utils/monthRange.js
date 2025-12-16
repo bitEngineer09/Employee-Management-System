@@ -1,4 +1,4 @@
-const getMonthRange = (month) => { // "2025 02"
+export const getMonthRange = (month) => { // "2025 02"
     const [year, mon] = month.split("-");
 
     // new Date(year, mon-1, 1) 1 means es month ki pehli date

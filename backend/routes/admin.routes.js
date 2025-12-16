@@ -7,7 +7,12 @@ import {
     updateEmployeeStatus,
     adminAttendance,
     getEmpAttendance,
-    getMonthlyAttendanceSummary
+    getMonthlyAttendanceSummary,
+    createHoliday,
+    getHolidays,
+    deleteHoliday,
+    getAllLeaves,
+    approveRejectLeave
 } from "../controllers/admin.controller.js";
 
 import { isAuth } from "../middlewares/isAuth.js";
@@ -28,5 +33,14 @@ router.patch("/employees/:id/status", updateEmployeeStatus);
 router.patch("/attendance/:id", adminAttendance);
 router.get("/empAttendance", getEmpAttendance);
 router.get("/attendance/summary", getMonthlyAttendanceSummary);
+
+// holiday routes
+router.post("/holiday", createHoliday);
+router.delete("/holiday/:id", deleteHoliday);
+router.get("/holiday", getHolidays);
+
+// leave routes
+router.get("/leaves", getAllLeaves);
+router.patch("/leaves/:id", approveRejectLeave);
 
 export default router;

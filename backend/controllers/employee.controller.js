@@ -276,3 +276,44 @@ export const getMonthySummary = async (req, res) => {
         });
     }
 }
+
+// apply leave
+export const applyLeave = async (req, res) => {
+    try {
+        const employeeId = req.user.id;
+        const { fromDate, toDate, type, reason } = req.body;
+        if (!employeeId || !fromDate || !toDate || !type || !reason) return res.status(400).json({
+            success: false,
+            message: "Please provide all fields",
+        });
+
+        if (new Date(fromDate) > newDate(toDate)) return res.status(400).json({
+            success: false,
+            message: "Invalid date range"
+        });
+
+        const leave = await prisma.leave.create({
+            data: {
+                employeeId,
+                fromDate: new Date(fromDate),
+                toDate: new Date(toDate),
+                type,
+                reason
+            },
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Leave request generated successfully",
+            leave
+        });
+
+    } catch (error) {
+        console.error("applyLeave error", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message
+        });
+    }
+}
