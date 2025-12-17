@@ -1,5 +1,14 @@
-export const getPayRollCalc = (attendance, monthlySalary) => {
+export const payrollCalculator = (attendance, monthlySalary) => {
     let payableDays = 0;
+
+    if (attendance.length === 0) {
+        return {
+            totalWorkingDays: 0,
+            payableDays: 0,
+            perDaySalary: 0,
+            grossSalary: 0
+        };
+    }
 
     attendance.forEach(a => {
         switch (a.status) {
@@ -22,12 +31,12 @@ export const getPayRollCalc = (attendance, monthlySalary) => {
 
     const totalWorkingDays = attendance.length;
     const perDaySalary = monthlySalary / totalWorkingDays;
-    const finalPayableAmount = perDaySalary * payableDays;
+    const grossSalary = perDaySalary * payableDays;
 
     return {
         totalWorkingDays,
         payableDays,
         perDaySalary: Number(perDaySalary.toFixed(2)),
-        finalPayableAmount: Number(finalPayableAmount.toFixed(2)),
+        grossSalary: Number(grossSalary.toFixed(2)),
     };
 };

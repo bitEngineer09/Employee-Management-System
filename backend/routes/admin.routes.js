@@ -13,7 +13,8 @@ import {
     deleteHoliday,
     getAllLeaves,
     approveRejectLeave,
-    getPayRoll
+    getPayRoll,
+    getPaySlip
 } from "../controllers/admin.controller.js";
 
 import { isAuth } from "../middlewares/isAuth.js";
@@ -46,5 +47,6 @@ router.patch("/leaves/:id", approveRejectLeave);
 
 // pay roll routes
 router.get("/payroll", getPayRoll);
+router.get("/payslip", getPaySlip);
 
 export default router;

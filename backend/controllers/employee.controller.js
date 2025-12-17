@@ -191,7 +191,7 @@ export const getAttendance = async (req, res) => {
         });
 
         return res.status(200).json({
-            success: false,
+            success: true,
             message: "Attendance fetched successfully",
             attendanceReport: data,
         });
@@ -207,12 +207,14 @@ export const getAttendance = async (req, res) => {
 };
 
 // get monthly summary
-export const getMonthySummary = async (req, res) => {
+export const getMonthlySummary = async (req, res) => {
     try {
-        const { employeeId, month } = req.query;
-        if (!employeeId || !month) return res.status(400).json({
+        const { month } = req.query;
+        const employeeId = req.user.id;
+
+        if (!month) return res.status(400).json({
             success: false,
-            message: "Please provide all fields",
+            message: "Please provide month",
         });
 
         const { startDate, endDate } = getMonthRange(month);
@@ -222,22 +224,20 @@ export const getMonthySummary = async (req, res) => {
         });
 
         const employee = await prisma.user.findUnique({
-            where: { id: Number(employeeId) },
+            where: { id: employeeId },
         });
 
-        if (!employee || employee !== "EMPLOYEE") return res.status(400).json({
+        if (!employee || employee.role !== "EMPLOYEE") return res.status(400).json({
             success: false,
             message: "Employee not found",
         });
 
         const attendance = await prisma.attendance.findMany({
             where: {
-                employeeId_date: {
-                    employeeId: Number(employeeId),
-                    date: {
-                        gte: startDate,
-                        lte: endDate,
-                    },
+                employeeId: Number(employeeId),
+                date: {
+                    gte: startDate,
+                    lte: endDate,
                 },
             },
             select: {
@@ -261,7 +261,7 @@ export const getMonthySummary = async (req, res) => {
         summary.totalWorkingHours = Number(summary.totalWorkingHours.toFixed(2));
 
         return res.status(200).json({
-            success: false,
+            success: true,
             message: "Your Monthly report fetched successfully",
             month,
             summary,
@@ -282,12 +282,18 @@ export const applyLeave = async (req, res) => {
     try {
         const employeeId = req.user.id;
         const { fromDate, toDate, type, reason } = req.body;
+
         if (!employeeId || !fromDate || !toDate || !type || !reason) return res.status(400).json({
             success: false,
             message: "Please provide all fields",
         });
 
-        if (new Date(fromDate) > newDate(toDate)) return res.status(400).json({
+        if (!["CASUAL", "SICK", "PAID", "UNPAID"].includes(type)) return res.status(400).json({
+            success: false,
+            message: "Invalid leave type",
+        });
+
+        if (new Date(fromDate) > new Date(toDate)) return res.status(400).json({
             success: false,
             message: "Invalid date range"
         });

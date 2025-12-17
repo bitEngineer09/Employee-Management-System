@@ -1,8 +1,9 @@
 import { prisma } from "../utils/client.js";
 import argon2 from 'argon2';
 import { getMonthRange } from '../utils/monthRange.js';
-import { getPayRollCalc } from "../utils/payRollCalc.js";
-import { deductionCalcultor } from "../utils/deductionCalculator.js";
+import { getDaysBetween } from '../helpers/getDaysBetween.js'
+import { payrollCalculator } from "../utils/payRollCalc.js";
+import { deductionCalculator } from "../utils/deductionCalculator.js";
 
 // employe create
 export const createEmployee = async (req, res) => {
@@ -61,14 +62,14 @@ export const createEmployee = async (req, res) => {
                 designation,
                 role: "EMPLOYEE",
                 monthlySalary,
-                basicSalary,
+                basicSalary
             }
         });
 
         // adding by default 12 casual leaves
         const currentYear = new Date().getFullYear();
         await prisma.leaveBalance.create({
-            where: {
+            data: {
                 employeeId: newEmployee.id,
                 year: currentYear,
                 casualLeft: 12,
@@ -110,8 +111,6 @@ export const getAllEmployees = async (req, res) => {
                 employeeId: true,
                 department: true,
                 designation: true,
-                monthlySalary: true,
-                basicSalary: true,
                 isActive: true,
                 createdAt: true,
                 updatedAt: true,
@@ -152,8 +151,6 @@ export const getEmployeeById = async (req, res) => {
                 employeeId: true,
                 department: true,
                 designation: true,
-                monthlySalary: true,
-                basicSalary: true,
                 isActive: true,
                 createdAt: true,
                 updatedAt: true,
@@ -196,7 +193,9 @@ export const updateEmployee = async (req, res) => {
         const { name, department, designation, monthlySalary } = req.body;
 
         let basicSalary;
-        if (monthlySalary) return basicSalary = monthlySalary * 0.4;
+        if (monthlySalary) {
+            basicSalary = monthlySalary * 0.4;
+        }
 
         const employee = await prisma.user.findUnique({
             where: { id: Number(empId) }
@@ -250,6 +249,17 @@ export const updateEmployeeStatus = async (req, res) => {
             message: "Invalid status",
         });
 
+        const employee = await prisma.user.findUnique({
+            where: { id: Number(empId) }
+        });
+
+        if (!employee || employee.role !== "EMPLOYEE") {
+            return res.status(404).json({
+                success: false,
+                message: "Employee not found"
+            });
+        }
+
         const isActive = status === "ACTIVE";
 
         const updatedStatus = await prisma.user.update({
@@ -282,7 +292,7 @@ export const adminAttendance = async (req, res) => {
         const { status } = req.body;
         const adminId = req.user.id;
 
-        const allowedStatus = ["PRESENT", "ABSENT", "HALF_DAY"];
+        const allowedStatus = ["PRESENT", "ABSENT", "HALF_DAY", "LEAVE"];
         if (!allowedStatus.includes(status)) return res.status(400).json({
             success: false,
             message: "Invalid Status",
@@ -433,7 +443,9 @@ export const getMonthlyAttendanceSummary = async (req, res) => {
         };
 
         attendance.forEach(a => {
-            summary[a.status]++;
+            if (summary[a.status] !== undefined) {
+                summary[a.status]++;
+            }
             summary.totalWorkingHours += a.workingHours || 0;
         });
 
@@ -468,6 +480,18 @@ export const createHoliday = async (req, res) => {
             success: false,
             message: "Please provide all fields",
         });
+
+        const isHolidayExisits = await prisma.holiday.findUnique({
+            where: { date: new Date(date) }
+        });
+
+        if (isHolidayExisits) {
+            return res.status(400).json({
+                success: false,
+                message: "Holiday already exists for this date"
+            });
+        }
+
 
         const holiday = await prisma.holiday.create({
             data: {
@@ -605,7 +629,7 @@ export const approveRejectLeave = async (req, res) => {
 
             const balance = await prisma.leaveBalance.findUnique({
                 where: {
-                    employeeId_date: {
+                    employeeId_year: {
                         employeeId: leave.employeeId,
                         year
                     },
@@ -623,6 +647,32 @@ export const approveRejectLeave = async (req, res) => {
                     casualLeft: balance.casualLeft - days,
                 },
             });
+
+            const current = new Date(leave.fromDate);
+            const end = new Date(leave.toDate);
+
+
+            // jab tak leave hai, tab tak employee ka status me leave show karna hai
+            while (current <= end) {
+                await prisma.attendance.upsert({
+                    where: {
+                        employeeId_date: {
+                            employeeId: leave.employeeId,
+                            date: new Date(current)
+                        }
+                    },
+                    update: {
+                        status: "LEAVE"
+                    },
+                    create: {
+                        employeeId: leave.employeeId,
+                        date: new Date(current),
+                        status: "LEAVE"
+                    }
+                });
+
+                current.setDate(current.getDate() + 1);
+            }
         }
 
         return res.status(200).json({
@@ -674,7 +724,7 @@ export const getPayRoll = async (req, res) => {
             },
         });
 
-        const payRoll = getPayRollCalc(attendance, employee.monthlySalary);
+        const payRoll = payrollCalculator(attendance, employee.monthlySalary);
 
         return res.status(200).json({
             success: true,
@@ -728,12 +778,12 @@ export const getPaySlip = async (req, res) => {
             }
         });
 
-        const payroll = getPayRoll(attendance, employee.monthlySalary);
+        const payroll = payrollCalculator(attendance, employee.monthlySalary);
 
-        const deductions = deductionCalcultor(payroll.grossSalary, employee.basicSalary);
+        const deductions = deductionCalculator(payroll.grossSalary, employee.basicSalary);
 
         return res.status(200).json({
-            success: false,
+            success: true,
             message: "Payslip generated successfully",
             employee: {
                 employeeId: employee.id,

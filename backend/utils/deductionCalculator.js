@@ -1,4 +1,4 @@
-export const deductionCalcultor = (gross, basic) => {
+export const deductionCalculator = (gross, basic) => {
     const pf = basic * 0.12;
     const tax = gross * 0.05;
     const netSalary = gross - pf - tax;
