@@ -9,7 +9,7 @@ export const signupController = async (req, res) => {
             name,
             email,
             password,
-            adminCode
+            adminCode,
         } = req.body;
 
         if (!name || !email || !password || !adminCode) {
@@ -90,7 +90,7 @@ export const loginController = async (req, res) => {
             message: "Invalid Credentials"
         });
 
-        const validPasswd = await argon2.verify(user.password, password);
+        const validPasswd = await argon2.verify(user.password, String(password));
 
         if (!validPasswd) return res.status(400).json({
             success: false,

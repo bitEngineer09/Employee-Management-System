@@ -5,11 +5,7 @@ import {
     checkout,
     getAttendance,
     getLeaveBalance,
-<<<<<<< HEAD
-    getMonthySummary,
-=======
     getMonthlySummary,
->>>>>>> 015168a (payrole, payslip)
 } from '../controllers/employee.controller.js'
 import { isAuth } from '../middlewares/isAuth.js';
 import { requireAuth } from '../middlewares/requireAuth.js';

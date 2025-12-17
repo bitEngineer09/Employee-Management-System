@@ -25,11 +25,11 @@ const router = express.Router();
 
 router.use(isAuth, requireAuth, isAdmin);
 
-router.post("/employees", createEmployee);
+router.post("/employee", createEmployee);
 router.get("/employees", getAllEmployees);
-router.get("/employees/:id", getEmployeeById);
-router.put("/employees/:id", updateEmployee);
-router.patch("/employees/:id/status", updateEmployeeStatus);
+router.get("/employee/:id", getEmployeeById);
+router.put("/employee/:id", updateEmployee);
+router.patch("/employee/:id/status", updateEmployeeStatus);
 
 // attendance routes
 router.patch("/attendance/:id", adminAttendance);

@@ -1,4 +1,4 @@
-const getDaysBetween = (from, to) => {
+export const getDaysBetween = (from, to) => {
     const start = new Date(from);
     const end = new Date(to);
     const days = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1; // 1000 * 60 * 60 * 24 = 86400000 ms
