@@ -317,3 +317,34 @@ export const applyLeave = async (req, res) => {
         });
     }
 }
+
+// get leave balance
+export const getLeaveBalance = async (req, res) => {
+    try {
+        const employeeId = req.user.id;
+        const year = new Date().getFullYear();
+
+        const balance = await prisma.leaveBalance.findUnique({
+            where: {
+                employeeId_year: {
+                    employeeId,
+                    year,
+                }
+            }
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Leave balance fetched successfully",
+            balance
+        });
+
+    } catch (error) {
+        console.error("getLeaveBalance error", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message
+        });
+    }
+}

@@ -2,7 +2,7 @@ import express from "express";
 import {
     createEmployee,
     getAllEmployees,
-    getAllEmployeeById,
+    getEmployeeById,
     updateEmployee,
     updateEmployeeStatus,
     adminAttendance,
@@ -12,7 +12,8 @@ import {
     getHolidays,
     deleteHoliday,
     getAllLeaves,
-    approveRejectLeave
+    approveRejectLeave,
+    getPayRoll
 } from "../controllers/admin.controller.js";
 
 import { isAuth } from "../middlewares/isAuth.js";
@@ -25,7 +26,7 @@ router.use(isAuth, requireAuth, isAdmin);
 
 router.post("/employees", createEmployee);
 router.get("/employees", getAllEmployees);
-router.get("/employees/:id", getAllEmployeeById);
+router.get("/employees/:id", getEmployeeById);
 router.put("/employees/:id", updateEmployee);
 router.patch("/employees/:id/status", updateEmployeeStatus);
 
@@ -42,5 +43,8 @@ router.get("/holiday", getHolidays);
 // leave routes
 router.get("/leaves", getAllLeaves);
 router.patch("/leaves/:id", approveRejectLeave);
+
+// pay roll routes
+router.get("/payroll", getPayRoll);
 
 export default router;

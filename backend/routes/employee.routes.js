@@ -4,6 +4,7 @@ import {
     checkin,
     checkout,
     getAttendance,
+    getLeaveBalance,
     getMonthySummary,
 } from '../controllers/employee.controller.js'
 import { isAuth } from '../middlewares/isAuth.js';
@@ -22,4 +23,5 @@ router.get("/attendance/summary", getMonthySummary);
 
 // leave routes
 router.post("/leave", applyLeave);
+router.get("/leave-balance", getLeaveBalance);
 export default router;

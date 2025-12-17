@@ -1,6 +1,8 @@
 import { prisma } from "../utils/client.js";
 import argon2 from 'argon2';
 import { getMonthRange } from '../utils/monthRange.js';
+import { getPayRollCalc } from "../utils/payRollCalc.js";
+import { deductionCalcultor } from "../utils/deductionCalculator.js";
 
 // employe create
 export const createEmployee = async (req, res) => {
@@ -10,15 +12,18 @@ export const createEmployee = async (req, res) => {
             email,
             employeeId,
             department,
-            designation
+            designation,
+            monthlySalary
         } = req.body;
 
-        if (!name || !email || !employeeId || !department || !designation) {
+        if (!name || !email || !employeeId || !department || !designation || !monthlySalary) {
             return res.status(400).json({
                 success: false,
                 message: "Please provide all fields"
             });
         }
+
+        const basicSalary = monthlySalary * 0.4;
 
         const isUserExisits = await prisma.user.findUnique({
             where: { email }
@@ -54,8 +59,20 @@ export const createEmployee = async (req, res) => {
                 employeeId,
                 department,
                 designation,
-                role: "EMPLOYEE"
+                role: "EMPLOYEE",
+                monthlySalary,
+                basicSalary,
             }
+        });
+
+        // adding by default 12 casual leaves
+        const currentYear = new Date().getFullYear();
+        await prisma.leaveBalance.create({
+            where: {
+                employeeId: newEmployee.id,
+                year: currentYear,
+                casualLeft: 12,
+            },
         });
 
         return res.status(201).json({
@@ -93,6 +110,8 @@ export const getAllEmployees = async (req, res) => {
                 employeeId: true,
                 department: true,
                 designation: true,
+                monthlySalary: true,
+                basicSalary: true,
                 isActive: true,
                 createdAt: true,
                 updatedAt: true,
@@ -116,7 +135,7 @@ export const getAllEmployees = async (req, res) => {
 };
 
 // get emp data by id
-export const getAllEmployeeById = async (req, res) => {
+export const getEmployeeById = async (req, res) => {
     try {
 
         const empId = req.params.id;
@@ -133,6 +152,8 @@ export const getAllEmployeeById = async (req, res) => {
                 employeeId: true,
                 department: true,
                 designation: true,
+                monthlySalary: true,
+                basicSalary: true,
                 isActive: true,
                 createdAt: true,
                 updatedAt: true,
@@ -172,7 +193,10 @@ export const updateEmployee = async (req, res) => {
             message: "Employee id not provided",
         });
 
-        const { name, department, designation } = req.body;
+        const { name, department, designation, monthlySalary } = req.body;
+
+        let basicSalary;
+        if (monthlySalary) return basicSalary = monthlySalary * 0.4;
 
         const employee = await prisma.user.findUnique({
             where: { id: Number(empId) }
@@ -188,7 +212,9 @@ export const updateEmployee = async (req, res) => {
             data: {
                 name,
                 department,
-                designation
+                designation,
+                monthlySalary,
+                basicSalary,
             },
         });
 
@@ -372,14 +398,12 @@ export const getMonthlyAttendanceSummary = async (req, res) => {
             message: "get montRange method error",
         });
 
-        const attendance = await prisma.findMany({
+        const attendance = await prisma.attendance.findMany({
             where: {
-                employeeId_date: {
-                    employeeId: Number(employeeId),
-                    date: {
-                        gte: startDate,
-                        lte: endDate,
-                    }
+                employeeId: Number(employeeId),
+                date: {
+                    gte: new Date(startDate),
+                    lte: new Date(endDate),
                 }
             },
             select: {
@@ -388,10 +412,23 @@ export const getMonthlyAttendanceSummary = async (req, res) => {
             },
         });
 
+        // count holidays
+        const holidays = await prisma.holiday.findMany({
+            where: {
+                date: {
+                    gte: new Date(startDate),
+                    lte: new Date(endDate),
+                },
+            },
+        });
+
         let summary = {
             PRESENT: 0,
             HALF_DAY: 0,
             ABSENT: 0,
+            HOLIDAY: holidays.length,
+            LEAVE_PAID: 0,
+            LEAVE_UNPAID: 0,
             totalWorkingHours: 0,
         };
 
@@ -561,6 +598,33 @@ export const approveRejectLeave = async (req, res) => {
             },
         });
 
+        // if status got approved then deduct the casual leaves balance
+        if (status === "APPROVED" && leave.type === "CASUAL") {
+            const year = new Date(leave.fromDate).getFullYear();
+            const days = getDaysBetween(leave.fromDate, leave.toDate);
+
+            const balance = await prisma.leaveBalance.findUnique({
+                where: {
+                    employeeId_date: {
+                        employeeId: leave.employeeId,
+                        year
+                    },
+                },
+            });
+
+            if (!balance || balance.casualLeft < days) return res.status(400).json({
+                success: false,
+                message: "Insuffucient casual leaves balance",
+            });
+
+            await prisma.leaveBalance.update({
+                where: { id: balance.id },
+                data: {
+                    casualLeft: balance.casualLeft - days,
+                },
+            });
+        }
+
         return res.status(200).json({
             success: true,
             leave,
@@ -568,6 +632,124 @@ export const approveRejectLeave = async (req, res) => {
 
     } catch (error) {
         console.error("approveRejectLeave error", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+}
+
+// get pay roll of employee
+export const getPayRoll = async (req, res) => {
+    try {
+        const { employeeId, month } = req.query;
+        if (!employeeId || !month) return res.status(400).json({
+            success: false,
+            message: "Please provide all fields",
+        });
+
+        const employee = await prisma.user.findUnique({
+            where: { id: Number(employeeId) }
+        });
+
+        if (!employee || employee.role !== "EMPLOYEE") return res.status(400).json({
+            success: false,
+            message: "Employee not found"
+        });
+
+        const { startDate, endDate } = getMonthRange(month);
+        if (!startDate || !endDate) return res.status(400).json({
+            success: false,
+            message: "get monthRange method error",
+        });
+
+        const attendance = await prisma.attendance.findMany({
+            where: {
+                employeeId: Number(employeeId),
+                date: {
+                    gte: new Date(startDate),
+                    lte: new Date(endDate)
+                },
+            },
+        });
+
+        const payRoll = getPayRollCalc(attendance, employee.monthlySalary);
+
+        return res.status(200).json({
+            success: true,
+            message: "Pay Roll calculted successfully",
+            employee: {
+                employeeId: employee.id,
+                name: employee.name,
+            },
+            month,
+            payRoll,
+        });
+
+    } catch (error) {
+        console.error("getPayRoll error", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+}
+
+// get payslip
+export const getPaySlip = async (req, res) => {
+    try {
+        const { employeeId, month } = req.query;
+        if (!employeeId || !month) return res.status(400).json({
+            success: false,
+            message: "Please provide all fields"
+        });
+
+        const employee = await prisma.user.findUnique({
+            where: { id: Number(employeeId) }
+        });
+
+        if (!employee || employee.role !== "EMPLOYEE") return res.status(400).json({
+            success: false,
+            message: "Employee not found",
+        });
+
+        const { startDate, endDate } = getMonthRange(month);
+        if (!startDate || !endDate) return res.status(400).json({
+            success: false,
+            message: "get monthRange method error",
+        });
+
+        const attendance = await prisma.attendance.findMany({
+            where: {
+                employeeId: employee.id,
+                date: { gte: new Date(startDate), lte: new Date(endDate) }
+            }
+        });
+
+        const payroll = getPayRoll(attendance, employee.monthlySalary);
+
+        const deductions = deductionCalcultor(payroll.grossSalary, employee.basicSalary);
+
+        return res.status(200).json({
+            success: false,
+            message: "Payslip generated successfully",
+            employee: {
+                employeeId: employee.id,
+                name: employee.name
+            },
+            month,
+            earnings: {
+                basic: employee.basicSalary,
+                gross: payroll.grossSalary
+            },
+            deductions,
+            netSalary: deductions.netSalary
+        })
+
+    } catch (error) {
+        console.error("getPaySlip error", error.message);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error",

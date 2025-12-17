@@ -12,7 +12,9 @@ enum AttendanceStatus {
   PRESENT
   ABSENT
   HALF_DAY
-  LEAVE
+  HOLIDAY
+  LEAVE_PAID
+  LEAVE_UNPAID
 }
 
 enum AttendanceAction {
@@ -35,7 +37,6 @@ enum LeaveType {
   UNPAID
 }
 
-
 // models
 model user {
   id             Int             @id @default(autoincrement())
@@ -43,7 +44,7 @@ model user {
   email          String          @unique(map: "User_email_key")
   password       String
   role           String          @default("EMPLOYEE")
-  employeeId     String?
+  employeeId     String?         @unique
   department     String?
   designation    String?
   isActive       Boolean         @default(true)
@@ -54,6 +55,8 @@ model user {
   attendanceLogs AttendanceLog[] @relation("changedBy")
   leaves         Leave[]
   leaveBalance   LeaveBalance[]
+  monthlySalary  Decimal?        @db.Decimal(10, 2) // (10 total digits, and 2 decimal ke baad digits)
+  basicSalary    Decimal?        @db.Decimal(10, 2)
 }
 
 model session {
