@@ -7,7 +7,7 @@ export const adminAttendance = async (req, res) => {
         const { status } = req.body;
         const adminId = req.user.id;
 
-        const allowedStatus = ["PRESENT", "ABSENT", "HALF_DAY", "LEAVE"];
+        const allowedStatus = ["PRESENT", "ABSENT", "HALF_DAY", "LEAVE_PAID", "LEAVE_UNPAID"];
         if (!allowedStatus.includes(status)) return res.status(400).json({
             success: false,
             message: "Invalid Status",
@@ -186,3 +186,124 @@ export const getMonthlyAttendanceSummary = async (req, res) => {
         });
     }
 };
+
+// admin check in
+export const adminCheckin = async (req, res) => {
+    try {
+        const adminId = req.user.id;
+
+        const now = new Date();
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const existingAttendance = await prisma.attendance.findUnique({
+            where: {
+                employeeId_date: {
+                    employeeId: adminId,
+                    date: today,
+                },
+            },
+        });
+
+        if (existingAttendance) return res.status(400).json({
+            success: false,
+            message: "Today attendance already marked",
+        });
+
+        const attendance = await prisma.attendance.create({
+            data: {
+                employeeId: adminId,
+                date: today,
+                checkIn: now,
+                status: "PRESENT",
+            },
+        });
+
+        await prisma.attendanceLog.create({
+            data: {
+                attendanceId: attendance.id,
+                action: "CHECK_IN",
+                newStatus: "PRESENT",
+                changedBy: adminId,
+            },
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: "Admin check-in successful",
+            attendance,
+        });
+
+    } catch (error) {
+        console.error("adminCheckin error", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+}
+
+// admin ckeck out
+export const adminCheckout = async (req, res) => {
+    try {
+        const adminId = req.user.id;
+        const now = new Date();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const attendance = await prisma.attendance.findUnique({
+            where: {
+                employeeId_date: {
+                    employeeId: adminId,
+                    date: today,
+                },
+            },
+        });
+
+        if (!attendance) return res.status(400).json({
+            success: false,
+            message: "Check-in not found for today",
+        });
+
+        if (attendance.checkOut) return res.status(400).json({
+            success: false,
+            message: "Already checked out",
+        });
+
+        const workingHours = (now.getTime() - attendance.checkIn.getTime()) / (1000 * 60 * 60);
+
+        const updatedAttendance = await prisma.attendance.update({
+            where: { id: attendance.id },
+            data: {
+                checkOut: now,
+                workingHours: Number(workingHours.toFixed(2)),
+            },
+        });
+
+        await prisma.attendanceLog.create({
+            data: {
+                attendanceId: attendance.id,
+                action: "CHECK_OUT",
+                oldStatus: attendance.status,
+                newStatus: attendance.status,
+                changedBy: adminId,
+            },
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Admin check-out successful",
+            attendance: updatedAttendance,
+        });
+
+    } catch (error) {
+        console.error("adminCheckout error", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+}

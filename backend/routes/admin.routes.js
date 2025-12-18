@@ -9,6 +9,8 @@ import {
 
 import {
     adminAttendance,
+    adminCheckin,
+    adminCheckout,
     getEmpAttendance,
     getMonthlyAttendanceSummary,
 } from "../controllers/admin/attendance.controller.js";
@@ -32,11 +34,17 @@ import {
 import { isAuth } from "../middlewares/isAuth.js";
 import { requireAuth } from "../middlewares/requireAuth.js";
 import { isAdmin } from "../middlewares/isAdmin.js";
+import { forgotPassword, resetPassword } from "../controllers/auth.controller.js";
 
 const router = express.Router();
 
+// password routes
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password", resetPassword);
+
 router.use(isAuth, requireAuth, isAdmin);
 
+// employee routes
 router.post("/employee", createEmployee);
 router.get("/employees", getAllEmployees);
 router.get("/employee/:id", getEmployeeById);
@@ -47,6 +55,8 @@ router.patch("/employee/:id/status", updateEmployeeStatus);
 router.patch("/attendance/:id", adminAttendance);
 router.get("/empAttendance", getEmpAttendance);
 router.get("/attendance/summary", getMonthlyAttendanceSummary);
+router.post("/attendance/check-in", adminCheckin);
+router.patch("/attendance/check-out", adminCheckout);
 
 // holiday routes
 router.post("/holiday", createHoliday);
