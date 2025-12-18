@@ -6,6 +6,7 @@ import {
     FULL_DAY_HOURS
 } from "../utils/attendanceRules.js";
 import { getMonthRange } from '../utils/getMonthRange.js';
+import argon2 from 'argon2';
 
 // employee check in
 export const checkin = async (req, res) => {
@@ -351,6 +352,58 @@ export const getLeaveBalance = async (req, res) => {
             success: false,
             message: "Internal Server Error",
             error: error.message
+        });
+    }
+}
+
+// change default password
+export const changeDefaultPassword = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { oldPassword, newPassword } = req.body;
+
+        const employee = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+        if (!oldPassword || !newPassword) return res.status(400).json({
+            success: false,
+            message: "Please provide all fields",
+        });
+
+        // verify old password
+        const verifyOldPassword = await argon2.verify(employee.password, oldPassword);
+        if (!verifyOldPassword) return res.status(400).json({
+            success: false,
+            message: "Old password is incorrect",
+        });
+
+        // check if newPassword is same password
+        const isPasswordSame = await argon2.verify(employee.password, newPassword);
+        if (isPasswordSame) return res.status(400).json({
+            success: false,
+            message: "New password cannot be same as old password",
+        });
+
+        const hashedPassword = await argon2.hash(newPassword);
+
+        const updatePassword = await prisma.user.update({
+            where: { id: userId },
+            data: {
+                password: hashedPassword,
+            },
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Password updated successfully",
+        });
+
+    } catch (error) {
+        console.error("changeDefaultPassword error", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
         });
     }
 }

@@ -5,10 +5,17 @@ import {
     logoutController,
 } from '../controllers/auth.controller.js';
 
+// zod imports
+import { validate } from "../middlewares/zodValidator.js";
+import {
+    registerSchema,
+    loginSchema
+} from '../validators/auth.zod.js';
+
 const router = express.Router();
 
-router.post("/signup", signupController);
-router.post("/login", loginController);
+router.post("/signup", validate(registerSchema), signupController);
+router.post("/login", validate(loginSchema), loginController);
 router.post("/logout", logoutController);
 
 export default router;

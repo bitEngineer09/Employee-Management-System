@@ -40,7 +40,7 @@ export const createEmployee = async (req, res) => {
             message: "User already exists with this employee id"
         });
 
-        const tempPassword = "Welcome@User"
+        const tempPassword = "Welcome@123";
         const hashedPasword = await argon2.hash(tempPassword);
 
         if (!hashedPasword) return res.status(400).json({

@@ -9,10 +9,11 @@ export const signupController = async (req, res) => {
             name,
             email,
             password,
+            confirmPassword,
             adminCode,
         } = req.body;
 
-        if (!name || !email || !password || !adminCode) {
+        if (!name || !email || !password || !confirmPassword || !adminCode) {
             return res.status(400).json({
                 success: false,
                 message: "Please provide all fields"
@@ -33,6 +34,11 @@ export const signupController = async (req, res) => {
         if (isAdminExists) return res.status(400).json({
             success: false,
             message: "Admin already exists"
+        });
+
+        if (password !== confirmPassword) return res.status(400).json({
+            success: false,
+            message: "Please enter same password",
         });
 
         const hashedPaswd = await argon2.hash(password);
@@ -84,13 +90,16 @@ export const loginController = async (req, res) => {
         const user = await prisma.user.findUnique({
             where: { email }
         });
+        // console.log(password)
 
         if (!user) return res.status(400).json({
             success: false,
             message: "Invalid Credentials"
         });
+        // console.log(user.password)
+        const validPasswd = await argon2.verify(user.password, String(password).trim());
 
-        const validPasswd = await argon2.verify(user.password, String(password));
+        // console.log(validPasswd);
 
         if (!validPasswd) return res.status(400).json({
             success: false,
