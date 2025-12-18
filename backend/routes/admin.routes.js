@@ -5,20 +5,29 @@ import {
     getEmployeeById,
     updateEmployee,
     updateEmployeeStatus,
+} from "../controllers/admin/user.controller.js";
+
+import {
     adminAttendance,
     getEmpAttendance,
     getMonthlyAttendanceSummary,
+} from "../controllers/admin/attendance.controller.js";
+
+import {
     createHoliday,
     getHolidays,
     deleteHoliday,
     getAllLeaves,
     approveRejectLeave,
+} from "../controllers/admin/leave.controller.js";
+
+import {
     getPayRoll,
     getPaySlip,
     generatePayroll,
     generatePayslipPDF,
-    regeneratePayroll
-} from "../controllers/admin.controller.js";
+    regeneratePayroll,
+} from "../controllers/admin/payroll.controller.js";
 
 import { isAuth } from "../middlewares/isAuth.js";
 import { requireAuth } from "../middlewares/requireAuth.js";
