@@ -12,7 +12,6 @@ enum AttendanceStatus {
   PRESENT
   ABSENT
   HALF_DAY
-  HOLIDAY
   LEAVE_PAID
   LEAVE_UNPAID
 }
@@ -57,6 +56,7 @@ model user {
   attendanceLogs AttendanceLog[] @relation("changedBy")
   leaves         Leave[]
   leaveBalance   LeaveBalance[]
+  payroll        Payroll[]
 }
 
 model session {
@@ -140,4 +140,21 @@ model LeaveBalance {
   employee   user @relation(fields: [employeeId], references: [id])
 
   @@unique([employeeId, year])
+}
+
+model Payroll {
+  id               Int      @id @default(autoincrement())
+  employeeId       Int
+  month            String
+  grossSalary      Float
+  pf               Float
+  tax              Float
+  netSalary        Float
+  totalWorkingDays Int
+  payableDays       Int
+  employee         user     @relation(fields: [employeeId], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([employeeId, month])
 }

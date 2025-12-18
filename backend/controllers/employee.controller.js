@@ -5,7 +5,7 @@ import {
     HALF_DAY_HOURS,
     FULL_DAY_HOURS
 } from "../utils/attendanceRules.js";
-import { getMonthRange } from '../utils/monthRange.js';
+import { getMonthRange } from '../utils/getMonthRange.js';
 
 // employee check in
 export const checkin = async (req, res) => {

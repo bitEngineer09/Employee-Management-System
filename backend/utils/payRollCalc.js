@@ -1,7 +1,7 @@
-export const payrollCalculator = (attendance, monthlySalary) => {
+export const getPayrollCalculator = (attendance, monthlySalary, totalWorkingDays) => {
     let payableDays = 0;
 
-    if (attendance.length === 0) {
+    if (attendance.length === 0 || totalWorkingDays === 0) {
         return {
             totalWorkingDays: 0,
             payableDays: 0,
@@ -13,7 +13,6 @@ export const payrollCalculator = (attendance, monthlySalary) => {
     attendance.forEach(a => {
         switch (a.status) {
             case "PRESENT":
-            case "HOLIDAY":
             case "LEAVE_PAID":
                 payableDays += 1;
                 break;
@@ -26,10 +25,11 @@ export const payrollCalculator = (attendance, monthlySalary) => {
             case "HALF_DAY":
                 payableDays += 0.5;
                 break;
+
+            default: break;
         }
     });
 
-    const totalWorkingDays = attendance.length;
     const perDaySalary = monthlySalary / totalWorkingDays;
     const grossSalary = perDaySalary * payableDays;
 

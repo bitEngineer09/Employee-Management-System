@@ -1,7 +1,9 @@
-export const deductionCalculator = (gross, basic) => {
-    const pf = basic * 0.12;
-    const tax = gross * 0.05;
-    const netSalary = gross - pf - tax;
+export const deductionCalculator = (grossSalary, basicSalary) => {
+    let pf = basicSalary * 0.12;
+    if (pf > 1800) pf = 1800;
+    
+    const tax = grossSalary > 25000 ? grossSalary * 0.05 : 0;
+    const netSalary = grossSalary - pf - tax;
 
     return {
         pf: Number(pf.toFixed(2)),
