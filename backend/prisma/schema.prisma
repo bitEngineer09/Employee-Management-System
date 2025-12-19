@@ -44,13 +44,18 @@ model user {
   password       String
   role           String          @default("EMPLOYEE")
   employeeId     String?         @unique
-  department     String?
+
+  departmentId   Int?
+  department     Department?     @relation(fields: [departmentId], references: [id])
   designation    String?
+
   isActive       Boolean         @default(true)
   monthlySalary  Float?
   basicSalary    Float?
+
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
+  
   session        session[]
   attendances    Attendance[]
   attendanceLogs AttendanceLog[] @relation("changedBy")
@@ -70,6 +75,16 @@ model session {
   user      user     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Session_userId_fkey")
 
   @@index([userId], map: "Session_userId_idx")
+}
+
+model Department {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  isActive    Boolean  @default(true)
+  users       user[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Attendance {

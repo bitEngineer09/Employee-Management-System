@@ -12,6 +12,7 @@ import { startAutoAbsentCron } from './cron/autoAbsent.cron.js';
 import authRouter from './routes/auth.routes.js';
 import adminRouter from './routes/admin.routes.js';
 import employeeRouter from './routes/employee.routes.js';
+import departmentRouter from './routes/department.routes.js';
 
 
 const app = express();
@@ -35,6 +36,7 @@ app.use(requestIp.mw());
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/employee", employeeRouter);
+app.use("/api/department", departmentRouter);
 
 
 startAutoAbsentCron(); // start cron
