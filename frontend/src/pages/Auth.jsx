@@ -1,20 +1,38 @@
 import React, { useState } from 'react';
 import useLogin from '../hooks/useLogin';
-// import useSignup from '../hooks/useSignup';
+import useSignup from '../hooks/useSignup';
+import ButtonLoader from '../components/Loader/buttonLoader';
+import { FaRegEye } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa";
+
 
 const Auth = () => {
 
   const [newUser, setNewUser] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
+    confirmPassword: "",
+    adminCode: "",
   });
 
   // handle form submit
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    login({ email: formData.email, password: formData.password })
+    newUser ?
+      signup({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+        adminCode: formData.adminCode,
+      }) :
+      login({
+        email: formData.email,
+        password: formData.password,
+      })
   };
 
   // handle input change
@@ -25,12 +43,8 @@ const Auth = () => {
     });
   };
 
-  // const [signupData, setSignupData] = useState({
-  // })
-
-
   const { login, isLoading: loginLoading, error: loginError } = useLogin();
-  // const { signup, isLoading: signupLoading, error: signupError } = useSignup();
+  const { signup, isLoading: signupLoading, error: signupError } = useSignup();
 
   return (
     <div className='flex h-screen items-center justify-center bg-(--bg-secondary) px-4'>
@@ -40,8 +54,31 @@ const Auth = () => {
 
         {/* form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-5">
+          {/* name */}
+          {
+            newUser && (
+              <div className='flex flex-col'>
+                <label htmlFor="email" className="text-sm text-(--text-secondary)">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="
+                    border border-(--border-primary)
+                    rounded-md 
+                    py-2 px-2
+                    text-sm text-(--text-secondary)
+                    mt-1
+                    outline-none
+                  "/>
+              </div>
+            )
+          }
+
+          {/* email */}
           <div className='flex flex-col'>
-            <label htmlFor="" className="text-sm text-(--text-secondary)">Email</label>
+            <label htmlFor="email" className="text-sm text-(--text-secondary)">Email</label>
             <input
               type="email"
               name="email"
@@ -57,10 +94,11 @@ const Auth = () => {
               "/>
           </div>
 
-          <div className='flex flex-col'>
-            <label htmlFor="" className="text-sm text-(--text-secondary)">Password</label>
+          {/* password */}
+          <div className='flex flex-col relative'>
+            <label htmlFor="password" className="text-sm text-(--text-secondary)">Password</label>
             <input
-              type="password"
+              type={`${showPassword ? "text" : "password"}`}
               name="password"
               value={formData.password}
               onChange={handleChange}
@@ -72,15 +110,24 @@ const Auth = () => {
                 mt-1
                 outline-none
               "/>
+            {
+              showPassword
+                ? <FaRegEye onClick={() => setShowPassword(!showPassword)} className='absolute right-2 top-9 text-(--text-secondary)' />
+                : <FaRegEyeSlash onClick={() => setShowPassword(!showPassword)} className='absolute right-2 top-9 text-(--text-secondary)' />
+            }
+
           </div>
           {
             newUser ?
               <>
-                <div className='flex flex-col'>
-                  <label htmlFor="" className="text-sm text-(--text-secondary)">Confirm Code</label>
+                {/* confirm password */}
+                <div className='flex flex-col relative'>
+                  <label htmlFor="confirmPassword" className="text-sm text-(--text-secondary)">Confirm Password</label>
                   <input
-                    type="text"
-                    name="confirmCode"
+                    onChange={handleChange}
+                    type={`${showPassword ? "text" : "password"}`}
+                    value={formData.confirmPassword}
+                    name="confirmPassword"
                     className="
                       border border-(--border-primary)
                       rounded-md 
@@ -89,13 +136,21 @@ const Auth = () => {
                       mt-1
                       outline-none
                     "/>
+                  {
+                    showPassword
+                      ? <FaRegEye onClick={() => setShowPassword(!showPassword)} className='absolute right-2 top-9 text-(--text-secondary)' />
+                      : <FaRegEyeSlash onClick={() => setShowPassword(!showPassword)} className='absolute right-2 top-9 text-(--text-secondary)' />
+                  }
                 </div>
 
+                {/* admin code */}
                 <div className='flex flex-col'>
-                  <label htmlFor="" className="text-sm text-(--text-secondary)">Admin Code</label>
+                  <label htmlFor="adminCode" className="text-sm text-(--text-secondary)">Admin Code</label>
                   <input
-                    type="text"
-                    name="password"
+                    type="password"
+                    name="adminCode"
+                    onChange={handleChange}
+                    value={formData.adminCode}
                     className="
                       border border-(--border-primary)
                       rounded-md 
@@ -115,7 +170,12 @@ const Auth = () => {
               cursor-pointer 
               bg-(--blue-dark) text-(--text-primary)
               hover:bg-(--blue-hover) transition-colors
-            ">{newUser ? "Signup" : "Login"}
+              flex items-center justify-center
+            ">{
+              loginLoading || signupLoading
+                ? <ButtonLoader />
+                : newUser ? "Signup" : "Login"
+            }
           </button>
         </form>
 
