@@ -7,7 +7,7 @@ export const validate = (schema, source = "body") => {
         } catch (error) {
 
             const formattedErrors = error.issues.map(issue => ({
-                "fields": issue.path().join("."),
+                "fields": issue.path.join("."),
                 "message": issue.message,
             }));
 

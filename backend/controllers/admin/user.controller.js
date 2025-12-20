@@ -8,12 +8,12 @@ export const createEmployee = async (req, res) => {
             name,
             email,
             employeeId,
-            department,
+            departmentId,
             designation,
             monthlySalary
         } = req.body;
 
-        if (!name || !email || !employeeId || !department || !designation || !monthlySalary) {
+        if (!name || !email || !employeeId || !departmentId || !designation || !monthlySalary) {
             return res.status(400).json({
                 success: false,
                 message: "Please provide all fields"
@@ -54,7 +54,9 @@ export const createEmployee = async (req, res) => {
                 email,
                 password: hashedPasword,
                 employeeId,
-                department,
+                department: {
+                    connect: { id: Number(departmentId) }
+                },
                 designation,
                 role: "EMPLOYEE",
                 monthlySalary,
@@ -105,7 +107,12 @@ export const getAllEmployees = async (req, res) => {
                 name: true,
                 email: true,
                 employeeId: true,
-                department: true,
+                department: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
                 designation: true,
                 isActive: true,
                 createdAt: true,
@@ -145,7 +152,12 @@ export const getEmployeeById = async (req, res) => {
                 name: true,
                 email: true,
                 employeeId: true,
-                department: true,
+                department: {
+                    select: {
+                        id: true,
+                        name: true
+                    }
+                },
                 designation: true,
                 isActive: true,
                 createdAt: true,
@@ -186,7 +198,7 @@ export const updateEmployee = async (req, res) => {
             message: "Employee id not provided",
         });
 
-        const { name, department, designation, monthlySalary } = req.body;
+        const { name, departmentId, designation, monthlySalary } = req.body;
 
         let basicSalary;
         if (monthlySalary) {
@@ -206,10 +218,12 @@ export const updateEmployee = async (req, res) => {
             where: { id: Number(empId) },
             data: {
                 name,
-                department,
                 designation,
                 monthlySalary,
                 basicSalary,
+                department: departmentId
+                    ? { connect: { id: Number(departmentId) } }
+                    : undefined
             },
         });
 

@@ -5,6 +5,7 @@ configDotenv();
 import requestIp from 'request-ip';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
+import cors from 'cors';
 
 import { startAutoAbsentCron } from './cron/autoAbsent.cron.js';
 
@@ -32,6 +33,10 @@ app.use(session({
     }
 }));
 app.use(requestIp.mw());
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+}));
 
 app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
