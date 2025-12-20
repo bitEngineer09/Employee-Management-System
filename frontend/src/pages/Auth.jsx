@@ -163,9 +163,28 @@ const Auth = () => {
               </>
               : null
           }
+
+          {/* error display */}
+          {
+            (loginError || signupError) && (
+            <div
+              className="
+                border border-red-500
+                bg-red-700/20
+                text-(--text-primary)
+                rounded-md my-3
+                p-2 text-center
+              ">
+              {loginError?.response?.data?.message ||
+                signupError?.response?.data?.message}
+            </div>
+            )
+          }
+
           <button
+            disabled={loginLoading || signupLoading}
             className="
-              w-full p-2 mt-4
+              w-full p-2
               font-semibold rounded-md
               cursor-pointer 
               bg-(--blue-dark) text-(--text-primary)
