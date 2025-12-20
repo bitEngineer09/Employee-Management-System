@@ -6,10 +6,18 @@ import { useLocation } from 'react-router-dom';
 const Navbar = () => {
     const location = useLocation();
     return (
-        <div className='w-full h-15 flex items-center relative px-2 border-b border-zinc-200'>
-
+        <div
+            className='
+                w-full h-15 px-2
+                bg-(--bg-tertiary)
+                text-(--text-primary)
+                flex items-center
+                relative
+                border-b
+                border-(--border-primary)
+            '>
             {/* Logo */}
-            <div className='absolute left-5 flex items-center gap-1 text-2xl'>
+            <div className='absolute left-5 flex items-center gap-2 text-2xl'>
                 <FaTeamspeak />
                 <p>
                     <span className="font-bold">T</span>eam{" "}
@@ -21,7 +29,7 @@ const Navbar = () => {
             {
                 location.pathname !== "/auth" ?
                     <div className='flex items-center justify-center mx-auto'>
-                        <div className='flex items-center rounded border border-zinc-300 px-2'>
+                        <div className='flex items-center rounded-lg border border-(--border-secondary) px-2'>
                             <IoSearch />
                             <input
                                 name=''

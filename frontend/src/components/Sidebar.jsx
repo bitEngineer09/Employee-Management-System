@@ -17,7 +17,13 @@ const Sidebar = () => {
     ]
 
     return (
-        <div className="w-60 h-full border-r-2 border-zinc-200 flex flex-col justify-between">
+        <div
+            className="
+                w-60 h-full 
+                border-r-2 border-(--border-primary)
+                flex flex-col justify-between
+                bg-(--bg-secondary)
+            ">
             <div className="flex flex-col mt-1 gap-1">
                 {
                     sidebarContent.map((item, index) => {
@@ -31,8 +37,9 @@ const Sidebar = () => {
                             cursor-pointer
                             rounded-r-full
                             transition-all duration-200
-                            hover:bg-zinc-800
-                            hover:text-white
+                            text-(--text-secondary)
+                            hover:bg-(--text-secondary)
+                            hover:text-(--bg-secondary)
                         ">
                                 <span className="text-xl">
                                     {icon}
@@ -53,10 +60,11 @@ const Sidebar = () => {
                 cursor-pointer
                 rounded-r-full
                 transition-all duration-200
-                hover:bg-red-600
+                hover:bg-red-800
                 hover:text-white
             '>
-                <TbLogout2 className='text-xl' /><p className='text-sm font-medium tracking-wide'>Log</p>
+                <TbLogout2 className='text-xl text-(--text-secondary)' />
+                <p className='text-(--text-secondary) text-sm font-medium tracking-wide'>Logout</p>
             </div>
         </div>
     )

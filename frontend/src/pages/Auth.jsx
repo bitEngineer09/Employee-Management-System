@@ -1,8 +1,135 @@
-import React from 'react';
+import React, { useState } from 'react';
+import useLogin from '../hooks/useLogin';
+// import useSignup from '../hooks/useSignup';
 
 const Auth = () => {
+
+  const [newUser, setNewUser] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  // handle form submit
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    login({ email: formData.email, password: formData.password })
+  };
+
+  // handle input change
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  // const [signupData, setSignupData] = useState({
+  // })
+
+
+  const { login, isLoading: loginLoading, error: loginError } = useLogin();
+  // const { signup, isLoading: signupLoading, error: signupError } = useSignup();
+
   return (
-    <div>Auth</div>
+    <div className='flex h-screen items-center justify-center bg-(--bg-secondary) px-4'>
+      <div className="border border-(--border-primary) rounded-xl p-5 bg-(--bg-tertiary) w-full max-w-md">
+        <h1 className="text-2xl sm:text-3xl text-(--text-primary) font-semibold">{newUser ? "Create" : "Login to"} your Account</h1>
+        <p className="text-xs sm:text-sm text-(--text-secondary) mt-3">{newUser ? "Create your account to start your team track" : "See what is going on with your team"}</p>
+
+        {/* form */}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-5">
+          <div className='flex flex-col'>
+            <label htmlFor="" className="text-sm text-(--text-secondary)">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="
+                border border-(--border-primary)
+                rounded-md 
+                py-2 px-2
+                text-sm text-(--text-secondary)
+                mt-1
+                outline-none
+              "/>
+          </div>
+
+          <div className='flex flex-col'>
+            <label htmlFor="" className="text-sm text-(--text-secondary)">Password</label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="
+                border border-(--border-primary)
+                rounded-md 
+                py-2 px-2
+                text-sm text-(--text-secondary)
+                mt-1
+                outline-none
+              "/>
+          </div>
+          {
+            newUser ?
+              <>
+                <div className='flex flex-col'>
+                  <label htmlFor="" className="text-sm text-(--text-secondary)">Confirm Code</label>
+                  <input
+                    type="text"
+                    name="confirmCode"
+                    className="
+                      border border-(--border-primary)
+                      rounded-md 
+                      py-2 px-2
+                      text-sm text-(--text-secondary)
+                      mt-1
+                      outline-none
+                    "/>
+                </div>
+
+                <div className='flex flex-col'>
+                  <label htmlFor="" className="text-sm text-(--text-secondary)">Admin Code</label>
+                  <input
+                    type="text"
+                    name="password"
+                    className="
+                      border border-(--border-primary)
+                      rounded-md 
+                      py-2 px-2
+                      text-sm text-(--text-secondary)
+                      mt-1
+                      outline-none
+                    "/>
+                </div>
+              </>
+              : null
+          }
+          <button
+            className="
+              w-full p-2 mt-4
+              font-semibold rounded-md
+              cursor-pointer 
+              bg-(--blue-dark) text-(--text-primary)
+              hover:bg-(--blue-hover) transition-colors
+            ">{newUser ? "Signup" : "Login"}
+          </button>
+        </form>
+
+        <div className="mt-5 flex flex-col sm:flex-row justify-center items-center gap-1 sm:gap-3 text-sm">
+          <p className='text-(--text-secondary)'>{newUser ? "Already have an account?" : "Not registered Yet?"}</p>
+          <p
+            onClick={() => setNewUser(!newUser)}
+            className="
+            text-(--blue-light)
+              font-medium cursor-pointer
+            ">{newUser ? "Login to your account" : "Create an account"}</p>
+        </div>
+      </div>
+    </div>
   )
 }
 

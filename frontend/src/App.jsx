@@ -7,9 +7,11 @@ import Employee from './pages/Employee'
 import Dashboard from './pages/Dashboard'
 import Auth from './pages/Auth'
 import AuthLayout from './Layout/AuthLayout'
+import {Toaster} from 'react-hot-toast'
 
 const App = () => {
   return (
+    <>
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
@@ -22,6 +24,10 @@ const App = () => {
         <Route path="/auth" element={<Auth />} />
       </Route>
     </Routes>
+    
+    <Toaster />
+    </>
+    
   );
 };
 

@@ -1,4 +1,32 @@
 @import "tailwindcss";
+@theme {
+    /* BACKGROUND */
+    --bg-primary: #000000;        /* Pure black - Main background */
+    --bg-secondary: #0a0a0a;      /* Almost black - Cards */
+    --bg-tertiary: #171717;       /* Dark gray - Inputs (neutral-900) */
+    --bg-elevated: #262626;       /* Elevated elements (neutral-800) */
+    --bg-hover: #404040;          /* Hover state (neutral-700) */
+    
+    /* TEXT */
+    --text-primary: #ffffff;      /* Pure white - Headings */
+    --text-secondary: #d4d4d4;    /* Light gray - Body text (neutral-300) */
+    --text-tertiary: #a3a3a3;     /* Gray - Muted text (neutral-400) */
+    --text-disabled: #737373;     /* Dark gray - Disabled (neutral-500) */
+    --text-placeholder: #525252;  /* Darker gray - Placeholder (neutral-600) */
+    
+    /* BLUE */
+    --blue-primary: #3b82f6;      /* Primary blue (blue-500) */
+    --blue-hover: #2563eb;        /* Hover blue (blue-600) */
+    --blue-active: #1d4ed8;       /* Active blue (blue-700) */
+    --blue-light: #60a5fa;        /* Light blue (blue-400) */
+    --blue-dark: #1e40af;         /* Dark blue (blue-800) */
+    
+    /* BORDER */
+    --border-primary: #262626;    /* Main border (neutral-800) */
+    --border-secondary: #404040;  /* Secondary border (neutral-700) */
+    --border-focus: #3b82f6;      /* Focus border (blue-500) */
+    --border-subtle: #171717;     /* Subtle border (neutral-900) */
+}
 
 html, body {
     margin: 0;
