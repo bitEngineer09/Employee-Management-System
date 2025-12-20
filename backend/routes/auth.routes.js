@@ -15,7 +15,7 @@ import {
 const router = express.Router();
 
 router.post("/signup", validate(registerSchema), signupController);
-router.post("/login", loginController);
+router.post("/login", validate(loginSchema) ,loginController);
 router.post("/logout", logoutController);
 
 export default router;
