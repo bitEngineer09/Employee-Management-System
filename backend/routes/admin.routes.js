@@ -35,6 +35,7 @@ import { isAuth } from "../middlewares/isAuth.js";
 import { requireAuth } from "../middlewares/requireAuth.js";
 import { isAdmin } from "../middlewares/isAdmin.js";
 import { forgotPassword, resetPassword } from "../controllers/auth.controller.js";
+import { getDashboardStats } from "../controllers/admin/dashboardStats.controller.js";
 
 const router = express.Router();
 
@@ -73,5 +74,8 @@ router.post("/payroll/generate", generatePayroll);
 router.get("/payslip", getPaySlip);
 router.get("/payslip/pdf", generatePayslipPDF);
 router.post("/payroll/regenerate", regeneratePayroll);
+
+// dashboard routes
+router.get("/admin-stats", getDashboardStats);
 
 export default router;
