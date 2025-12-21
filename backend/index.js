@@ -30,7 +30,7 @@ app.use(session({
         httpOnly: true,
         secure: false,
         sameSite: "Lax"
-    }
+    },
 }));
 app.use(requestIp.mw());
 app.use(cors({

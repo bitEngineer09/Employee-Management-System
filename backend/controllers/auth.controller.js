@@ -241,3 +241,33 @@ export const resetPassword = async (req, res) => {
         });
     }
 };
+
+// get current user info
+export const getUserInfo = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await prisma.user.findUnique({
+            where: { id: Number(userId) },
+            omit: { password: true },
+        });
+
+        if (!user) return res.status(400).json({
+            success: false,
+            message: "user not found",
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "User info fetched successfully",
+            user,
+        });
+
+    } catch (error) {
+        console.error("getUserInfo error", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    };
+};
