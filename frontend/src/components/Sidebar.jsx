@@ -10,7 +10,7 @@ import { TbLogout2 } from "react-icons/tb";
 import { CiMenuKebab } from "react-icons/ci";
 
 import useLogout from '../hooks/Auth/useLogout';
-import useUser from '../hooks/Auth/useUser';
+import useAuth from '../hooks/Auth/useAuth';
 
 const Sidebar = () => {
     const sidebarContent = [
@@ -22,7 +22,7 @@ const Sidebar = () => {
     ]
 
     const { logout } = useLogout();
-    const { currentUser } = useUser();
+    const { currentUser } = useAuth();
 
     const { name, designation, } = currentUser?.user || {};
 
