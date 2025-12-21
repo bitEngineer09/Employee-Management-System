@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import useLogin from '../hooks/useLogin';
-import useSignup from '../hooks/useSignup';
+
 import ButtonLoader from '../components/Loader/buttonLoader';
 import { FaRegEye } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
-
+import useLogin from '../hooks/Auth/useLogin';
+import useSignup from '../hooks/Auth/useSignup';
 
 const Auth = () => {
 
