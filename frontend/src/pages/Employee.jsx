@@ -1,9 +1,17 @@
 import React, { useState } from 'react'
 import { LuPlus } from "react-icons/lu";
 import CreateEmpPopup from '../components/CreateEmpPopup';
+import EmployeeRecords from '../components/EmployeeRecords';
+import useAllEmployees from '../hooks/Admin/useAllEmployees';
 
 const Employee = () => {
   const [createEmp, setCreateEmp] = useState(false);
+
+  const { allEmployees } = useAllEmployees();
+
+  const employees = allEmployees?.data;
+  console.log(employees)
+
 
   return (
     <div className='relative'>
@@ -35,6 +43,10 @@ const Employee = () => {
           </div>
         )
       }
+
+      <div>
+        <EmployeeRecords employees={employees} />
+      </div>
     </div>
   );
 };
