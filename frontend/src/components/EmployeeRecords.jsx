@@ -1,24 +1,24 @@
 import React from 'react'
 import { Mail, Phone, Edit2, Trash2 } from 'lucide-react';
 
+// table header data
+const tableHeader = [
+    { name: "Employee" },
+    { name: "Contact" },
+    { name: "Designation" },
+    { name: "Department" },
+    { name: "Salary" },
+    { name: "Status" },
+    { name: "Action" },
+];
+
 const EmployeeRecords = ({ employees }) => {
     // console.log(employees)
 
-    // table header data
-    const tableHeader = [
-        { name: "Employee" },
-        { name: "Contact" },
-        { name: "Position" },
-        { name: "Department" },
-        { name: "Salary" },
-        { name: "Status" },
-        { name: "Action" },
-    ];
-
     return (
-        <div className='mt-6'>
-            <table className='w-full border border-(--border-primary)'>
-                <thead className="bg-(--border-subtle) border-b border-(--border-primary)">
+        <div className='mt-8 overflow-x-auto'>
+            <table className='w-full border border-(--border-primary) border-collapse'>
+                <thead className="bg-(--border-subtle) border-b border-(--border-primary) sticky top-0 z-10">
                     <tr>
                         {
                             tableHeader.map((header) =>

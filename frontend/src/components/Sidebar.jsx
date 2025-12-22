@@ -27,7 +27,7 @@ const Sidebar = () => {
     return (
         <div
             className="
-                w-60 h-full 
+                w-60 h-full shrink-0
                 border-r-2 border-(--border-primary)
                 flex flex-col justify-between
                 bg-(--bg-secondary)
@@ -35,7 +35,7 @@ const Sidebar = () => {
             <div className="flex flex-col mt-1 gap-1">
 
                 {/* Profile */}
-                <div className='flex items-center justify-center gap-4 px-5 my-4 tracking-wider text-sm cursor-pointer'>
+                <div className='flex items-center justify-center gap-4 my-4 tracking-wider text-sm cursor-pointer'>
                     <div
                         className='
                             flex items-center justify-center

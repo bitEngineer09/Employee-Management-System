@@ -8,12 +8,12 @@ const Navbar = () => {
     return (
         <div
             className='
-                w-full h-15 px-2
+                w-full h-15 px-2 
                 bg-(--bg-tertiary)
                 text-(--text-primary)
                 flex items-center
                 relative
-                border-b
+                border-b shrink-0 
                 border-(--border-primary)
             '>
             {/* Logo */}

@@ -15,11 +15,11 @@ const MainLayout = () => {
     // const errorOccur = true;
 
     return (
-        <div className='flex flex-col h-screen'>
+        <div className='flex flex-col h-screen overflow-hidden'>
             <Navbar />
-            <div className="flex flex-1">
+            <div className="flex flex-1 overflow-hidden">
                 <Sidebar />
-                <div className="flex-1 relative bg-(--bg-secondary) p-4">
+                <div className="flex-1 relative bg-(--bg-secondary) p-4 overflow-y-auto overflow-x-hidden">
                     {
                         isPageLoading && (
                             <div className="absolute inset-0 z-50">

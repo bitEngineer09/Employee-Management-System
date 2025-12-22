@@ -8,6 +8,9 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
     const [formData, setFormData] = useState({
         name: "",
         email: "",
+        gender: "",
+        dob: "",
+        phone: "",
         departmentId: "",
         designation: "",
         monthlySalary: "",
@@ -81,7 +84,7 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
                         required
                         onChange={handleChange}
                         value={formData.email}
-                        placeholder="Enter name"
+                        placeholder="Enter email"
                         className='
                             border border-(--border-primary)
                             py-3 px-4
@@ -92,6 +95,71 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
                             transition-all
                         '/>
                 </div>
+
+                <div className='flex flex-col gap-2'>
+                    <label htmlFor='gender' className='text-sm font-medium text-(--bg-secondary)'>Name</label>
+                    <select
+                        name="gender"
+                        value={formData?.gender}
+                        onChange={handleChange}
+                        required
+                        className='
+                            border border-(--border-primary)
+                            py-3 px-4
+                            outline-none rounded-xl
+                            text-(--bg-secondary)
+                            focus:border-(--blue-active)
+                            focus:ring-3 focus:ring-(--blue-light)
+                            transition-all
+                        '>
+                        <option value="">Select Gender</option>
+                        <option value="MALE">Male</option>
+                        <option value="FEMALE">Female</option>
+                        <option value="OTHER">Other</option>
+                    </select>
+                </div>
+
+                <div className='flex flex-col gap-2'>
+                    <label htmlFor='dob' className='text-sm font-medium text-(--bg-secondary)'>
+                        Date of Birth
+                    </label>
+                    <input
+                        type="date"
+                        name="dob"
+                        value={formData.dob}
+                        onChange={handleChange}
+                        required
+                        className='
+                            border border-(--border-primary)
+                            py-3 px-4
+                            outline-none rounded-xl
+                            text-(--bg-secondary)
+                            focus:border-(--blue-active)
+                            focus:ring-3 focus:ring-(--blue-light)
+                            transition-all
+                        '/>
+                </div>
+
+                <div className='flex flex-col gap-2'>
+                    <label htmlFor='phone' className='text-sm font-medium text-(--bg-secondary)'>Phone</label>
+                    <input
+                        type="text"
+                        name="phone"
+                        required
+                        onChange={handleChange}
+                        value={formData.phone}
+                        placeholder="Enter Phone Number"
+                        className='
+                            border border-(--border-primary)
+                            py-3 px-4
+                            outline-none rounded-xl
+                            text-(--bg-secondary)
+                            focus:border-(--blue-active)
+                            focus:ring-3 focus:ring-(--blue-light)
+                            transition-all
+                        '/>
+                </div>
+
 
                 <div className='flex flex-col gap-2'>
                     <label htmlFor='departmentId' className='text-sm font-medium text-(--bg-secondary)'>Department ID</label>
