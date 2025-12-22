@@ -1,5 +1,6 @@
 import { prisma } from '../../utils/client.js';
 import argon2 from 'argon2';
+import { generateEmployeeId } from '../../utils/employeeIdGenerator.js';
 
 // employe create
 export const createEmployee = async (req, res) => {
@@ -7,20 +8,19 @@ export const createEmployee = async (req, res) => {
         const {
             name,
             email,
-            employeeId,
             departmentId,
             designation,
             monthlySalary
         } = req.body;
 
-        if (!name || !email || !employeeId || !departmentId || !designation || !monthlySalary) {
+        if (!name || !email || !departmentId || !designation || !monthlySalary) {
             return res.status(400).json({
                 success: false,
                 message: "Please provide all fields"
             });
         }
-
-        const basicSalary = monthlySalary * 0.4;
+        const empId = await generateEmployeeId();
+        const basicSalary = Number(monthlySalary) * 0.4;
 
         const isUserExisits = await prisma.user.findUnique({
             where: { email }
@@ -29,15 +29,6 @@ export const createEmployee = async (req, res) => {
         if (isUserExisits) return res.status(400).json({
             success: false,
             message: "User already exists. Try with different email id"
-        });
-
-        const isSameEmpIdExists = await prisma.user.findFirst({
-            where: { employeeId }
-        });
-
-        if (isSameEmpIdExists) return res.status(400).json({
-            success: false,
-            message: "User already exists with this employee id"
         });
 
         const tempPassword = "Welcome@123";
@@ -53,13 +44,13 @@ export const createEmployee = async (req, res) => {
                 name,
                 email,
                 password: hashedPasword,
-                employeeId,
+                employeeId: empId,
                 department: {
                     connect: { id: Number(departmentId) }
                 },
                 designation,
                 role: "EMPLOYEE",
-                monthlySalary,
+                monthlySalary: Number(monthlySalary),
                 basicSalary
             }
         });
