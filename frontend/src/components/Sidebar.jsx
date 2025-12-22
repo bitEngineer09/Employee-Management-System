@@ -24,8 +24,6 @@ const Sidebar = () => {
     const { logout } = useLogout();
     const { currentUser } = useAuth();
 
-    const { name, designation, } = currentUser?.user || {};
-
     return (
         <div
             className="
@@ -47,8 +45,8 @@ const Sidebar = () => {
                             text-3xl font-semibold
                     '>G</div>
                     <div className='flex flex-col text-(--text-secondary)'>
-                        <p>{name}</p>
-                        <p>{designation}</p>
+                        <p>{currentUser?.user?.name}</p>
+                        <p>{currentUser?.user?.designation}</p>
                     </div>
                     <CiMenuKebab className='text-(--text-secondary) text-2xl' />
                 </div>

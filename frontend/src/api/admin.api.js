@@ -7,25 +7,25 @@ export const adminDashboardApi = () => {
 
 // create employee
 export const createEmployeeApi = (data) => {
-    return axiosInstance.post("/employee", data);
+    return axiosInstance.post("/admin/employee", data);
 }
 
 // get all employees
 export const getAllEmployeesApi = () => {
-    return axiosInstance.get("/employees");
+    return axiosInstance.get("/admin/employees");
 }
 
 // get employee by id
 export const getEmployeeByIdApi = (id) => {
-    return axiosInstance.get(`/employee/${id}`);
+    return axiosInstance.get(`/admin/employee/${id}`);
 }
 
 // update employee
 export const updateEmployeeApi = (id, data) => {
-    return axiosInstance.put(`/employee/${id}`, data);
+    return axiosInstance.put(`/admin/employee/${id}`, data);
 }
 
 // update employee status
 export const updateEmployeeStatusApi = (id, data) => {
-    return axiosInstance.patch(`/employee/${id}/status`, data)
+    return axiosInstance.patch(`/admin/employee/${id}/status`, data)
 }

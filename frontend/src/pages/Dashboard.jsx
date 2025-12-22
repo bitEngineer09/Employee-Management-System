@@ -14,30 +14,29 @@ const Dashboard = () => {
   // console.log(isAdmin);
 
   const { adminDashboardData } = useAdminDashboard();
-  const { totalEmployees, activeEmployees, absentEmployees, departments } = adminDashboardData || {};
 
   const stats = [
     {
       name: "Total Employees",
-      number: totalEmployees,
+      number: adminDashboardData?.totalEmployees,
       icon: <IoIosPerson />,
       color: "bg-blue-600/20 text-blue-400",
     },
     {
       name: "Active Employees",
-      number: activeEmployees,
+      number: adminDashboardData?.activeEmployees,
       icon: <MdOutlineVerified />,
       color: "bg-green-600/20 text-green-400",
     },
     {
       name: "Absent Employees",
-      number: absentEmployees,
+      number: adminDashboardData?.absentEmployees,
       icon: <IoIosPerson />,
       color: "bg-red-600/20 text-red-400",
     },
     {
       name: "Departments",
-      number: departments,
+      number: adminDashboardData?.departments,
       icon: <PiHouseSimpleBold />,
       color: "bg-purple-600/20 text-purple-400",
     },

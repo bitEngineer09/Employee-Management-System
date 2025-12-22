@@ -1,7 +1,36 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { RxCross2 } from "react-icons/rx";
+import useCreateEmployee from '../hooks/Admin/useCreateEmployee';
 
 const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
+
+    const { createEmployee } = useCreateEmployee();
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        departmentId: "",
+        designation: "",
+        monthlySalary: "",
+    });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log(formData)
+        createEmployee({
+            name: formData.name,
+            email: formData.email,
+            departmentId: formData.departmentId,
+            designation: formData.designation,
+            monthlySalary: formData.monthlySalary,
+        });
+    };
+
+    const handleChange = (e) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        });
+    }
 
     return (
         <div
@@ -23,12 +52,15 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
                 />
             </div>
 
-            <form className='grid grid-cols-2 gap-6'>
+            <form onSubmit={handleSubmit} className='grid grid-cols-2 gap-6'>
                 <div className='flex flex-col gap-2'>
-                    <label className='text-sm font-medium text-(--bg-secondary)'>Name</label>
+                    <label htmlFor='name' className='text-sm font-medium text-(--bg-secondary)'>Name</label>
                     <input
                         type="text"
                         name="name"
+                        required
+                        onChange={handleChange}
+                        value={formData.name}
                         placeholder="Enter name"
                         className='
                             border border-(--border-primary)
@@ -42,11 +74,14 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
                 </div>
 
                 <div className='flex flex-col gap-2'>
-                    <label className='text-sm font-medium text-(--bg-secondary)'>Employee ID</label>
+                    <label htmlFor='email' className='text-sm font-medium text-(--bg-secondary)'>Email</label>
                     <input
-                        type="number"
-                        name="employeeId"
-                        placeholder="Enter employee ID"
+                        type="email"
+                        name="email"
+                        required
+                        onChange={handleChange}
+                        value={formData.email}
+                        placeholder="Enter name"
                         className='
                             border border-(--border-primary)
                             py-3 px-4
@@ -59,10 +94,13 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
                 </div>
 
                 <div className='flex flex-col gap-2'>
-                    <label className='text-sm font-medium text-(--bg-secondary)'>Department ID</label>
+                    <label htmlFor='departmentId' className='text-sm font-medium text-(--bg-secondary)'>Department ID</label>
                     <input
-                        type="number"
+                        type="text"
                         name="departmentId"
+                        required
+                        onChange={handleChange}
+                        value={formData.departmentId}
                         placeholder="Enter department ID"
                         className='
                             border border-(--border-primary)
@@ -76,10 +114,13 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
                 </div>
 
                 <div className='flex flex-col gap-2'>
-                    <label className='text-sm font-medium text-(--bg-secondary)'>Designation</label>
+                    <label htmlFor='designation' className='text-sm font-medium text-(--bg-secondary)'>Designation</label>
                     <input
                         type="text"
                         name="designation"
+                        required
+                        onChange={handleChange}
+                        value={formData.designation}
                         placeholder="Enter designation"
                         className='
                             border border-(--border-primary)
@@ -92,11 +133,14 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
                         '/>
                 </div>
 
-                <div className='flex flex-col gap-2 col-span-2'>
-                    <label className='text-sm font-medium text-(--bg-secondary)'>Monthly Salary</label>
+                <div className='flex flex-col gap-2 '>
+                    <label htmlFor='monthlySalary' className='text-sm font-medium text-(--bg-secondary)'>Monthly Salary</label>
                     <input
-                        type="number"
-                        name="salary"
+                        type="text"
+                        name="monthlySalary"
+                        required
+                        onChange={handleChange}
+                        value={formData.monthlySalary}
                         placeholder="Enter monthly salary"
                         className='
                             border border-(--border-primary)
@@ -113,6 +157,7 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
                     <button
                         type="submit"
                         className='
+                            cursor-pointer
                             flex-1 bg-(--blue-active)
                             text-white py-3
                             rounded-xl hover:bg-blue-700
@@ -124,6 +169,7 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
                         type="button"
                         onClick={() => setCreateEmp(false)}
                         className='
+                            cursor-pointer
                             flex-1 bg-gray-200
                             text-(--bg-secondary)
                             py-3 rounded-xl
