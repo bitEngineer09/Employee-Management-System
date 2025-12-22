@@ -104,6 +104,10 @@ export const getAllEmployees = async (req, res) => {
                         name: true
                     }
                 },
+                monthlySalary: true,
+                phoneNumber: true,
+                gender: true,
+                dob: true,
                 designation: true,
                 isActive: true,
                 createdAt: true,

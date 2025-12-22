@@ -8,6 +8,12 @@ datasource db {
 }
 
 // enums data
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
 enum AttendanceStatus {
   PRESENT
   ABSENT
@@ -44,6 +50,11 @@ model user {
   password       String
   role           String          @default("EMPLOYEE")
   employeeId     String?         @unique
+
+  gender         Gender?
+  dob            DateTime?       @db.Date
+  phoneNumber    String?         @unique
+
 
   departmentId   Int?
   department     Department?     @relation(fields: [departmentId], references: [id])
