@@ -7,10 +7,6 @@ export const isAuth = async (req, res, next) => {
 
         req.user = null;
 
-        if (!accessToken && !refreshToken) {
-            return next();
-        }
-
         if (accessToken) {
             try {
                 const decoded = verifyToken(accessToken);

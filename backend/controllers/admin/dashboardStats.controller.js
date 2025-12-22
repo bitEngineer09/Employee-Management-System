@@ -7,13 +7,17 @@ export const getDashboardStats = async (req, res) => {
         });
 
         const activeEmployees = await prisma.user.count({
-            where: { 
+            where: {
                 role: "EMPLOYEE",
                 isActive: true
             },
         });
 
         const absentEmployees = totalEmployees - activeEmployees;
+
+        const inactiveEmployees = await prisma.user.count({
+            where: { isActive: false }
+        });
 
         const departments = await prisma.department.count();
 
@@ -23,6 +27,7 @@ export const getDashboardStats = async (req, res) => {
             totalEmployees,
             activeEmployees,
             absentEmployees,
+            inactiveEmployees: inactiveEmployees,
             departments,
         });
 

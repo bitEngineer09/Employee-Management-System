@@ -91,6 +91,7 @@ export const refreshTheTokens = async (refreshToken) => {
             id: user.id,
             name: user.name,
             email: user.email,
+            role: user.role, 
             sessionId: currentSession.id,
         }
 
@@ -108,7 +109,7 @@ export const refreshTheTokens = async (refreshToken) => {
 
 // DELETE SESSION BY SESSION ID
 export const clearSession = async (sessionId) => {
-    return await prisma.session.delete({
+    return await prisma.session.update({
         where: { id: sessionId },
         data: {valid: false}, // soft delete
     });
