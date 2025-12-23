@@ -19,7 +19,7 @@ const MainLayout = () => {
             <Navbar />
             <div className="flex flex-1 overflow-hidden">
                 <Sidebar />
-                <div className="flex-1 relative bg-(--bg-secondary) p-4 overflow-y-auto overflow-x-hidden">
+                <div className="flex-1 relative bg-(--bg-secondary) p-4 overflow-y-auto overflow-x-hidden custom-scrollbar">
                     {
                         isPageLoading && (
                             <div className="absolute inset-0 z-50">

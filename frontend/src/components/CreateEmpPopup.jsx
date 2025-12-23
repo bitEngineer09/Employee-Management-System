@@ -22,6 +22,9 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
         createEmployee({
             name: formData.name,
             email: formData.email,
+            gender: formData.gender,
+            dob: formData.dob,
+            phoneNumber: formData.phone,
             departmentId: formData.departmentId,
             designation: formData.designation,
             monthlySalary: formData.monthlySalary,
@@ -97,7 +100,7 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
                 </div>
 
                 <div className='flex flex-col gap-2'>
-                    <label htmlFor='gender' className='text-sm font-medium text-(--bg-secondary)'>Name</label>
+                    <label htmlFor='gender' className='text-sm font-medium text-(--bg-secondary)'>Gender</label>
                     <select
                         name="gender"
                         value={formData?.gender}
@@ -126,7 +129,7 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
                     <input
                         type="date"
                         name="dob"
-                        value={formData.dob}
+                        value={formData?.dob}
                         onChange={handleChange}
                         required
                         className='
@@ -147,7 +150,7 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
                         name="phone"
                         required
                         onChange={handleChange}
-                        value={formData.phone}
+                        value={formData?.phone}
                         placeholder="Enter Phone Number"
                         className='
                             border border-(--border-primary)

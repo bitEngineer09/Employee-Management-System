@@ -12,10 +12,13 @@ const FILTER_CONFIG = {
   status: ["ACTIVE", "INACTIVE"],
 };
 
+const ITEMS_PER_PAGE = 6;
+
 const Employee = () => {
   const [createEmp, setCreateEmp] = useState(false);
   const [filterType, setFilterType] = useState("");
   const [filterValue, setFilterValue] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const { allEmployees } = useAllEmployees();
 
   // all employees data
@@ -48,6 +51,16 @@ const Employee = () => {
       }
     });
   }, [employees, filterType, filterValue]);
+
+  //  total pages calculation
+  const totalPages = Math.ceil(filteredEmployees?.length / ITEMS_PER_PAGE);
+
+  //  data for current page
+  const paginatedEmployees = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return filteredEmployees?.slice(startIndex, endIndex);
+  }, [filteredEmployees, currentPage]);
 
 
   return (
@@ -99,6 +112,7 @@ const Employee = () => {
           onChange={(e) => {
             setFilterType(e.target.value);
             setFilterValue("");
+            setCurrentPage(1);
           }}
           className="border py-3 px-4 rounded-xl text-(--text-secondary)"
         >
@@ -128,7 +142,12 @@ const Employee = () => {
       </div>
 
       {/* Employee table records */}
-      <EmployeeRecords employees={filteredEmployees} />
+      <EmployeeRecords
+        employees={paginatedEmployees}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        totalPages={totalPages}
+      />
 
     </div>
   );

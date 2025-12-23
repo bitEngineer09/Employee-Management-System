@@ -12,11 +12,12 @@ const tableHeader = [
     { name: "Action" },
 ];
 
-const EmployeeRecords = ({ employees }) => {
+const EmployeeRecords = ({ employees, currentPage, setCurrentPage, totalPages }) => {
     // console.log(employees)
 
     return (
-        <div className='mt-8 overflow-x-auto'>
+        <>
+        <div className='mt-8 overflow-x-auto custom-scrollbar'>
             <table className='w-full border border-(--border-primary) border-collapse'>
                 <thead className="bg-(--border-subtle) border-b border-(--border-primary) sticky top-0 z-10">
                     <tr>
@@ -130,6 +131,30 @@ const EmployeeRecords = ({ employees }) => {
                 </tbody>
             </table>
         </div>
+
+        <div className="flex justify-end items-center gap-4 mt-6 text-(--text-secondary)">
+        <button
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((p) => p - 1)}
+          className="px-4 py-2 border rounded-full disabled:opacity-50 cursor-pointer"
+        >
+          Previous
+        </button>
+
+        <span className="text-sm">
+          Page {currentPage} of {totalPages}
+        </span>
+
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage((p) => p + 1)}
+          className="px-4 py-2 border rounded-full disabled:opacity-50 cursor-pointer"
+        >
+          Next
+        </button>
+      </div>
+        </>
+        
     )
 }
 
