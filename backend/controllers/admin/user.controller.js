@@ -10,10 +10,13 @@ export const createEmployee = async (req, res) => {
             email,
             departmentId,
             designation,
+            gender,
+            dob,
+            phoneNumber,
             monthlySalary
         } = req.body;
 
-        if (!name || !email || !departmentId || !designation || !monthlySalary) {
+        if (!name || !email || !departmentId || !designation || !monthlySalary || !gender || !dob || !phoneNumber) {
             return res.status(400).json({
                 success: false,
                 message: "Please provide all fields"
@@ -48,8 +51,11 @@ export const createEmployee = async (req, res) => {
                 department: {
                     connect: { id: Number(departmentId) }
                 },
-                designation,
                 role: "EMPLOYEE",
+                designation,
+                gender,
+                dob: new Date(dob),
+                phoneNumber,
                 monthlySalary: Number(monthlySalary),
                 basicSalary
             }
