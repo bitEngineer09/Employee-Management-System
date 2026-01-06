@@ -66,7 +66,7 @@ const Employee = () => {
   return (
     <div className='relative'>
       <div className='flex items-center justify-between'>
-        <p className='flex items-center gap-2 text-(--text-secondary) text-3xl font-semibold'>Employee Records <User size={28} strokeWidth={3} /></p>
+        <p className='flex items-center gap-2 text-(--text-secondary) text-3xl font-medium'>Employee Records <User size={28} strokeWidth={3} /></p>
 
         {/* Create Employee */}
         <button
@@ -102,7 +102,7 @@ const Employee = () => {
       {/* Filter employees */}
       <div className='flex items-center gap-5 mt-10'>
         <h1
-          className='flex items-center gap-2 text-(--text-secondary) text-3xl font-semibold'>
+          className='flex items-center gap-2 text-(--text-secondary) text-3xl font-medium'>
           Filter By <Funnel size={28} strokeWidth={2} />
         </h1>
 
@@ -114,7 +114,7 @@ const Employee = () => {
             setFilterValue("");
             setCurrentPage(1);
           }}
-          className="border py-3 px-4 rounded-xl text-(--text-secondary)"
+          className="border py-3 px-4 rounded-xl text-(--text-secondary) cursor-pointer hover:text-amber-500 transition-colors"
         >
           <option className='text-(--bg-secondary)' value="">Select Category</option>
           <option className='text-(--bg-secondary)' value="gender">Gender</option>

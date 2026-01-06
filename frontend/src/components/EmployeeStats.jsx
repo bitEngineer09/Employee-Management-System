@@ -19,24 +19,28 @@ const EmployeeStats = () => {
             number: adminDashboardData?.totalEmployees,
             icon: <User />,
             color: "bg-blue-600/20 text-blue-400",
+            bgColor: "bg-blue-600/10"
         },
         {
             name: "Active Employees",
             number: adminDashboardData?.activeEmployees,
             icon: <BadgeCheck />,
             color: "bg-green-600/20 text-green-400",
+            bgColor: "bg-green-600/10"
         },
         {
             name: "Absent Employees",
             number: adminDashboardData?.absentEmployees,
             icon: <User />,
             color: "bg-red-600/20 text-red-400",
+            bgColor: "bg-red-600/10"
         },
         {
             name: "Inactive Employees",
             number: adminDashboardData?.inactiveEmployees,
             icon: <Ban />,
-            color: "bg-red-600/20 text-red-400",
+            color: "bg-amber-600/20 text-amber-400",
+            bgColor: "bg-amber-600/10"
         }
     ];
 
@@ -46,16 +50,17 @@ const EmployeeStats = () => {
                 {
                     isAdmin && (
                         stats.map((stat, index) => {
-                            const { name, number, icon, color } = stat;
+                            const { name, number, icon, color, bgColor } = stat;
                             return (
                                 <div
                                     key={index}
-                                    className='
+                                    className={`
                                         flex items-center justify-between
                                         text-(--text-secondary)
                                         bg-(--bg-primary)
                                         p-4 rounded-2xl
-                                        '>
+                                        ${bgColor}
+                                    `}>
                                     <div className='flex flex-col gap-2'>
                                         <p>{name}</p>
                                         <p className='text-3xl font-medium'>{number}</p>
