@@ -2,6 +2,9 @@ import { prisma } from "../../utils/client.js";
 
 export const getDashboardStats = async (req, res) => {
     try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
         const totalEmployees = await prisma.user.count({
             where: { role: "EMPLOYEE" },
         });
@@ -13,10 +16,29 @@ export const getDashboardStats = async (req, res) => {
             },
         });
 
-        const absentEmployees = totalEmployees - activeEmployees;
-
         const inactiveEmployees = await prisma.user.count({
             where: { isActive: false }
+        });
+
+        const onLeaveEmployees = await prisma.leave.findMany({
+            where: {
+                status: "APPROVED",
+                fromDate: { lte: today },
+                toDate: { gte: today },
+            },
+            distinct: ["employeeId"],
+        });
+
+        const onLeaveCount = onLeaveEmployees.length;
+
+        const absentEmployees = await prisma.attendance.count({
+            where: {
+                date: today,
+                status: "ABSENT",
+                employeeId: {
+                    notIn: onLeaveEmployees.map(l => l.employeeId),
+                },
+            },
         });
 
         const departments = await prisma.department.count();
@@ -27,7 +49,8 @@ export const getDashboardStats = async (req, res) => {
             totalEmployees,
             activeEmployees,
             absentEmployees,
-            inactiveEmployees: inactiveEmployees,
+            onLeaveEmployees: onLeaveCount,
+            inactiveEmployees,
             departments,
         });
 
@@ -36,7 +59,39 @@ export const getDashboardStats = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Internal Server Error",
-            error: error.message
+            error: error.message,
         });
+    }
+}
+
+export const getDepartmentStats = async (req, res) => {
+    try {
+
+        const totalDepartment = await prisma.department.count();
+
+        const departmentsWithCount = await prisma.department.findMany({
+            select: {
+                name: true,
+                isActive: true,
+                _count: {
+                    select: { users: true }
+                }
+            }
+        });
+        
+        return res.status(200).json({
+            success: true,
+            message: "employees in each department data",
+            totalDepartment,
+            data: departmentsWithCount,
+        });
+
+    } catch (error) {
+        console.error("getEmployeeFromDept error", error);
+        return res.status(400).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        })
     }
 }
