@@ -1,31 +1,35 @@
 import { prisma } from '../utils/client.js';
+import { getMonthRange } from '../utils/getMonthRange.js';
+import argon2 from 'argon2';
 import {
     OFFICE_START_HOUR,
     LATE_CHECKIN_MINUTES,
     HALF_DAY_HOURS,
     FULL_DAY_HOURS
 } from "../utils/attendanceRules.js";
-import { getMonthRange } from '../utils/getMonthRange.js';
-import argon2 from 'argon2';
 
-// employee check in
+// check in
 export const checkin = async (req, res) => {
     try {
-        const employeeId = req.user.id;
+        const userId = req.user?.id;
+        const role = req.user?.role;
 
-        const today = new Date();
-        // ye karne se date same rehti hai, bas hrs 0 set ho jaate hai
-        // taaki one attendance record per employee per day maintain rahe,
-        // koi bhi timestamp-based duplication issues naa aaye
-        today.setHours(0, 0, 0, 0);
+        if (role !== "EMPLOYEE") {
+            return res.status(403).json({
+                success: false,
+                message: "Only employees can mark attendance"
+            });
+        }
 
         const now = new Date();
 
-        // check existing attendance
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
         const existing = await prisma.attendance.findUnique({
             where: {
                 employeeId_date: {
-                    employeeId,
+                    employeeId: userId,
                     date: today
                 }
             }
@@ -38,16 +42,20 @@ export const checkin = async (req, res) => {
             });
         }
 
-        // Late check-in logic
+        let status = "PRESENT";
+
+        // Late logic
         const officeStart = new Date(today);
         officeStart.setHours(OFFICE_START_HOUR, LATE_CHECKIN_MINUTES, 0, 0);
 
-        const status = now > officeStart ? "HALF_DAY" : "PRESENT";
+        if (now > officeStart) {
+            status = "HALF_DAY";
+        }
 
         const attendance = await prisma.attendance.upsert({
             where: {
                 employeeId_date: {
-                    employeeId,
+                    employeeId: userId,
                     date: today
                 }
             },
@@ -56,7 +64,7 @@ export const checkin = async (req, res) => {
                 status
             },
             create: {
-                employeeId,
+                employeeId: userId,
                 date: today,
                 checkIn: now,
                 status
@@ -68,7 +76,7 @@ export const checkin = async (req, res) => {
                 attendanceId: attendance.id,
                 action: "CHECK_IN",
                 newStatus: status,
-                changedBy: employeeId
+                changedBy: userId
             }
         });
 
@@ -79,7 +87,7 @@ export const checkin = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("checkin error", error);
+        console.error("checkin error", error.message);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"
@@ -87,10 +95,18 @@ export const checkin = async (req, res) => {
     }
 };
 
-// employee check out
+// check out
 export const checkout = async (req, res) => {
     try {
-        const employeeId = req.user.id;
+        const userId = req.user?.id;
+        const role = req.user?.role;
+
+        if (role !== "EMPLOYEE") {
+            return res.status(403).json({
+                success: false,
+                message: "Only employees can mark attendance"
+            });
+        }
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -98,7 +114,7 @@ export const checkout = async (req, res) => {
         const attendance = await prisma.attendance.findUnique({
             where: {
                 employeeId_date: {
-                    employeeId,
+                    employeeId: userId,
                     date: today
                 }
             }
@@ -107,7 +123,7 @@ export const checkout = async (req, res) => {
         if (!attendance || !attendance.checkIn) {
             return res.status(400).json({
                 success: false,
-                message: "No check-in found"
+                message: "No check-in found for today"
             });
         }
 
@@ -132,9 +148,7 @@ export const checkout = async (req, res) => {
         }
 
         const updatedAttendance = await prisma.attendance.update({
-            where: {
-                id: attendance.id
-            },
+            where: { id: attendance.id },
             data: {
                 checkOut: checkOutTime,
                 workingHours: Number(workingHours.toFixed(2)),
@@ -148,18 +162,18 @@ export const checkout = async (req, res) => {
                 action: "CHECK_OUT",
                 oldStatus: attendance.status,
                 newStatus: finalStatus,
-                changedBy: employeeId
+                changedBy: userId
             }
         });
 
         return res.status(200).json({
             success: true,
-            message: `Checked out (${finalStatus})`,
-            updatedAttendance
+            message: `Checked out successfully (${finalStatus})`,
+            attendance: updatedAttendance
         });
 
     } catch (error) {
-        console.error("checkout error", error);
+        console.error("checkout error", error.message);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error"

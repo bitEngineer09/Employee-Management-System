@@ -310,3 +310,67 @@ export const departmentAttendanceSummary = async (req, res) => {
         });
     }
 };
+
+// department wise attendance summary
+export const departmentWiseTodayAttendance = async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0,);
+
+        const employees = await prisma.user.findMany({
+            where: {
+                role: "EMPLOYEE",
+                isActive: true,
+                department: {
+                    isActive: true,
+                },
+            },
+            select: {
+                id: true,
+                department: {
+                    select: { name: true },
+                },
+                attendances: {
+                    where: {
+                        date: today,
+                    },
+                    select: {
+                        status: true
+                    },
+                },
+            },
+        });
+
+        const result = {};
+        employees.forEach(emp => {
+            const departmentName = emp?.department?.name;
+            if (!result[departmentName]) {
+                result[departmentName] = {
+                    department: departmentName,
+                    total: 0,
+                    present: 0,
+                };
+            }
+
+            result[departmentName].total += 1;
+            const status = emp.attendances[0]?.status;
+
+            if (status === "PRESENT" || status === "HALF_DAY") {
+                result[deptName].present += 1;
+            }
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: Object.values(result),
+        });
+
+    } catch (error) {
+        console.error("departmentWiseTodayAttendance error", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+}

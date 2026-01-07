@@ -9,8 +9,6 @@ import {
 
 import {
     adminAttendance,
-    adminCheckin,
-    adminCheckout,
     getEmpAttendance,
     getMonthlyAttendanceSummary,
 } from "../controllers/admin/attendance.controller.js";
@@ -35,7 +33,7 @@ import { isAuth } from "../middlewares/isAuth.js";
 import { requireAuth } from "../middlewares/requireAuth.js";
 import { isAdmin } from "../middlewares/isAdmin.js";
 import { forgotPassword, resetPassword } from "../controllers/auth.controller.js";
-import { getDashboardStats, getDepartmentStats } from "../controllers/admin/dashboardStats.controller.js";
+import { getDashboardStats } from "../controllers/admin/dashboardStats.controller.js";
 
 const router = express.Router();
 
@@ -56,8 +54,6 @@ router.patch("/employee/:id/status", updateEmployeeStatus);
 router.patch("/attendance/:id", adminAttendance);
 router.get("/empAttendance", getEmpAttendance);
 router.get("/attendance/summary", getMonthlyAttendanceSummary);
-router.post("/attendance/check-in", adminCheckin);
-router.patch("/attendance/check-out", adminCheckout);
 
 // holiday routes
 router.post("/holiday", createHoliday);
@@ -77,6 +73,6 @@ router.post("/payroll/regenerate", regeneratePayroll);
 
 // dashboard routes
 router.get("/admin-stats", getDashboardStats);
-router.get("/admin-dept-stats", getDepartmentStats);
+
 
 export default router;

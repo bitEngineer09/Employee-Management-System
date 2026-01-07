@@ -9,6 +9,17 @@ export const getDashboardStats = async (req, res) => {
             where: { role: "EMPLOYEE" },
         });
 
+        const presentEmployees = await prisma.attendance.count({
+            where: {
+                date: today,
+                status: "PRESENT",
+                employee: {
+                    role: "EMPLOYEE",
+                    isActive: true,
+                },
+            },
+        });
+
         const activeEmployees = await prisma.user.count({
             where: {
                 role: "EMPLOYEE",
@@ -48,6 +59,7 @@ export const getDashboardStats = async (req, res) => {
             message: "admin dashboard stats fetched successfully",
             totalEmployees,
             activeEmployees,
+            presentEmployees,
             absentEmployees,
             onLeaveEmployees: onLeaveCount,
             inactiveEmployees,

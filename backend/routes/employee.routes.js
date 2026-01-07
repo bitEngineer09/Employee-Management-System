@@ -8,13 +8,13 @@ import {
     getLeaveBalance,
     getMonthlySummary,
 } from '../controllers/employee.controller.js'
+import { forgotPassword, resetPassword } from '../controllers/auth.controller.js';
 import { isAuth } from '../middlewares/isAuth.js';
 import { requireAuth } from '../middlewares/requireAuth.js';
 
 // zod imports
 import { validate } from '../middlewares/zodValidator.js';
 import { changeDefaultPasswordSchema } from '../validators/auth.zod.js';
-import { forgotPassword, resetPassword } from '../controllers/auth.controller.js';
 
 const router = express.Router();
 
