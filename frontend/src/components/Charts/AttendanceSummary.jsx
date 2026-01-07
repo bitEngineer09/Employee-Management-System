@@ -5,7 +5,7 @@ import {
     ResponsiveContainer,
 } from "recharts";
 
-const AttendanceSummary = ({ data }) => {
+const AttendanceSummary = ({ data, header }) => {
 
     const COLORS = [
         "#22c55e", // present
@@ -16,7 +16,7 @@ const AttendanceSummary = ({ data }) => {
     return (
         <div>
             <h3 className="text-(--text-secondary) text-2xl ml-2 mb-3 font-medium">
-                Attendance Summary
+                {header}
             </h3>
 
             <div className="flex items-center">

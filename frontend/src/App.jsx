@@ -1,6 +1,5 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
-import Home from './pages/Home'
 import MainLayout from './Layout/MainLayout'
 import Department from './pages/Department'
 import Employee from './pages/Employee'
@@ -17,8 +16,7 @@ const App = () => {
       <Routes>
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/" element={<Dashboard />} />
             <Route path="/emp" element={<Employee />} />
             <Route path="/dept" element={<Department />} />
           </Route>

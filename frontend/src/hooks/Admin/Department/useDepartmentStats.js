@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { departmentStatsApi } from "../../api/admin.api";
+import { departmentStatsApi } from "../../../api/department.api";
+
 
 const useDepartmentStats = () => {
     const { data, isLoading, error } = useQuery({

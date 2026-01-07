@@ -14,8 +14,7 @@ import useAuth from '../hooks/Auth/useAuth';
 
 const Sidebar = () => {
     const sidebarContent = [
-        { name: "Home", icon: <IoMdHome />, path: "/" },
-        { name: "Dashboard", icon: <RxDashboard />, path: "/dashboard" },
+        { name: "Dashboard", icon: <RxDashboard />, path: "/" },
         { name: "Employees", icon: <IoIosPerson />, path: "/emp" },
         { name: "Departments", icon: <PiHouseSimpleBold />, path: "/dept" },
         { name: "Settings", icon: <GoGear /> },

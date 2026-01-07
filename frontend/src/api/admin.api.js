@@ -5,11 +5,6 @@ export const adminDashboardApi = () => {
     return axiosInstance.get("/admin/admin-stats");
 };
 
-// get department stats
-export const departmentStatsApi = () => {
-    return axiosInstance.get("/admin/admin-dept-stats");
-};
-
 // create employee
 export const createEmployeeApi = (data) => {
     return axiosInstance.post("/admin/employee", data);

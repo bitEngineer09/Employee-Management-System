@@ -1,9 +1,24 @@
-import React from 'react'
+import React from "react";
+import useAuth from "../hooks/Auth/useAuth";
+import { getGreeting } from "../services/getGreeting";
+import { Clapperboard, User } from "lucide-react";
 
 const Home = () => {
-  return (
-    <div className='w-full h-full'>Home</div>
-  )
-}
+  const { currentUser } = useAuth();
+  const user = currentUser?.user;
 
-export default Home
+  const greeting = getGreeting();
+
+  return (
+    <div className="text-(--text-secondary)">
+      
+
+      
+
+      
+
+    </div>
+  );
+};
+
+export default Home;
