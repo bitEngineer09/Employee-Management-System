@@ -46,9 +46,16 @@ export const getDepartments = async (req, res) => {
     try {
         const departments = await prisma.department.findMany({
             where: { isActive: true },
-            include: {
-                _count: {
-                    select: { users: true },
+            select: {
+                id: true,
+                name: true,
+                createdAt: true,
+                isActive: true,
+                users: {
+                    select: {
+                        id: true,
+                        isActive: true,
+                    },
                 },
             },
         });
@@ -59,10 +66,35 @@ export const getDepartments = async (req, res) => {
                 message: "No Departments found",
             });
         }
+
+        const totalDepartments = departments.length;
+        const activeDepartments = departments.filter(dept => dept.isActive).length;
+        const inactiveDepartments = departments.filter(dept => !dept.isActive).length;
+
+        const formattedDepartments = departments.map((dept) => {
+            const totalEmployees = dept.users.length;
+            const activeEmployees = dept.users.filter(u => u.isActive).length;
+            const inactiveEmployees = dept.users.filter(u => !u.isActive).length;
+
+            return {
+                id: dept.id,
+                name: dept.name,
+                createdAt: dept.createdAt,
+                totalEmployees,
+                activeEmployees,
+                inactiveEmployees,
+            };
+        });
+
         return res.status(200).json({
             success: true,
-            message: "departments fetched successfully",
-            departments,
+            message: "Departments fetched successfully",
+            summary: {
+                totalDepartments,
+                activeDepartments,
+                inactiveDepartments,
+            },
+            departments: formattedDepartments,
         });
 
     } catch (error) {
@@ -78,26 +110,88 @@ export const getDepartments = async (req, res) => {
 // get department by id
 export const getDepartmentById = async (req, res) => {
     try {
-
         const departmentId = req.params.id;
-        if (!departmentId) return res.status(400).json({
-            success: false,
-            message: "Department id not provided",
-        });
+        if (!departmentId) {
+            return res.status(400).json({
+                success: false,
+                message: "Department id not provided",
+            });
+        }
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
         const department = await prisma.department.findUnique({
             where: { id: Number(departmentId) },
-            include: { users: true },
+            include: {
+                users: {
+                    where: { isActive: true },
+                    select: {
+                        id: true,
+                        name: true,
+                        designation: true,
+                        email: true,
+                        phoneNumber: true,
+                        isActive: true,
+                        createdAt: true,
+                        monthlySalary: true,
+                        attendances: {
+                            where: {
+                                date: today,
+                            },
+                            select: { status: true },
+                        },
+                    },
+                },
+            },
         });
 
         if (!department || !department.isActive) {
-            return res.status(404).json({ success: false, message: "Department not found" });
+            return res.status(404).json({
+                success: false,
+                message: "Department not found",
+            });
         }
+
+        const totalEmployees = department.users.length;
+        let present = 0;
+        let absent = 0;
+        let onLeave = 0;
+
+        department.users.forEach(user => {
+            const status = user.attendances[0]?.status;
+
+            if (status === "PRESENT" || status === "HALF_DAY") present++;
+            else if (status === "ABSENT") absent++;
+            else if (status === "LEAVE_PAID" || status === "LEAVE_UNPAID") onLeave++;
+            else absent++;
+        });
 
         return res.status(200).json({
             success: true,
-            message: "Department fetched successfully",
-            department,
+            department: {
+                id: department.id,
+                name: department.name,
+                createdAt: department.createdAt,
+                totalEmployees,
+                activeEmployees: totalEmployees,
+                inactiveEmployees: 0,
+                attendance: {
+                    present,
+                    absent,
+                    onLeave,
+                },
+                employees: department.users.map(emp => ({
+                    id: emp.id,
+                    name: emp.name,
+                    designation: emp.designation,
+                    email: emp.email,
+                    phone: emp.phoneNumber,
+                    salary: emp.salary,
+                    isActive: emp.isActive,
+                    joinedOn: emp.createdAt,
+                })),
+            },
         });
 
     } catch (error) {
@@ -108,7 +202,8 @@ export const getDepartmentById = async (req, res) => {
             error: error.message,
         });
     }
-}
+};
+
 
 // update department
 export const updateDepartment = async (req, res) => {
@@ -356,7 +451,7 @@ export const departmentWiseTodayAttendance = async (req, res) => {
             const status = emp.attendances[0]?.status;
 
             if (status === "PRESENT" || status === "HALF_DAY") {
-                result[deptName].present += 1;
+                result[departmentName].present += 1;
             }
         });
 
