@@ -142,6 +142,7 @@ export const getEmployeeById = async (req, res) => {
     try {
 
         const empId = req.params.id;
+        console.log(empId);
         if (!empId) return res.status(400).json({
             success: false,
             message: "employee id not provided",
@@ -150,16 +151,19 @@ export const getEmployeeById = async (req, res) => {
         const employee = await prisma.user.findFirst({
             where: { id: Number(empId), role: "EMPLOYEE" },
             select: {
+                id: true,
                 name: true,
                 email: true,
+                phoneNumber: true,
                 employeeId: true,
                 department: {
                     select: {
                         id: true,
                         name: true
-                    }
+                    },
                 },
                 designation: true,
+                monthlySalary: true,
                 isActive: true,
                 createdAt: true,
                 updatedAt: true,
