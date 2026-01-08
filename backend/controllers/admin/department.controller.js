@@ -45,7 +45,6 @@ export const createDepartment = async (req, res) => {
 export const getDepartments = async (req, res) => {
     try {
         const departments = await prisma.department.findMany({
-            where: { isActive: true },
             select: {
                 id: true,
                 name: true,
@@ -80,6 +79,7 @@ export const getDepartments = async (req, res) => {
                 id: dept.id,
                 name: dept.name,
                 createdAt: dept.createdAt,
+                isActive: dept.isActive,
                 totalEmployees,
                 activeEmployees,
                 inactiveEmployees,
@@ -203,7 +203,6 @@ export const getDepartmentById = async (req, res) => {
         });
     }
 };
-
 
 // update department
 export const updateDepartment = async (req, res) => {

@@ -11,6 +11,7 @@ import {
     adminAttendance,
     getEmpAttendance,
     getMonthlyAttendanceSummary,
+    getTodayEmployeesAttendance,
 } from "../controllers/admin/attendance.controller.js";
 
 import {
@@ -54,6 +55,7 @@ router.patch("/employee/:id/status", updateEmployeeStatus);
 router.patch("/attendance/:id", adminAttendance);
 router.get("/empAttendance", getEmpAttendance);
 router.get("/attendance/summary", getMonthlyAttendanceSummary);
+router.get("/attendance/today-employees", getTodayEmployeesAttendance);
 
 // holiday routes
 router.post("/holiday", createHoliday);
