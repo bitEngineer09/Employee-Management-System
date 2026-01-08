@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import useAuth from '../hooks/Auth/useAuth';
 import useAdminDashboard from '../hooks/Admin/useAdminDashboard';
 import EmployeeStatusBarChart from '../components/Charts/EmployeeStatusBarChart';
@@ -11,17 +11,33 @@ import { getGreeting } from '../utils/getGreeting';
 import QuickActions from '../components/QuickActions';
 import { getDashboardStatsCard } from '../data/SummaryCards';
 import { getActiveInactivePieData, getAttendancePieData, getEmployeeChartData } from '../data/ChartData';
+import useAllEmployees from '../hooks/Admin/useAllEmployees';
+import useGetDepartment from '../hooks/Admin/Department/useGetDepartment';
+import SummaryDepartmentPopup from '../components/Popups/SummaryTablesPopup/SummaryDepartmentPopup';
+import SummaryEmployeePopup from '../components/Popups/SummaryTablesPopup/SummaryEmployeePopup';
+import useTodayEmployeesAttendance from '../hooks/Admin/useTodayEmployeesAttendance';
 
 const Dashboard = () => {
+  const [summaryType, setSummaryType] = useState(null);
+  const [summaryTypeDepartments, setSummaryTypeDepartments] = useState(null);
+  const { todayEmployeesAttendance } = useTodayEmployeesAttendance();
+  const todayEmployees = todayEmployeesAttendance?.data;
 
   const { currentUser } = useAuth();
   const { role } = currentUser?.user || {};
+  const { allEmployees } = useAllEmployees();
+  const { departmentData } = useGetDepartment();
+  const employees = summaryType === "PRESENT" || summaryType === "ABSENT"
+    ? todayEmployees
+    : allEmployees?.data || [];
+
+  const departments = departmentData?.departments || [];
 
   const isAdmin = role === "ADMIN";
   // console.log(isAdmin);
 
   const { adminDashboardData } = useAdminDashboard();
-  // console.log(adminDashboardData);
+  console.log(adminDashboardData);
 
   const { departmentStats } = useDepartmentStats();
   // console.log(departmentStats)
@@ -56,9 +72,14 @@ const Dashboard = () => {
         {
           isAdmin && (
             stats.map((stat, index) => {
-              const { name, number, icon, color, bgColor, hover } = stat;
+              const { name, number, icon, color, bgColor, hover, type } = stat;
               return (
                 <div
+                  onClick={
+                    type === "TOTAL" || type === "PRESENT" || type === "ABSENT"
+                      ? () => setSummaryType(type)
+                      : () => setSummaryTypeDepartments(type)
+                  }
                   key={index}
                   className={`
                     border-2 border-transparent
@@ -93,7 +114,7 @@ const Dashboard = () => {
       {/* Quick actions */}
       <QuickActions />
 
-        {/* Charts */}
+      {/* Charts */}
       <div className="grid grid-cols-2 gap-6 w-full mt-9">
         <div className="bg-blue-700/10 rounded-2xl p-4">
           <EmployeeStatusBarChart data={employeeChartData} />
@@ -116,6 +137,31 @@ const Dashboard = () => {
         <AttendanceSummary data={activeInactivePieData} header={"Active / Inactive"} />
       </div>
 
+      {/* summary table employees */}
+      {
+        summaryType && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-sm">
+            <SummaryEmployeePopup
+              type={summaryType}
+              employees={employees}
+              onClose={() => setSummaryType(null)}
+            />
+          </div>
+        )
+      }
+
+      {/* summary table departments */}
+      {
+        summaryTypeDepartments && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-sm">
+            <SummaryDepartmentPopup
+              type={summaryTypeDepartments}
+              departments={departments}
+              onClose={() => setSummaryTypeDepartments(null)}
+            />
+          </div>
+        )
+      }
     </div>
   )
 }

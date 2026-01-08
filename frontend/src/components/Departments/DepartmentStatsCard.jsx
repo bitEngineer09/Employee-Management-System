@@ -3,7 +3,7 @@ import useGetDepartment from '../../hooks/Admin/Department/useGetDepartment';
 import useAuth from '../../hooks/Auth/useAuth';
 import { getDepartmentStatsCard } from '../../data/SummaryCards';
 
-const DepartmentStatsCard = () => {
+const DepartmentStatsCard = ({ onCardClick }) => {
     const { currentUser } = useAuth();
     const { role } = currentUser?.user || {};
     const isAdmin = role === "ADMIN";
@@ -20,9 +20,10 @@ const DepartmentStatsCard = () => {
                 {
                     isAdmin && (
                         departmentStatsCardData.map((stat, index) => {
-                            const { name, number, icon, color, bgColor, hover } = stat;
+                            const { name, number, icon, color, bgColor, hover, type } = stat;
                             return (
                                 <div
+                                    onClick={() => onCardClick(type)}
                                     key={index}
                                     className={`
                                         border-2 border-transparent

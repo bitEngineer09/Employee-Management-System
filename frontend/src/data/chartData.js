@@ -1,4 +1,3 @@
-
 export const getEmployeeChartData = (data) => [
     { name: "Total Employees", value: data?.totalEmployees },
     { name: "Present", value: data?.presentEmployees },

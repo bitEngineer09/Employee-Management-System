@@ -3,7 +3,7 @@ import useAuth from '../hooks/Auth/useAuth';
 import useAdminDashboard from '../hooks/Admin/useAdminDashboard';
 import { getEmployeeStatsCard } from '../data/SummaryCards';
 
-const EmployeeStats = () => {
+const EmployeeStats = ({ onCardClick }) => {
     const { currentUser } = useAuth();
     const { role } = currentUser?.user || {};
 
@@ -21,9 +21,10 @@ const EmployeeStats = () => {
                 {
                     isAdmin && (
                         employeeStatsCardData.map((stat, index) => {
-                            const { name, number, icon, color, bgColor, hover } = stat;
+                            const { name, number, icon, color, bgColor, hover, type } = stat;
                             return (
                                 <div
+                                    onClick={() => onCardClick(type)}
                                     key={index}
                                     className={`
                                         border-2 border-transparent

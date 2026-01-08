@@ -14,10 +14,14 @@ const Sidebar = () => {
             className="
                 w-65 h-full shrink-0
                 px-4 pb-3
-                border-r-2 border-(--border-primary)
+                relative
                 flex flex-col justify-between
                 bg-(--bg-secondary)
             ">
+            {/* Border on Right */}
+            {/* <div className="absolute top-0 right-0 w-0.5 h-full bg-linear-to-b from-purple-500 via-linear-500 via-cyan-500 to-pink-500"></div> */}
+            {/* <div className="absolute top-0 right-0 w-0.5 h-full bg-stone-900"></div> */}
+
             <div className="flex flex-col mt-1 gap-1">
 
                 {/* Profile */}

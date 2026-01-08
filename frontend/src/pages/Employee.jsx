@@ -4,6 +4,8 @@ import CreateEmpPopup from '../components/Popups/CreateEmpPopup';
 import EmployeeRecords from '../components/EmployeeRecords';
 import useAllEmployees from '../hooks/Admin/useAllEmployees';
 import EmployeeStats from '../components/EmployeeStats';
+import SummaryEmployeePopup from '../components/Popups/SummaryTablesPopup/SummaryEmployeePopup';
+import useTodayEmployeesAttendance from '../hooks/Admin/useTodayEmployeesAttendance';
 
 const FILTER_CONFIG = {
   gender: ["MALE", "FEMALE", "OTHER"],
@@ -19,10 +21,19 @@ const Employee = () => {
   const [filterType, setFilterType] = useState("");
   const [filterValue, setFilterValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [summaryType, setSummaryType] = useState(null);
   const { allEmployees } = useAllEmployees();
+  const { todayEmployeesAttendance } = useTodayEmployeesAttendance();
+  const todayEmployees = todayEmployeesAttendance?.data;
 
   // all employees data
-  const employees = allEmployees?.data;
+  const employees = useMemo(() => {
+    if (summaryType === "PRESENT" || summaryType === "ABSENT") {
+      return todayEmployees || [];
+    }
+    return allEmployees?.data || [];
+  }, [summaryType, todayEmployees, allEmployees]);
+
   // console.log(employees);
 
   // employees filtering logic
@@ -97,7 +108,7 @@ const Employee = () => {
       }
 
       {/* Employee stats */}
-      <EmployeeStats />
+      <EmployeeStats onCardClick={(type) => setSummaryType(type)} />
 
       {/* Filter employees */}
       <div className='flex items-center gap-5 mt-10'>
@@ -148,6 +159,19 @@ const Employee = () => {
         setCurrentPage={setCurrentPage}
         totalPages={totalPages}
       />
+
+      {/* Summary card popup */}
+      {
+        summaryType && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-sm">
+            <SummaryEmployeePopup
+              type={summaryType}
+              employees={employees}
+              onClose={() => setSummaryType(null)}
+            />
+          </div>
+        )
+      }
 
     </div>
   );

@@ -4,12 +4,14 @@ import DepartmentRecords from '../components/Departments/DepartmentRecords';
 import useGetDepartment from '../hooks/Admin/Department/useGetDepartment';
 import CreateDepartmentPopup from '../components/Popups/CreateDepartmentPopup';
 import DepartmentStatsCard from '../components/Departments/DepartmentStatsCard';
+import SummaryDepartmentPopup from '../components/Popups/SummaryTablesPopup/SummaryDepartmentPopup';
 
 const ITEMS_PER_PAGE = 6;
 
 const Department = () => {
   const [createDept, setCreateDept] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [summaryType, setSummaryType] = useState(null);
 
   const { departmentData } = useGetDepartment();
   const departments = departmentData?.departments || [];
@@ -52,7 +54,7 @@ const Department = () => {
         </header>
 
         {/* Department stats summary cards */}
-        <DepartmentStatsCard />
+        <DepartmentStatsCard onCardClick={(type) => setSummaryType(type)} />
 
         {/* Department records table */}
         <DepartmentRecords
@@ -68,6 +70,19 @@ const Department = () => {
         createDept && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
             <CreateDepartmentPopup createDept={createDept} setCreateDept={setCreateDept} />
+          </div>
+        )
+      }
+
+      {/* Summary table */}
+      {
+        summaryType && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+            <SummaryDepartmentPopup
+              type={summaryType}
+              departments={departments}
+              onClose={() => setSummaryType(null)}
+            />
           </div>
         )
       }

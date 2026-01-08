@@ -1,4 +1,3 @@
-import React from 'react';
 import { Home, LayoutDashboard, Settings, User } from 'lucide-react';
 
 export const sidebarContent = [
