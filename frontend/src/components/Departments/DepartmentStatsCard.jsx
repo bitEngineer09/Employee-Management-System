@@ -20,16 +20,19 @@ const DepartmentStatsCard = () => {
                 {
                     isAdmin && (
                         departmentStatsCardData.map((stat, index) => {
-                            const { name, number, icon, color, bgColor } = stat;
+                            const { name, number, icon, color, bgColor, hover } = stat;
                             return (
                                 <div
                                     key={index}
                                     className={`
+                                        border-2 border-transparent
                                         flex items-center justify-between
                                         text-(--text-secondary)
                                         bg-(--bg-primary)
                                         p-4 rounded-2xl
+                                        transition-all
                                         ${bgColor}
+                                        ${hover}
                                     `}>
                                     <div className='flex flex-col gap-2'>
                                         <p>{name}</p>

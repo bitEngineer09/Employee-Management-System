@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { RxCross2 } from "react-icons/rx";
 import useCreateEmployee from '../../hooks/Admin/useCreateEmployee';
+import { User } from 'lucide-react';
 
 const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
     const { createEmployee } = useCreateEmployee();
@@ -48,7 +49,7 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
             '>
             <div className='flex items-center justify-between mb-6'>
                 <div>
-                    <h1 className='text-2xl font-semibold text-(--bg-secondary)'>Create Employee</h1>
+                    <h1 className='flex items-center gap-1 text-2xl font-semibold text-(--bg-secondary)'>Create Employee <User/></h1>
                     <p className='text-(--text-disabled) text-sm mt-1'>Enter employee details</p>
                 </div>
                 <RxCross2
