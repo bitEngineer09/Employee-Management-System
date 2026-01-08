@@ -1,13 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { sidebarContent } from '../services/SidebarData';
-import useLogout from '../hooks/Auth/useLogout';
 import useAuth from '../hooks/Auth/useAuth';
 import { LogOut } from 'lucide-react';
+import LogoutPopup from './Popups/LogoutPopup';
 
 const Sidebar = () => {
-
-    const { logout } = useLogout();
+    const [logoutPopupOpen, setLogoutPopupOpen] = useState(false);
     const { currentUser } = useAuth();
 
     return (
@@ -77,7 +76,7 @@ const Sidebar = () => {
 
             {/* settings */}
             <div
-                onClick={logout}
+                onClick={() => setLogoutPopupOpen(!logoutPopupOpen)}
                 className='
                 flex items-center gap-4
                 h-11 px-5
@@ -89,6 +88,18 @@ const Sidebar = () => {
                 <LogOut className='text-xl' />
                 <p className=' text-sm font-medium tracking-wide'>Logout</p>
             </div>
+
+            {/* logout popup */}
+            {
+                logoutPopupOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                        <LogoutPopup
+                            logoutPopupOpen={logoutPopupOpen}
+                            setLogoutPopupOpen={setLogoutPopupOpen}
+                        />
+                    </div>
+                )
+            }
         </div>
     )
 }
