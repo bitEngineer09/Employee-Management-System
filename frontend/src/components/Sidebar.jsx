@@ -1,6 +1,5 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { CiMenuKebab } from "react-icons/ci";
 import { sidebarContent } from '../services/SidebarData';
 import useLogout from '../hooks/Auth/useLogout';
 import useAuth from '../hooks/Auth/useAuth';
@@ -32,6 +31,7 @@ const Sidebar = () => {
                         rounded-xl p-3
                         gap-4 my-4 tracking-wider 
                         text-sm cursor-pointer
+                        transition-all duration-200
                     '>
                     <div
                         className='
@@ -66,7 +66,7 @@ const Sidebar = () => {
                                 <span className="text-xl">
                                     {icon}
                                 </span>
-                                <span className="text-sm font-medium tracking-wide">
+                                <span className="text-sm font-medium tracking-wider">
                                     {name}
                                 </span>
                             </NavLink>
