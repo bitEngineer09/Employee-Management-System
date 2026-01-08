@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import useAuth from '../hooks/Auth/useAuth';
-import { LogOut } from 'lucide-react';
-import LogoutPopup from './Popups/LogoutPopup';
+import { LogOut, X } from 'lucide-react';
 import { sidebarContent } from '../data/SidebarData';
+import Remove from './Popups/Remove';
+import useLogout from '../hooks/Auth/useLogout';
 
 const Sidebar = () => {
     const [logoutPopupOpen, setLogoutPopupOpen] = useState(false);
     const { currentUser } = useAuth();
+    const {logout, isLoading} = useLogout();
 
     return (
         <div
@@ -97,9 +99,14 @@ const Sidebar = () => {
             {
                 logoutPopupOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                        <LogoutPopup
-                            logoutPopupOpen={logoutPopupOpen}
-                            setLogoutPopupOpen={setLogoutPopupOpen}
+                        <Remove
+                            state={logoutPopupOpen}
+                            setState={setLogoutPopupOpen}
+                            method={logout}
+                            isLoading={isLoading}
+                            icon={<LogOut />}
+                            header={"Logout"}
+                            subHeader={"Are you sure you want to logout ?"}
                         />
                     </div>
                 )

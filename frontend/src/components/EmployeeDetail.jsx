@@ -1,11 +1,17 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { Mail, Phone, Briefcase, Building2, CalendarDays, IndianRupee, CheckCircle2, } from 'lucide-react';
 import PageLoader from './Loader/PageLoader';
 import useGetEmployeeById from '../hooks/Admin/useGetEmployeeById';
 
+// icons
+import { Mail, Phone, Briefcase, Building2, CalendarDays, IndianRupee, CheckCircle2, } from 'lucide-react';
+
 const EmployeeDetail = () => {
+
+    // id parameter
     const { id } = useParams();
+
+    // employee by id
     const { employeeById, isLoading } = useGetEmployeeById(id);
     const employee = employeeById?.data;
     console.log(employee)

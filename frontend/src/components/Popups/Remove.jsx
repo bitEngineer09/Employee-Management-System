@@ -1,27 +1,35 @@
-import React from 'react';
-import { LogOut, X } from 'lucide-react';
-import useLogout from '../../hooks/Auth/useLogout';
+import React from 'react'
+import ButtonLoader from '../../components/Loader/ButtonLoader'
+import { X } from 'lucide-react';
 
-const LogoutPopup = ({ setLogoutPopupOpen, logoutPopupOpen }) => {
-    const { logout, isLoading } = useLogout();
+const Remove = ({
+    state,
+    setState,
+    method,
+    isLoading,
+    header,
+    subHeader,
+    icon
+}) => {
+
     return (
         <div
             className='
                 w-lg
                 bg-white rounded-2xl 
                 p-6 shadow-2xl
-                '>
+            '>
             <div className='flex items-center justify-between mb-6'>
                 <div>
                     <h1 className='flex items-center gap-2 text-2xl font-semibold text-(--bg-secondary)'>
-                        Logout <LogOut />
+                        {header} {icon}
                     </h1>
                     <p className='text-(--text-disabled) text-sm mt-1'>
-                        Are you sure you want to log out ?
+                        {subHeader}
                     </p>
                 </div>
                 <X
-                    onClick={() => setLogoutPopupOpen(!logoutPopupOpen)}
+                    onClick={() => setState(!state)}
                     className='cursor-pointer text-2xl text-(--bg-secondary) hover:text-red-700 transition-colors'
                 />
             </div>
@@ -29,7 +37,7 @@ const LogoutPopup = ({ setLogoutPopupOpen, logoutPopupOpen }) => {
             <div className='grid grid-cols-2 gap-3'>
                 <button
                     disabled={isLoading}
-                    onClick={logout}
+                    onClick={method}
                     className='
                         flex-1 bg-red-600
                         text-white py-3
@@ -38,7 +46,7 @@ const LogoutPopup = ({ setLogoutPopupOpen, logoutPopupOpen }) => {
                         transition-colors font-medium
                         disabled:opacity-50
                         disabled:cursor-not-allowed 
-                    '>
+                        '>
                     {
                         isLoading ? <ButtonLoader /> : "Yes"
                     }
@@ -46,7 +54,7 @@ const LogoutPopup = ({ setLogoutPopupOpen, logoutPopupOpen }) => {
 
                 <button
                     disabled={isLoading}
-                    onClick={() => setLogoutPopupOpen(!logoutPopupOpen)}
+                    onClick={() => setState(!state)}
                     className='
                         flex-1 bg-emerald-600
                         text-white py-3
@@ -55,7 +63,7 @@ const LogoutPopup = ({ setLogoutPopupOpen, logoutPopupOpen }) => {
                         transition-colors font-medium
                         disabled:opacity-50
                         disabled:cursor-not-allowed 
-                    '>
+                        '>
                     {
                         isLoading ? <ButtonLoader /> : "No"
                     }
@@ -65,4 +73,4 @@ const LogoutPopup = ({ setLogoutPopupOpen, logoutPopupOpen }) => {
     )
 }
 
-export default LogoutPopup
+export default Remove;

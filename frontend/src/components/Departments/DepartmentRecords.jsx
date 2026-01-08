@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import { Users, User, Eye, Edit2, Trash2 } from 'lucide-react';
+import { Users, User, Eye, Edit2, Trash2, Home } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import EditDepartmentPopup from '../Popups/EditDepartmentPopup';
-import DeleteDepartmentPopup from '../Popups/DeleteDepartmentPopup';
+import Remove from '../Popups/Remove';
+import useDeleteDepartment from '../../hooks/Admin/Department/useDeleteDepartment';
 
 // table header data
 const tableHeader = [
@@ -18,6 +19,7 @@ const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPage
     const [updateDept, setUpdateDept] = useState(false);
     const [deleteDept, setDeleteDept] = useState(false);
     const navigate = useNavigate();
+    const { deactiveDepartment, isLoading } = useDeleteDepartment();
 
     return (
         <div className='mt-8 overflow-x-auto custom-scrollbar'>
@@ -182,7 +184,15 @@ const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPage
             {
                 deleteDept && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                        <DeleteDepartmentPopup deleteDept={deleteDept} setDeleteDept={setDeleteDept} />
+                        <Remove
+                            state={deleteDept}
+                            setState={setDeleteDept}
+                            method={deactiveDepartment}
+                            isLoading={isLoading}
+                            icon={<Home />}
+                            header={"Remove Department"}
+                            subHeader={"Are you sure you want to remove this department ?"}
+                        />
                     </div>
                 )
             }
