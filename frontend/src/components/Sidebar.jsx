@@ -1,24 +1,12 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-
-import { IoIosPerson } from "react-icons/io";
-import { RxDashboard } from "react-icons/rx";
-import { PiHouseSimpleBold } from "react-icons/pi";
-import { IoMdHome } from "react-icons/io";
-import { GoGear } from "react-icons/go";
-import { TbLogout2 } from "react-icons/tb";
+import { NavLink } from 'react-router-dom';
 import { CiMenuKebab } from "react-icons/ci";
-
+import { sidebarContent } from '../services/SidebarData';
 import useLogout from '../hooks/Auth/useLogout';
 import useAuth from '../hooks/Auth/useAuth';
+import { LogOut } from 'lucide-react';
 
 const Sidebar = () => {
-    const sidebarContent = [
-        { name: "Dashboard", icon: <RxDashboard />, path: "/" },
-        { name: "Employees", icon: <IoIosPerson />, path: "/emp" },
-        { name: "Departments", icon: <PiHouseSimpleBold />, path: "/dept" },
-        { name: "Settings", icon: <GoGear /> },
-    ]
 
     const { logout } = useLogout();
     const { currentUser } = useAuth();
@@ -26,7 +14,8 @@ const Sidebar = () => {
     return (
         <div
             className="
-                w-60 h-full shrink-0
+                w-65 h-full shrink-0
+                px-4 pb-3
                 border-r-2 border-(--border-primary)
                 flex flex-col justify-between
                 bg-(--bg-secondary)
@@ -34,45 +23,53 @@ const Sidebar = () => {
             <div className="flex flex-col mt-1 gap-1">
 
                 {/* Profile */}
-                <div className='flex items-center justify-center gap-4 my-4 tracking-wider text-sm cursor-pointer'>
+                <div
+                    className='
+                        flex items-center justify-center
+                        border-2 border-transparent
+                        hover:bg-cyan-700/20 hover:border-2
+                        hover:border-cyan-500
+                        rounded-xl p-3
+                        gap-4 my-4 tracking-wider 
+                        text-sm cursor-pointer
+                    '>
                     <div
                         className='
                             flex items-center justify-center
-                            bg-(--text-secondary)
-                            size-10
+                            bg-linear-to-r from-blue-500 to-indigo-500
+                            size-12 text-(--text-secondary)
                             rounded-full
                             text-3xl font-semibold
-                    '>G</div>
+                    '>{currentUser?.user?.name?.charAt(0)?.toUpperCase()}</div>
                     <div className='flex flex-col text-(--text-secondary)'>
                         <p>{currentUser?.user?.name}</p>
                         <p>{currentUser?.user?.designation}</p>
                     </div>
-                    <CiMenuKebab className='text-(--text-secondary) text-2xl' />
                 </div>
 
                 {
                     sidebarContent.map((item, index) => {
-                        const { name, icon, path } = item;
+                        const { name, icon, path, style } = item;
                         return (
-                            <Link to={path}
+                            <NavLink
                                 key={index}
-                                className="
-                            flex items-center gap-4
-                            h-11 px-5
-                            cursor-pointer
-                            rounded-r-full
-                            transition-all duration-200
-                            text-(--text-secondary)
-                            hover:bg-(--text-secondary)
-                            hover:text-(--bg-secondary)
-                        ">
+                                to={path}
+                                className={({ isActive }) => `
+                                  flex items-center gap-4
+                                  h-11 px-5
+                                  cursor-pointer
+                                  rounded-full
+                                  transition-all duration-200 mt-2
+                                  ${style}
+                                  ${isActive ? 'ring-2' : ''}
+                                  `}>
                                 <span className="text-xl">
                                     {icon}
                                 </span>
                                 <span className="text-sm font-medium tracking-wide">
                                     {name}
                                 </span>
-                            </Link>
+                            </NavLink>
                         )
                     })
                 }
@@ -85,13 +82,12 @@ const Sidebar = () => {
                 flex items-center gap-4
                 h-11 px-5
                 cursor-pointer
-                rounded-r-full
+                rounded-full
                 transition-all duration-200
-                hover:bg-red-800
-                hover:text-white
+                border-2 border-transparent bg-red-700/10 hover:border-red-600 text-red-400
             '>
-                <TbLogout2 className='text-xl text-(--text-secondary)' />
-                <p className='text-(--text-secondary) text-sm font-medium tracking-wide'>Logout</p>
+                <LogOut className='text-xl' />
+                <p className=' text-sm font-medium tracking-wide'>Logout</p>
             </div>
         </div>
     )

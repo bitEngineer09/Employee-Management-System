@@ -11,6 +11,7 @@ import ProtectedRoute from './components/Routes/ProtectedRoute';
 import PublicRoute from './components/Routes/PublicRoute';
 import DepartmentDetail from './components/Departments/DepartmentDetails';
 import EmployeeDetail from './components/EmployeeDetail'
+import SettingsPage from './pages/SettingsPage'
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
             <Route path="/dept" element={<Department />} />
             <Route path="/department/:id" element={<DepartmentDetail />} />
             <Route path="/emp/:id" element={<EmployeeDetail />} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Route>
         </Route>
 
