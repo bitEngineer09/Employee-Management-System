@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { RxCross2 } from "react-icons/rx";
-import useCreateHoliday from '../hooks/Admin/Holiday/useCreateHoliday';
+import useCreateHoliday from '../../hooks/Admin/Holiday/useCreateHoliday';
 import { TentTree } from 'lucide-react';
 
 const CreateHolidayPopup = ({ createHldy, setCreateHldy }) => {

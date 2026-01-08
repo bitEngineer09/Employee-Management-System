@@ -9,6 +9,8 @@ import AuthLayout from './Layout/AuthLayout'
 import { Toaster } from 'react-hot-toast'
 import ProtectedRoute from './components/Routes/ProtectedRoute';
 import PublicRoute from './components/Routes/PublicRoute';
+import DepartmentDetail from './components/Departments/DepartmentDetails';
+import EmployeeDetail from './components/EmployeeDetail'
 
 const App = () => {
   return (
@@ -19,6 +21,8 @@ const App = () => {
             <Route path="/" element={<Dashboard />} />
             <Route path="/emp" element={<Employee />} />
             <Route path="/dept" element={<Department />} />
+            <Route path="/department/:id" element={<DepartmentDetail />} />
+            <Route path="/emp/:id" element={<EmployeeDetail />} />
           </Route>
         </Route>
 

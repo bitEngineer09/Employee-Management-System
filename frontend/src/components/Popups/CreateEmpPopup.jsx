@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
 import { RxCross2 } from "react-icons/rx";
-import useCreateEmployee from '../hooks/Admin/useCreateEmployee';
+import useCreateEmployee from '../../hooks/Admin/useCreateEmployee';
 
 const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
-
     const { createEmployee } = useCreateEmployee();
     const [formData, setFormData] = useState({
         name: "",
@@ -84,7 +83,7 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
                     <input
                         type="email"
                         name="email"
-                        required
+                        required    
                         onChange={handleChange}
                         value={formData.email}
                         placeholder="Enter email"

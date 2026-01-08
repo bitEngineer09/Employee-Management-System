@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react'
 import { Plus, User, Funnel } from 'lucide-react';
-import CreateEmpPopup from '../components/CreateEmpPopup';
+import CreateEmpPopup from '../components/Popups/CreateEmpPopup';
 import EmployeeRecords from '../components/EmployeeRecords';
 import useAllEmployees from '../hooks/Admin/useAllEmployees';
 import EmployeeStats from '../components/EmployeeStats';
@@ -23,7 +23,7 @@ const Employee = () => {
 
   // all employees data
   const employees = allEmployees?.data;
-  console.log(employees);
+  // console.log(employees);
 
   // employees filtering logic
   const filteredEmployees = useMemo(() => {

@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { RxCross2 } from "react-icons/rx";
-import useCreateDepartment from '../hooks/Admin/Department/useCreateDepartment';
+import useUpdateDepartment from '../../hooks/Admin/Department/useUpdateDepartment';
 import { House } from 'lucide-react';
+import ButtonLoader from '../Loader/ButtonLoader';
+import { SquarePen, Pencil } from 'lucide-react';
 
-const CreateDepartmentPopup = ({ createDept, setCreateDept }) => {
-    const { createDepartment } = useCreateDepartment();
+const EditDepartmentPopup = ({ updateDept, setUpdateDept }) => {
+    const { updateDepartment, isLoading } = useUpdateDepartment();
 
     const [formData, setFormData] = useState({
         name: "",
@@ -14,7 +16,7 @@ const CreateDepartmentPopup = ({ createDept, setCreateDept }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(formData);
-        createDepartment({
+        updateDepartment({
             name: formData.name,
             description: formData.description,
         });
@@ -39,14 +41,14 @@ const CreateDepartmentPopup = ({ createDept, setCreateDept }) => {
             <div className='flex items-center justify-between mb-6'>
                 <div>
                     <h1 className='flex items-center gap-2 text-2xl font-semibold text-(--bg-secondary)'>
-                        Create Department <House/>
+                        Edit Department <House />
                     </h1>
                     <p className='text-(--text-disabled) text-sm mt-1'>
-                        Enter department details
+                        Edit department details
                     </p>
                 </div>
                 <RxCross2
-                    onClick={() => setCreateDept(!createDept)}
+                    onClick={() => setUpdateDept(!updateDept)}
                     className='cursor-pointer text-2xl text-(--bg-secondary) hover:text-red-700 transition-colors'
                 />
             </div>
@@ -54,12 +56,13 @@ const CreateDepartmentPopup = ({ createDept, setCreateDept }) => {
             <form onSubmit={handleSubmit} className='grid grid-cols-2 gap-6'>
                 {/* Department Name */}
                 <div className='flex flex-col gap-2'>
-                    <label className='text-sm font-medium text-(--bg-secondary)'>
-                        Name
+                    <label htmlFor='name' className='flex items-center gap-1 text-sm font-medium text-(--bg-secondary)'>
+                        Name <SquarePen size={15} />
                     </label>
                     <input
                         type="text"
                         name="name"
+                        id="name"
                         required
                         value={formData.name}
                         onChange={handleChange}
@@ -78,11 +81,12 @@ const CreateDepartmentPopup = ({ createDept, setCreateDept }) => {
 
                 {/* Department Description */}
                 <div className='col-span-2 flex flex-col gap-2'>
-                    <label className='text-sm font-medium text-(--bg-secondary)'>
-                        Description
+                    <label htmlFor='descp' className='flex items-center gap-1 text-sm font-medium text-(--bg-secondary)'>
+                        Description <SquarePen size={15} />
                     </label>
                     <textarea
                         name="description"
+                        id="descp"
                         rows="4"
                         value={formData.description}
                         onChange={handleChange}
@@ -96,13 +100,13 @@ const CreateDepartmentPopup = ({ createDept, setCreateDept }) => {
                             focus:border-purple-400
                             focus:ring-3 focus:ring-purple-400
                             transition-all
-                        '
-                    />
+                        '/>
                 </div>
 
                 {/* Buttons */}
                 <div className='col-span-2 flex gap-4 mt-4'>
                     <button
+                        disabled={isLoading}
                         type="submit"
                         className='
                             flex-1 bg-purple-600
@@ -110,12 +114,19 @@ const CreateDepartmentPopup = ({ createDept, setCreateDept }) => {
                             rounded-xl hover:bg-purple-700
                             cursor-pointer
                             transition-colors font-medium
+                            disabled:opacity-50
+                            disabled:cursor-not-allowed
                         '>
-                        Create Department
+                        {
+                            isLoading
+                                ? <ButtonLoader />
+                                : <p className='flex items-center justify-center gap-2'> Update Department <Pencil size={15} /> </p>
+                        }
                     </button>
                     <button
+                        disabled={isLoading}
                         type="button"
-                        onClick={() => setCreateDept(false)}
+                        onClick={() => setUpdateDept(false)}
                         className='
                             flex-1 bg-gray-200
                             text-(--bg-secondary)
@@ -123,8 +134,12 @@ const CreateDepartmentPopup = ({ createDept, setCreateDept }) => {
                             hover:bg-gray-300
                             cursor-pointer
                             transition-colors font-medium
+                            disabled:opacity-50
+                            disabled:cursor-not-allowed
                         '>
-                        Cancel
+                        {
+                            isLoading ? <ButtonLoader /> : "Cancel"
+                        }
                     </button>
                 </div>
             </form>
@@ -132,4 +147,4 @@ const CreateDepartmentPopup = ({ createDept, setCreateDept }) => {
     )
 }
 
-export default CreateDepartmentPopup;
+export default EditDepartmentPopup;

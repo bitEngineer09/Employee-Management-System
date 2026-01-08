@@ -10,7 +10,7 @@ const useGetDepartment = () => {
         retry: false,
     });
     return {
-        getDepartmentData: data,
+        departmentData: data,
         isLoading,
         error,
     };

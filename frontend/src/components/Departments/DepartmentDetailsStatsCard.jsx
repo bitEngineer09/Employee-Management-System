@@ -1,49 +1,42 @@
-import React from 'react'
-import useAuth from '../hooks/Auth/useAuth';
-import useAdminDashboard from '../hooks/Admin/useAdminDashboard';
-import { User, BadgeCheck, Ban } from 'lucide-react';
+import React from 'react';
+import useAuth from '../../hooks/Auth/useAuth';
+import { BadgeCheck, Ban, House, TentTree, User } from 'lucide-react';
 
-const EmployeeStats = () => {
+const DepartmentDetailsStatsCard = ({ department }) => {
     const { currentUser } = useAuth();
     const { role } = currentUser?.user || {};
-
     const isAdmin = role === "ADMIN";
-    // console.log(isAdmin);
-
-    const { adminDashboardData } = useAdminDashboard();
-    // console.log(adminDashboardData);
-
     const stats = [
         {
-            name: "Total Employees",
-            number: adminDashboardData?.totalEmployees,
+            name: "Present Employees",
+            number: department?.attendance?.present,
             icon: <User />,
-            color: "bg-blue-600/20 text-blue-400",
-            bgColor: "bg-blue-600/10"
-        },
-        {
-            name: "Active Employees",
-            number: adminDashboardData?.activeEmployees,
-            icon: <BadgeCheck />,
-            color: "bg-green-600/20 text-green-400",
-            bgColor: "bg-green-600/10"
+            color: "bg-emerald-600/20 text-emerald-400",
+            bgColor: "bg-emerald-600/10"
         },
         {
             name: "Absent Employees",
-            number: adminDashboardData?.absentEmployees,
-            icon: <User />,
+            number: department?.attendance?.absent,
+            icon: <Ban />,
             color: "bg-red-600/20 text-red-400",
             bgColor: "bg-red-600/10"
         },
         {
-            name: "Inactive Employees",
-            number: adminDashboardData?.inactiveEmployees,
-            icon: <Ban />,
+            name: "On Leave",
+            number: department?.attendance?.onLeave,
+            icon: <TentTree />,
             color: "bg-amber-600/20 text-amber-400",
             bgColor: "bg-amber-600/10"
-        }
-    ];
+        },
+        {
+            name: "Inactive Employees",
+            number: department?.inactiveEmployees,
+            icon: <Ban />,
+            color: "bg-orange-600/20 text-orange-400",
+            bgColor: "bg-orange-600/10"
+        },
 
+    ];
     return (
         <div className='w-full h-full my-5'>
             <div className='grid grid-cols-4 gap-4'>
@@ -58,7 +51,7 @@ const EmployeeStats = () => {
                                         flex items-center justify-between
                                         text-(--text-secondary)
                                         bg-(--bg-primary)
-                                        p-6 rounded-2xl
+                                        p-4 rounded-2xl
                                         ${bgColor}
                                     `}>
                                     <div className='flex flex-col gap-2'>
@@ -84,4 +77,4 @@ const EmployeeStats = () => {
     )
 }
 
-export default EmployeeStats
+export default DepartmentDetailsStatsCard

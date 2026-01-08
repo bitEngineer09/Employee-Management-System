@@ -9,7 +9,6 @@ import useDepartmentStats from '../hooks/Admin/Department/useDepartmentStats';
 import useDepartmentWiseAttendance from '../hooks/Admin/Department/useDepartmentWiseAttendance';
 import DepartmentAttendanceChart from '../components/Charts/DepartmentAttendanceChart';
 import { getGreeting } from '../services/getGreeting';
-import CheckInOut from '../components/CheckInOut';
 import QuickActions from '../components/QuickActions';
 
 const Dashboard = () => {
@@ -21,7 +20,7 @@ const Dashboard = () => {
   // console.log(isAdmin);
 
   const { adminDashboardData } = useAdminDashboard();
-  console.log(adminDashboardData)
+  // console.log(adminDashboardData);
 
   const { departmentStats } = useDepartmentStats();
   // console.log(departmentStats)
@@ -87,8 +86,10 @@ const Dashboard = () => {
         }
       </div>
 
+      {/* Quick actions */}
       <QuickActions />
 
+        {/* Charts */}
       <div className="grid grid-cols-2 gap-6 w-full mt-9">
         <div className="bg-blue-700/10 rounded-2xl p-4">
           <EmployeeStatusBarChart data={employeeChartData} />

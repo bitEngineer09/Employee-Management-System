@@ -1,8 +1,8 @@
 import { Clapperboard, House, Lock, TentTree, User } from 'lucide-react'
 import React, { useState } from 'react'
-import CreateEmpPopup from './CreateEmpPopup';
-import CreateDepartmentPopup from './CreateDepartmentPopup';
-import CreateHolidayPopup from './CreateHolidayPopup';
+import CreateEmpPopup from "../components/Popups/CreateEmpPopup";
+import CreateDepartmentPopup from '../components/Popups/CreateDepartmentPopup';
+import CreateHolidayPopup from '../components/Popups/CreateHolidayPopup';
 
 const QuickActions = () => {
 
