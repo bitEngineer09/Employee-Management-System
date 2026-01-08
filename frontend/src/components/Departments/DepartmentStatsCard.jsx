@@ -1,48 +1,25 @@
 import React from 'react'
 import useGetDepartment from '../../hooks/Admin/Department/useGetDepartment';
-import { BadgeCheck, Ban, House } from 'lucide-react';
 import useAuth from '../../hooks/Auth/useAuth';
+import { getDepartmentStatsCard } from '../../data/SummaryCards';
 
 const DepartmentStatsCard = () => {
     const { currentUser } = useAuth();
     const { role } = currentUser?.user || {};
-
     const isAdmin = role === "ADMIN";
 
     const { departmentData } = useGetDepartment();
     const department = departmentData?.summary;
     // console.log(department)
 
-    const stats = [
-        {
-            name: "Total Departments",
-            number: department?.totalDepartments,
-            icon: <House />,
-            color: "bg-blue-600/20 text-blue-400",
-            bgColor: "bg-blue-600/10"
-        },
-        {
-            name: "Active Departments",
-            number: department?.activeDepartments,
-            icon: <BadgeCheck />,
-            color: "bg-green-600/20 text-green-400",
-            bgColor: "bg-green-600/10"
-        },
-        {
-            name: "Inactive Departments",
-            number: department?.inactiveDepartments,
-            icon: <Ban />,
-            color: "bg-red-600/20 text-red-400",
-            bgColor: "bg-red-600/10"
-        },
+    const departmentStatsCardData = getDepartmentStatsCard(department)
 
-    ];
     return (
         <div className='w-full h-full my-5'>
             <div className='grid grid-cols-4 gap-4'>
                 {
                     isAdmin && (
-                        stats.map((stat, index) => {
+                        departmentStatsCardData.map((stat, index) => {
                             const { name, number, icon, color, bgColor } = stat;
                             return (
                                 <div

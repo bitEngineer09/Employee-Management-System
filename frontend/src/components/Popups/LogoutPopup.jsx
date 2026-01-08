@@ -17,7 +17,7 @@ const LogoutPopup = ({ setLogoutPopupOpen, logoutPopupOpen }) => {
                         Logout <LogOut />
                     </h1>
                     <p className='text-(--text-disabled) text-sm mt-1'>
-                        Are you sure you want to log out?
+                        Are you sure you want to log out ?
                     </p>
                 </div>
                 <X

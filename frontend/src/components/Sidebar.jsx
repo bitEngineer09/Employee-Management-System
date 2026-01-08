@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { sidebarContent } from '../services/SidebarData';
 import useAuth from '../hooks/Auth/useAuth';
 import { LogOut } from 'lucide-react';
 import LogoutPopup from './Popups/LogoutPopup';
+import { sidebarContent } from '../data/SidebarData';
 
 const Sidebar = () => {
     const [logoutPopupOpen, setLogoutPopupOpen] = useState(false);

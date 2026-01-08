@@ -1,7 +1,7 @@
 import React from 'react'
 import useAuth from '../hooks/Auth/useAuth';
 import useAdminDashboard from '../hooks/Admin/useAdminDashboard';
-import { User, BadgeCheck, Ban } from 'lucide-react';
+import { getEmployeeStatsCard } from '../data/SummaryCards';
 
 const EmployeeStats = () => {
     const { currentUser } = useAuth();
@@ -13,43 +13,14 @@ const EmployeeStats = () => {
     const { adminDashboardData } = useAdminDashboard();
     // console.log(adminDashboardData);
 
-    const stats = [
-        {
-            name: "Total Employees",
-            number: adminDashboardData?.totalEmployees,
-            icon: <User />,
-            color: "bg-blue-600/20 text-blue-400",
-            bgColor: "bg-blue-600/10"
-        },
-        {
-            name: "Active Employees",
-            number: adminDashboardData?.activeEmployees,
-            icon: <BadgeCheck />,
-            color: "bg-green-600/20 text-green-400",
-            bgColor: "bg-green-600/10"
-        },
-        {
-            name: "Absent Employees",
-            number: adminDashboardData?.absentEmployees,
-            icon: <User />,
-            color: "bg-red-600/20 text-red-400",
-            bgColor: "bg-red-600/10"
-        },
-        {
-            name: "Inactive Employees",
-            number: adminDashboardData?.inactiveEmployees,
-            icon: <Ban />,
-            color: "bg-amber-600/20 text-amber-400",
-            bgColor: "bg-amber-600/10"
-        }
-    ];
+    const employeeStatsCardData = getEmployeeStatsCard(adminDashboardData);
 
     return (
         <div className='w-full h-full my-5'>
             <div className='grid grid-cols-4 gap-4'>
                 {
                     isAdmin && (
-                        stats.map((stat, index) => {
+                        employeeStatsCardData.map((stat, index) => {
                             const { name, number, icon, color, bgColor } = stat;
                             return (
                                 <div

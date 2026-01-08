@@ -1,8 +1,7 @@
 import React from 'react'
 import useDeleteDepartment from '../../hooks/Admin/Department/useDeleteDepartment';
-import { RxCross2 } from 'react-icons/rx';
 import ButtonLoader from '../../components/Loader/ButtonLoader'
-import { User } from 'lucide-react';
+import { User, X } from 'lucide-react';
 
 const DeleteEmployeePopup = ({ deleteEmp, setDeleteEmp }) => {
 
@@ -21,10 +20,10 @@ const DeleteEmployeePopup = ({ deleteEmp, setDeleteEmp }) => {
                         Remove Employee <User />
                     </h1>
                     <p className='text-(--text-disabled) text-sm mt-1'>
-                        Are you sure to remove this department
+                        Are you sure you want to remove this employee ?
                     </p>
                 </div>
-                <RxCross2
+                <X
                     onClick={() => setDeleteEmp(!deleteEmp)}
                     className='cursor-pointer text-2xl text-(--bg-secondary) hover:text-red-700 transition-colors'
                 />

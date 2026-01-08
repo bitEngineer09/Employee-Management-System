@@ -4,12 +4,13 @@ import useAdminDashboard from '../hooks/Admin/useAdminDashboard';
 import EmployeeStatusBarChart from '../components/Charts/EmployeeStatusBarChart';
 import DepartmentStats from '../components/Charts/DepartmentStats';
 import AttendanceSummary from '../components/Charts/AttendanceSummary';
-import { getActiveInactivePieData, getAttendancePieData, getEmployeeChartData, getStats } from '../services/dashboardData';
 import useDepartmentStats from '../hooks/Admin/Department/useDepartmentStats';
 import useDepartmentWiseAttendance from '../hooks/Admin/Department/useDepartmentWiseAttendance';
 import DepartmentAttendanceChart from '../components/Charts/DepartmentAttendanceChart';
-import { getGreeting } from '../services/getGreeting';
+import { getGreeting } from '../utils/getGreeting';
 import QuickActions from '../components/QuickActions';
+import { getDashboardStatsCard } from '../data/SummaryCards';
+import { getActiveInactivePieData, getAttendancePieData, getEmployeeChartData } from '../data/ChartData';
 
 const Dashboard = () => {
 
@@ -30,7 +31,7 @@ const Dashboard = () => {
 
   const greeting = getGreeting();
 
-  const stats = getStats(adminDashboardData);
+  const stats = getDashboardStatsCard(adminDashboardData);
   const employeeChartData = getEmployeeChartData(adminDashboardData)
   const attendancePieData = getAttendancePieData(adminDashboardData);
   const activeInactivePieData = getActiveInactivePieData(adminDashboardData);

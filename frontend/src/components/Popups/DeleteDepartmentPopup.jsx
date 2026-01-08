@@ -1,7 +1,6 @@
 import React from 'react'
 import useDeleteDepartment from '../../hooks/Admin/Department/useDeleteDepartment';
-import { House } from 'lucide-react';
-import { RxCross2 } from 'react-icons/rx';
+import { House, X } from 'lucide-react';
 import ButtonLoader from '../../components/Loader/ButtonLoader'
 
 const DeleteDepartmentPopup = ({ deleteDept, setDeleteDept }) => {
@@ -21,10 +20,10 @@ const DeleteDepartmentPopup = ({ deleteDept, setDeleteDept }) => {
             Delete Department <House />
           </h1>
           <p className='text-(--text-disabled) text-sm mt-1'>
-            Are you sure to delete this department
+            Are you sure you want to delete this department ?
           </p>
         </div>
-        <RxCross2
+        <X
           onClick={() => setDeleteDept(!deleteDept)}
           className='cursor-pointer text-2xl text-(--bg-secondary) hover:text-red-700 transition-colors'
         />
