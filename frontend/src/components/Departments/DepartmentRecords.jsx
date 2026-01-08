@@ -120,7 +120,7 @@ const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPage
                                     {/* Actions */}
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <button
-                                            onClick={() => navigate(`/department/${dept.id}`)}
+                                            onClick={() => navigate(`/admin/department/${dept.id}`)}
                                             className="text-blue-400 hover:text-(--blue-primary) mr-4 transition-colors"
                                             title="View Department"
                                         >

@@ -25,7 +25,7 @@ import DepartmentStatsBarChart from '../components/Charts/DepartmentStatsBarChar
 import AttendanceSummaryPieChart from '../components/Charts/AttendanceSummaryPieChart';
 import DepartmentAttendanceBarChart from '../components/Charts/DepartmentAttendanceChart';
 
-const Dashboard = () => {
+const AdminDashboard = () => {
 
   const [summaryType, setSummaryType] = useState(null);
   const [summaryTypeDepartments, setSummaryTypeDepartments] = useState(null);
@@ -182,4 +182,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard;
+export default AdminDashboard;

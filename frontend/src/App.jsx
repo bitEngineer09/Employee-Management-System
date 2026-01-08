@@ -1,30 +1,63 @@
-import React from 'react'
-import { Routes, Route } from 'react-router-dom'
-import MainLayout from './Layout/MainLayout'
-import Department from './pages/Department'
-import Employee from './pages/Employee'
-import Dashboard from './pages/Dashboard'
-import Auth from './pages/Auth'
-import AuthLayout from './Layout/AuthLayout'
-import { Toaster } from 'react-hot-toast'
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+
+// layout
+import MainLayout from './Layout/MainLayout';
+import AuthLayout from './Layout/AuthLayout';
+
+// pages
+import Department from './pages/Department';
+import Employee from './pages/Employee';
+import AdminDashboard from './pages/AdminDashboard';
+import UserDashboard from './pages/User/UserDashboard';
+import Auth from './pages/Auth';
+import SettingsPage from './pages/SettingsPage';
+
+// routes
 import ProtectedRoute from './components/Routes/ProtectedRoute';
 import PublicRoute from './components/Routes/PublicRoute';
+
+// components
 import DepartmentDetail from './components/Departments/DepartmentDetails';
-import EmployeeDetail from './components/EmployeeDetail'
-import SettingsPage from './pages/SettingsPage'
+import EmployeeDetail from './components/EmployeeDetail';
+
+// hooks
+import useAuth from './hooks/Auth/useAuth';
+import Attendance from './pages/User/Attendance';
+import Leave from './pages/User/Leave';
+import Salary from './pages/User/Salary';
+
 
 const App = () => {
+
+  // checking user role
+  const { currentUser } = useAuth();
+  const ROLE = currentUser?.user?.role;
+
   return (
     <>
       <Routes>
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/emp" element={<Employee />} />
-            <Route path="/dept" element={<Department />} />
-            <Route path="/department/:id" element={<DepartmentDetail />} />
-            <Route path="/emp/:id" element={<EmployeeDetail />} />
-            <Route path="/settings" element={<SettingsPage />} />
+            {
+              ROLE === "ADMIN"
+                ? <>
+                  <Route path="/" element={<AdminDashboard />} />
+                  <Route path="/admin/emp" element={<Employee />} />
+                  <Route path="/admin/dept" element={<Department />} />
+                  <Route path="/admin/department/:id" element={<DepartmentDetail />} />
+                  <Route path="/admin/emp/:id" element={<EmployeeDetail />} />
+                  <Route path="/emp/settings" element={<SettingsPage />} />
+                </>
+                : <>
+                  <Route path="/" element={<UserDashboard />} />
+                  <Route path="/emp/attendance" element={<Attendance />} />
+                  <Route path="/emp/leave" element={<Leave />} />
+                  <Route path="/emp/salary" element={<Salary />} />
+                  <Route path="/emp/settings" element={<SettingsPage />} />
+                </>
+            }
           </Route>
         </Route>
 

@@ -115,7 +115,7 @@ const DepartmentEmployeeTable = ({ employees, currentPage, setCurrentPage, total
                             {/* Action */}
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <button
-                                    onClick={() => navigate(`/emp/${emp?.id}`)}
+                                    onClick={() => navigate(`/admin/emp/${emp?.id}`)}
                                     className="text-blue-400 hover:text-(--blue-primary) mr-4 transition-colors"
                                     title="View Employee"
                                 >

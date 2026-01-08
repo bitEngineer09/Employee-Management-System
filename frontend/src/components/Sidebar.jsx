@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import useAuth from '../hooks/Auth/useAuth';
-import { LogOut, X } from 'lucide-react';
-import { sidebarContent } from '../data/SidebarData';
+import { LogOut } from 'lucide-react';
+import { sidebarAdminContent, sideBarUserContent } from '../data/SidebarData';
 import Remove from './Popups/Remove';
 import useLogout from '../hooks/Auth/useLogout';
 
 const Sidebar = () => {
     const [logoutPopupOpen, setLogoutPopupOpen] = useState(false);
     const { currentUser } = useAuth();
-    const {logout, isLoading} = useLogout();
+    const ROLE = currentUser?.user?.role;
+    console.log(ROLE)
+    const { logout, isLoading } = useLogout();
 
     return (
         <div
@@ -53,7 +55,7 @@ const Sidebar = () => {
                 </div>
 
                 {
-                    sidebarContent.map((item, index) => {
+                    (ROLE === "ADMIN" ? sidebarAdminContent : sideBarUserContent).map((item, index) => {
                         const { name, icon, path, style } = item;
                         return (
                             <NavLink

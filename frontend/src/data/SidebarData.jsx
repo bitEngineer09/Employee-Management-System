@@ -1,6 +1,7 @@
-import { Home, LayoutDashboard, Settings, User } from 'lucide-react';
+import { Home, IndianRupee, LayoutDashboard, Settings, TentTree, User } from 'lucide-react';
 
-export const sidebarContent = [
+// sidebar for admin
+export const sidebarAdminContent = [
     {
         name: "Dashboard",
         icon: <LayoutDashboard />,
@@ -11,22 +12,61 @@ export const sidebarContent = [
     {
         name: "Employees",
         icon: <User />,
-        path: "/emp",
+        path: "/admin/emp",
         style:
             "border-2 border-transparent bg-cyan-700/10 hover:border-cyan-600 text-cyan-400",
     },
     {
         name: "Departments",
         icon: <Home />,
-        path: "/dept",
+        path: "/admin/dept",
         style:
             "border-2 border-transparent bg-purple-700/10 hover:border-purple-600 text-purple-400",
     },
     {
         name: "Settings",
         icon: <Settings />,
-        path: "/settings",
+        path: "/admin/settings",
         style:
             "border-2 border-transparent bg-amber-700/10 hover:border-amber-600 text-amber-400",
     },
 ];
+
+// sidebar for user
+export const sideBarUserContent = [
+        {
+        name: "Dashboard",
+        icon: <LayoutDashboard />,
+        path: "/",
+        style:
+            "border-2 border-transparent bg-emerald-700/10 hover:border-emerald-600 text-emerald-400",
+    },
+    {
+        name: "Attendance",
+        icon: <User />,
+        path: "/emp/attendance",
+        style:
+            "border-2 border-transparent bg-cyan-700/10 hover:border-cyan-600 text-cyan-400",
+    },
+    {
+        name: "Leave",
+        icon: <TentTree/>,
+        path: "/emp/leave",
+        style:
+            "border-2 border-transparent bg-purple-700/10 hover:border-purple-600 text-purple-400",
+    },
+     {
+        name: "Salary",
+        icon: <IndianRupee/>,
+        path: "/emp/salary",
+        style:
+            "border-2 border-transparent bg-purple-700/10 hover:border-purple-600 text-purple-400",
+    },
+    {
+        name: "Settings",
+        icon: <Settings />,
+        path: "/emp/settings",
+        style:
+            "border-2 border-transparent bg-amber-700/10 hover:border-amber-600 text-amber-400",
+    },
+]
