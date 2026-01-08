@@ -1,53 +1,69 @@
 import React, { useState } from 'react'
-import useAuth from '../hooks/Auth/useAuth';
-import useAdminDashboard from '../hooks/Admin/useAdminDashboard';
-import EmployeeStatusBarChart from '../components/Charts/EmployeeStatusBarChart';
-import DepartmentStats from '../components/Charts/DepartmentStats';
-import AttendanceSummary from '../components/Charts/AttendanceSummary';
-import useDepartmentStats from '../hooks/Admin/Department/useDepartmentStats';
-import useDepartmentWiseAttendance from '../hooks/Admin/Department/useDepartmentWiseAttendance';
-import DepartmentAttendanceChart from '../components/Charts/DepartmentAttendanceChart';
+
+// data / fucntions import
 import { getGreeting } from '../utils/getGreeting';
-import QuickActions from '../components/QuickActions';
 import { getDashboardStatsCard } from '../data/SummaryCards';
 import { getActiveInactivePieData, getAttendancePieData, getEmployeeChartData } from '../data/ChartData';
-import useAllEmployees from '../hooks/Admin/useAllEmployees';
-import useGetDepartment from '../hooks/Admin/Department/useGetDepartment';
+
+// components import 
+import QuickActions from '../components/QuickActions';
 import SummaryDepartmentPopup from '../components/Popups/SummaryTablesPopup/SummaryDepartmentPopup';
 import SummaryEmployeePopup from '../components/Popups/SummaryTablesPopup/SummaryEmployeePopup';
+
+// hooks import
+import useAuth from '../hooks/Auth/useAuth';
+import useAdminDashboard from '../hooks/Admin/useAdminDashboard';
+import useDepartmentStats from '../hooks/Admin/Department/useDepartmentStats';
+import useDepartmentWiseAttendance from '../hooks/Admin/Department/useDepartmentWiseAttendance';
+import useAllEmployees from '../hooks/Admin/useAllEmployees';
+import useGetDepartment from '../hooks/Admin/Department/useGetDepartment';
 import useTodayEmployeesAttendance from '../hooks/Admin/useTodayEmployeesAttendance';
 
+// charts import
+import EmployeeStatusBarChart from '../components/Charts/EmployeeStatusBarChart';
+import DepartmentStatsBarChart from '../components/Charts/DepartmentStatsBarChart';
+import AttendanceSummaryPieChart from '../components/Charts/AttendanceSummaryPieChart';
+import DepartmentAttendanceBarChart from '../components/Charts/DepartmentAttendanceChart';
+
 const Dashboard = () => {
+
   const [summaryType, setSummaryType] = useState(null);
   const [summaryTypeDepartments, setSummaryTypeDepartments] = useState(null);
+
+  // today employees attendance
   const { todayEmployeesAttendance } = useTodayEmployeesAttendance();
   const todayEmployees = todayEmployeesAttendance?.data;
 
+  // current user
   const { currentUser } = useAuth();
   const { role } = currentUser?.user || {};
+
+  // all employees
   const { allEmployees } = useAllEmployees();
-  const { departmentData } = useGetDepartment();
+
   const employees = summaryType === "PRESENT" || summaryType === "ABSENT"
     ? todayEmployees
     : allEmployees?.data || [];
 
+  // departments data
+  const { departmentData } = useGetDepartment();
+
   const departments = departmentData?.departments || [];
 
+  // check admin
   const isAdmin = role === "ADMIN";
-  // console.log(isAdmin);
 
+  // hooks data
   const { adminDashboardData } = useAdminDashboard();
-  console.log(adminDashboardData);
-
   const { departmentStats } = useDepartmentStats();
-  // console.log(departmentStats)
-
   const { departmentWiseAttendance } = useDepartmentWiseAttendance();
-  // console.log(departmentWiseAttendance);
 
   const greeting = getGreeting();
 
-  const stats = getDashboardStatsCard(adminDashboardData);
+  // dashboard summary cards data
+  const dashboardStatsCardData = getDashboardStatsCard(adminDashboardData);
+
+  // chart data 
   const employeeChartData = getEmployeeChartData(adminDashboardData)
   const attendancePieData = getAttendancePieData(adminDashboardData);
   const activeInactivePieData = getActiveInactivePieData(adminDashboardData);
@@ -71,7 +87,7 @@ const Dashboard = () => {
       <div className='grid grid-cols-4 gap-4 mt-9'>
         {
           isAdmin && (
-            stats.map((stat, index) => {
+            dashboardStatsCardData.map((stat, index) => {
               const { name, number, icon, color, bgColor, hover, type } = stat;
               return (
                 <div
@@ -121,20 +137,20 @@ const Dashboard = () => {
         </div>
 
         <div className="bg-blue-700/10 rounded-2xl p-4">
-          <AttendanceSummary data={attendancePieData} header={"Attendance Summary"} />
+          <AttendanceSummaryPieChart data={attendancePieData} header={"Attendance Summary"} />
         </div>
       </div>
 
       <div className="bg-purple-700/10 rounded-2xl my-10 p-4">
-        <DepartmentStats data={departmentChartData} />
+        <DepartmentStatsBarChart data={departmentChartData} />
       </div>
 
       <div className="bg-green-700/10 rounded-2xl p-4">
-        <DepartmentAttendanceChart data={departmentWiseAttendance?.data || []} />
+        <DepartmentAttendanceBarChart data={departmentWiseAttendance?.data || []} />
       </div>
 
       <div className="bg-blue-700/10 rounded-2xl mt-6 p-4">
-        <AttendanceSummary data={activeInactivePieData} header={"Active / Inactive"} />
+        <AttendanceSummaryPieChart data={activeInactivePieData} header={"Active / Inactive"} />
       </div>
 
       {/* summary table employees */}

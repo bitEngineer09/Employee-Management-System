@@ -5,7 +5,7 @@ import {
     ResponsiveContainer,
 } from "recharts";
 
-const AttendanceSummary = ({ data, header }) => {
+const AttendanceSummaryPieChart = ({ data, header }) => {
 
     const COLORS = [
         "#22c55e", // present
@@ -65,4 +65,4 @@ const AttendanceSummary = ({ data, header }) => {
     );
 };
 
-export default AttendanceSummary;
+export default AttendanceSummaryPieChart;

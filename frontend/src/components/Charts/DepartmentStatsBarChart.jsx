@@ -8,7 +8,7 @@ import {
     ResponsiveContainer,
 } from "recharts";
 
-const DepartmentStats = ({ data }) => {
+const DepartmentStatsBarChart = ({ data }) => {
 
     return (
         <div>
@@ -26,4 +26,4 @@ const DepartmentStats = ({ data }) => {
     )
 }
 
-export default DepartmentStats;
+export default DepartmentStatsBarChart;

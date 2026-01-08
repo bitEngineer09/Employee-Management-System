@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 
-import ButtonLoader from '../components/Loader/buttonLoader';
-import { FaRegEye } from "react-icons/fa";
-import { FaRegEyeSlash } from "react-icons/fa";
+// components
+import ButtonLoader from '../components/Loader/ButtonLoader';
+
+// hooks  
 import useLogin from '../hooks/Auth/useLogin';
 import useSignup from '../hooks/Auth/useSignup';
+
+// icons
+import { Eye, EyeOff } from 'lucide-react';
 
 const Auth = () => {
 
@@ -43,6 +47,8 @@ const Auth = () => {
     });
   };
 
+
+  // hooks data
   const { login, isLoading: loginLoading, error: loginError } = useLogin();
   const { signup, isLoading: signupLoading, error: signupError } = useSignup();
 
@@ -112,8 +118,8 @@ const Auth = () => {
               "/>
             {
               showPassword
-                ? <FaRegEye onClick={() => setShowPassword(!showPassword)} className='absolute right-2 top-9 text-(--text-secondary)' />
-                : <FaRegEyeSlash onClick={() => setShowPassword(!showPassword)} className='absolute right-2 top-9 text-(--text-secondary)' />
+                ? <Eye size={15} onClick={() => setShowPassword(!showPassword)} className='absolute right-2 top-9 text-(--text-secondary) cursor-pointer' />
+                : <EyeOff size={15} onClick={() => setShowPassword(!showPassword)} className='absolute right-2 top-9 text-(--text-secondary) cursor-pointer' />
             }
 
           </div>
@@ -138,8 +144,8 @@ const Auth = () => {
                     "/>
                   {
                     showPassword
-                      ? <FaRegEye onClick={() => setShowPassword(!showPassword)} className='absolute right-2 top-9 text-(--text-secondary)' />
-                      : <FaRegEyeSlash onClick={() => setShowPassword(!showPassword)} className='absolute right-2 top-9 text-(--text-secondary)' />
+                      ? <Eye size={15} onClick={() => setShowPassword(!showPassword)} className='absolute right-2 top-9 text-(--text-secondary) cursor-pointer' />
+                      : <EyeOff size={15} onClick={() => setShowPassword(!showPassword)} className='absolute right-2 top-9 text-(--text-secondary) cursor-pointer' />
                   }
                 </div>
 
@@ -167,20 +173,21 @@ const Auth = () => {
           {/* error display */}
           {
             (loginError || signupError) && (
-            <div
-              className="
+              <div
+                className="
                 border border-red-500
                 bg-red-700/20
                 text-(--text-primary)
                 rounded-md my-3
                 p-2 text-center
               ">
-              {loginError?.response?.data?.message ||
-                signupError?.response?.data?.message}
-            </div>
+                {loginError?.response?.data?.message ||
+                  signupError?.response?.data?.message}
+              </div>
             )
           }
 
+          {/* Login / signup button */}
           <button
             disabled={loginLoading || signupLoading}
             className="
@@ -190,6 +197,8 @@ const Auth = () => {
               bg-(--blue-dark) text-(--text-primary)
               hover:bg-(--blue-hover) transition-colors
               flex items-center justify-center
+              disabled:opacity-50
+              disabled:cursor-not-allowed
             ">{
               loginLoading || signupLoading
                 ? <ButtonLoader />

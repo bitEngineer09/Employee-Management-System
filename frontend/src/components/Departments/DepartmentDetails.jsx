@@ -16,7 +16,6 @@ const DepartmentDetail = () => {
     const { departmentDetail, loading } = useGetDepartmentById(id);
     const department = departmentDetail?.department;
     const employees = department?.employees;
-    // console.log(employees);
 
     // Pagination
     const totalPages = Math.ceil(employees?.length / ITEMS_PER_PAGE);
@@ -26,6 +25,7 @@ const DepartmentDetail = () => {
         return employees?.slice(startIndex, endIndex);
     }, [employees, currentPage]);
 
+    
     if (loading) return <PageLoader />
 
     return (

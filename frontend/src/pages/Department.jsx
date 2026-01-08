@@ -1,21 +1,29 @@
 import React, { useMemo, useState } from 'react'
-import { House, Plus } from 'lucide-react';
+
+// components
 import DepartmentRecords from '../components/Departments/DepartmentRecords';
-import useGetDepartment from '../hooks/Admin/Department/useGetDepartment';
 import CreateDepartmentPopup from '../components/Popups/CreateDepartmentPopup';
 import DepartmentStatsCard from '../components/Departments/DepartmentStatsCard';
 import SummaryDepartmentPopup from '../components/Popups/SummaryTablesPopup/SummaryDepartmentPopup';
 
+// hooks
+import useGetDepartment from '../hooks/Admin/Department/useGetDepartment';
+
+// icons
+import { House, Plus } from 'lucide-react';
+
+// constants
 const ITEMS_PER_PAGE = 6;
 
 const Department = () => {
+
   const [createDept, setCreateDept] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [summaryType, setSummaryType] = useState(null);
 
+  // department data
   const { departmentData } = useGetDepartment();
   const departments = departmentData?.departments || [];
-  // console.log(departmentData)
 
   // pagingation 
   const totalPages = Math.ceil(departments.length / ITEMS_PER_PAGE);
@@ -74,10 +82,10 @@ const Department = () => {
         )
       }
 
-      {/* Summary table */}
+      {/* Summary table department popup*/}
       {
         summaryType && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
             <SummaryDepartmentPopup
               type={summaryType}
               departments={departments}

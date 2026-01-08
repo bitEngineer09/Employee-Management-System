@@ -1,12 +1,19 @@
 import React, { useMemo, useState } from 'react'
-import { Plus, User, Funnel } from 'lucide-react';
+
+// components
 import CreateEmpPopup from '../components/Popups/CreateEmpPopup';
 import EmployeeRecords from '../components/EmployeeRecords';
-import useAllEmployees from '../hooks/Admin/useAllEmployees';
 import EmployeeStats from '../components/EmployeeStats';
 import SummaryEmployeePopup from '../components/Popups/SummaryTablesPopup/SummaryEmployeePopup';
+
+// hooks 
+import useAllEmployees from '../hooks/Admin/useAllEmployees';
 import useTodayEmployeesAttendance from '../hooks/Admin/useTodayEmployeesAttendance';
 
+// icons 
+import { Plus, User, Funnel } from 'lucide-react';
+
+// constants
 const FILTER_CONFIG = {
   gender: ["MALE", "FEMALE", "OTHER"],
   department: ["Engineering", "Sales", "HR", "IT", "Finanace", "Customer", "R&D"],

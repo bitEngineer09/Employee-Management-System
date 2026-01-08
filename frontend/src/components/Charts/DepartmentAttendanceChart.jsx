@@ -8,7 +8,7 @@ import {
     CartesianGrid
 } from "recharts";
 
-const DepartmentAttendanceChart = ({ data }) => {
+const DepartmentAttendanceBarChart = ({ data }) => {
     return (
         <div>
             <h3 className="text-(--text-secondary) text-2xl font-medium ml-2 mb-3">
@@ -28,4 +28,4 @@ const DepartmentAttendanceChart = ({ data }) => {
     );
 };
 
-export default DepartmentAttendanceChart;
+export default DepartmentAttendanceBarChart;
