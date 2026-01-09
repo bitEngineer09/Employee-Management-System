@@ -10,7 +10,6 @@ const Sidebar = () => {
     const [logoutPopupOpen, setLogoutPopupOpen] = useState(false);
     const { currentUser } = useAuth();
     const ROLE = currentUser?.user?.role;
-    console.log(ROLE)
     const { logout, isLoading } = useLogout();
 
     return (

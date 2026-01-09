@@ -1,23 +1,23 @@
 import { useMutation } from "@tanstack/react-query";
-import { checkIn } from "../../api/attendance.api";
+import { applyLeaveApi } from "../../api/leave.api";
 import toast from "react-hot-toast";
 
-const useCheckIn = () => {
+const useApplyLeave = () => {
     const { mutate, isLoading, error } = useMutation({
-        mutationFn: checkIn,
+        mutationFn: applyLeaveApi,
         onSuccess: () => {
-            toast.success("Checked-in success");
+            toast.success("Leave applied successfully");
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Something went wrong");
-            console.error("useCheckIn error", error?.response?.data || error);
+            console.error("useApplyLeave error", error?.response?.data || error);
         },
     });
     return {
-        checkIn: mutate,
+        applyLeave: mutate,
         isLoading,
         error,
     };
 };
 
-export default useCheckIn;
+export default useApplyLeave;

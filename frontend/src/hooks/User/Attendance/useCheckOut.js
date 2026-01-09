@@ -1,10 +1,11 @@
 import { useMutation } from "@tanstack/react-query";
-import { checkOut } from "../../api/attendance.api";
 import toast from "react-hot-toast";
+import { checkOutApi } from "../../../api/attendance.api";
+
 
 const useCheckOut = () => {
     const { mutate, isLoading, error } = useMutation({
-        mutationFn: checkOut,
+        mutationFn: checkOutApi,
         onSuccess: () => {
             toast.success("Checked-out success");
         },
