@@ -101,7 +101,7 @@ model Department {
 model Attendance {
   id         Int      @id @default(autoincrement())
   employeeId Int
-  date       DateTime @db.Date
+  date       DateTime 
 
   checkIn      DateTime?
   checkOut     DateTime?

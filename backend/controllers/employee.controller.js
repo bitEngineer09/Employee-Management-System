@@ -7,6 +7,9 @@ import {
     HALF_DAY_HOURS,
     FULL_DAY_HOURS
 } from "../utils/attendanceRules.js";
+import { isSameDay } from '../helpers/isSameDay.js';
+import { getDatesBetween } from '../helpers/getDatesBetween.js';
+
 
 // check in
 export const checkin = async (req, res) => {
@@ -17,12 +20,11 @@ export const checkin = async (req, res) => {
         if (role !== "EMPLOYEE") {
             return res.status(403).json({
                 success: false,
-                message: "Only employees can mark attendance"
+                message: "Only employees can mark attendance",
             });
         }
 
         const now = new Date();
-
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -30,21 +32,20 @@ export const checkin = async (req, res) => {
             where: {
                 employeeId_date: {
                     employeeId: userId,
-                    date: today
-                }
-            }
+                    date: today,
+                },
+            },
         });
 
         if (existing?.checkIn) {
             return res.status(400).json({
                 success: false,
-                message: "Already checked in today"
+                message: "Already checked in today",
             });
         }
 
         let status = "PRESENT";
 
-        // Late logic
         const officeStart = new Date(today);
         officeStart.setHours(OFFICE_START_HOUR, LATE_CHECKIN_MINUTES, 0, 0);
 
@@ -56,44 +57,35 @@ export const checkin = async (req, res) => {
             where: {
                 employeeId_date: {
                     employeeId: userId,
-                    date: today
-                }
+                    date: today,
+                },
             },
             update: {
                 checkIn: now,
-                status
+                status,
             },
             create: {
                 employeeId: userId,
                 date: today,
                 checkIn: now,
-                status
-            }
-        });
-
-        await prisma.attendanceLog.create({
-            data: {
-                attendanceId: attendance.id,
-                action: "CHECK_IN",
-                newStatus: status,
-                changedBy: userId
-            }
+                status,
+            },
         });
 
         return res.status(200).json({
             success: true,
             message: `Checked in successfully (${status})`,
-            attendance
+            attendance,
         });
-
     } catch (error) {
-        console.error("checkin error", error.message);
+        console.error("checkin error", error);
         return res.status(500).json({
             success: false,
-            message: "Internal Server Error"
+            message: "Internal Server Error",
         });
     }
 };
+
 
 // check out
 export const checkout = async (req, res) => {
@@ -104,10 +96,11 @@ export const checkout = async (req, res) => {
         if (role !== "EMPLOYEE") {
             return res.status(403).json({
                 success: false,
-                message: "Only employees can mark attendance"
+                message: "Only employees can mark attendance",
             });
         }
 
+        const now = new Date();
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -115,29 +108,27 @@ export const checkout = async (req, res) => {
             where: {
                 employeeId_date: {
                     employeeId: userId,
-                    date: today
-                }
-            }
+                    date: today,
+                },
+            },
         });
 
         if (!attendance || !attendance.checkIn) {
             return res.status(400).json({
                 success: false,
-                message: "No check-in found for today"
+                message: "No check-in found for today",
             });
         }
 
         if (attendance.checkOut) {
             return res.status(400).json({
                 success: false,
-                message: "Already checked out"
+                message: "Already checked out",
             });
         }
 
-        const checkOutTime = new Date();
-
         const workingHours =
-            (checkOutTime.getTime() - attendance.checkIn.getTime()) / 3600000;
+            (now.getTime() - attendance.checkIn.getTime()) / 3600000;
 
         let finalStatus = "ABSENT";
 
@@ -150,76 +141,100 @@ export const checkout = async (req, res) => {
         const updatedAttendance = await prisma.attendance.update({
             where: { id: attendance.id },
             data: {
-                checkOut: checkOutTime,
+                checkOut: now,
                 workingHours: Number(workingHours.toFixed(2)),
-                status: finalStatus
-            }
-        });
-
-        await prisma.attendanceLog.create({
-            data: {
-                attendanceId: attendance.id,
-                action: "CHECK_OUT",
-                oldStatus: attendance.status,
-                newStatus: finalStatus,
-                changedBy: userId
-            }
+                status: finalStatus,
+            },
         });
 
         return res.status(200).json({
             success: true,
             message: `Checked out successfully (${finalStatus})`,
-            attendance: updatedAttendance
+            attendance: updatedAttendance,
         });
-
     } catch (error) {
-        console.error("checkout error", error.message);
+        console.error("checkout error", error);
         return res.status(500).json({
             success: false,
-            message: "Internal Server Error"
+            message: "Internal Server Error",
         });
     }
 };
 
+
 // get attendance report
 export const getAttendance = async (req, res) => {
     try {
-        const employeeId = req.user.id;
+        const employeeId = Number(req.user.id);
         const { from, to } = req.query;
 
         if (!from || !to) {
-            return res.status(400).json({ message: "From & To required" });
+            return res.status(400).json({
+                success: false,
+                message: "From & To required",
+            });
         }
+
+        const start = new Date(from);
+        const end = new Date(to);
+
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
 
         const data = await prisma.attendance.findMany({
             where: {
                 employeeId,
                 date: {
-                    gte: new Date(from),
-                    lte: new Date(to)
-                }
+                    gte: start,
+                    lte: end,
+                },
             },
-            include: {
-                attendanceLogs: true
-            },
-            orderBy: { date: "asc" }
+            orderBy: { date: "asc" },
+        });
+
+        const allDates = getDatesBetween(start, end);
+
+        const attendanceReport = allDates.map((date) => {
+            const record = data.find((d) => isSameDay(d.date, date));
+
+            if (!record) {
+                return {
+                    date,
+                    status: "ABSENT",
+                    checkIn: null,
+                    checkOut: null,
+                    workingHours: 0,
+                };
+            }
+
+            return {
+                date: record.date,
+                status: record.status,
+                checkIn: record.checkIn,
+                checkOut: record.checkOut,
+                workingHours: record.workingHours,
+            };
         });
 
         return res.status(200).json({
             success: true,
             message: "Attendance fetched successfully",
-            attendanceReport: data,
+            data: {
+                from,
+                to,
+                totalDays: attendanceReport.length,
+                attendance: attendanceReport,
+            },
         });
-
     } catch (error) {
-        console.error("getAttendance error", error.message);
+        console.error("getAttendance error", error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error",
-            error: error.message
         });
     }
 };
+
 
 // get monthly summary
 export const getMonthlySummary = async (req, res) => {
