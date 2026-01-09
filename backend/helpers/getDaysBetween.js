@@ -1,15 +1,20 @@
 export const getDaysBetween = (from, to) => {
-    const start = new Date(from);
-    const end = new Date(to);
-    const days = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1; // 1000 * 60 * 60 * 24 = 86400000 ms
-    return days;
-}
+  const start = new Date(from);
+  const end = new Date(to);
+
+  start.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+
+  const diff = end.getTime() - start.getTime();
+  return Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
+};
+
 
 //! NOTE =>
 // from = 1 Aug 2025
 // to   = 3 Aug 2025
 
-//* end - start = 172800000 ms
+//* end - start = 172800000 ms (diff)
 //* 1000 * 60 * 60 * 24 = 86400000 ms
 
 // Unit	        Value

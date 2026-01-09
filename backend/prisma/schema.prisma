@@ -43,7 +43,7 @@ enum LeaveType {
 }
 
 // models
-model user {
+model User {
   id             Int             @id @default(autoincrement())
   name           String
   email          String          @unique(map: "User_email_key")
@@ -67,15 +67,16 @@ model user {
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
   
-  session        session[]
+  sessions       Session[]
   attendances    Attendance[]
   attendanceLogs AttendanceLog[] @relation("changedBy")
   leaves         Leave[]
+  approvedLeaves  Leave[] @relation("approvedBy")
   leaveBalance   LeaveBalance[]
-  payroll        Payroll[]
+  payrolls        Payroll[]
 }
 
-model session {
+model Session {
   id        Int      @id @default(autoincrement())
   valid     Boolean  @default(true)
   ip        String
@@ -83,7 +84,7 @@ model session {
   userId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Session_userId_fkey")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Session_userId_fkey")
 
   @@index([userId], map: "Session_userId_idx")
 }
@@ -93,7 +94,7 @@ model Department {
   name        String   @unique
   description String?
   isActive    Boolean  @default(true)
-  users       user[]
+  users       User[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -108,7 +109,7 @@ model Attendance {
   workingHours Float?
   status       AttendanceStatus
 
-  employee       user            @relation(fields: [employeeId], references: [id])
+  employee       User            @relation(fields: [employeeId], references: [id])
   attendanceLogs AttendanceLog[]
 
   createdAt DateTime @default(now())
@@ -126,7 +127,7 @@ model AttendanceLog {
   newStatus AttendanceStatus?
 
   changedBy     Int?
-  changedByUser user? @relation("changedBy", fields: [changedBy], references: [id])
+  changedByUser User? @relation("changedBy", fields: [changedBy], references: [id])
 
   attendance Attendance @relation(fields: [attendanceId], references: [id], onDelete: Cascade)
 
@@ -147,26 +148,36 @@ model Holiday {
 model Leave {
   id         Int         @id @default(autoincrement())
   employeeId Int
-  fromDate   DateTime    @db.Date
-  toDate     DateTime    @db.Date
+  fromDate   DateTime    
+  toDate     DateTime    
   type       LeaveType
   reason     String?
   status     LeaveStatus @default(PENDING)
-  approvedBy Int?
-  employee   user        @relation(fields: [employeeId], references: [id])
+
+  approvedBy   Int?
+  approvedByUser User? @relation("approvedBy", fields: [approvedBy], references: [id])
+
+  employee   User        @relation(fields: [employeeId], references: [id])
+
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
 }
 
+
 model LeaveBalance {
-  id         Int  @id @default(autoincrement())
+  id         Int @id @default(autoincrement())
   employeeId Int
   year       Int
-  casualLeft Int  @default(12)
-  employee   user @relation(fields: [employeeId], references: [id])
+
+  casualLeft Int @default(12)
+  sickLeft   Int @default(8)
+  paidLeft   Int @default(10)
+
+  employee User @relation(fields: [employeeId], references: [id])
 
   @@unique([employeeId, year])
 }
+
 
 model Payroll {
   id               Int      @id @default(autoincrement())
@@ -178,7 +189,7 @@ model Payroll {
   netSalary        Float
   totalWorkingDays Int
   payableDays      Int
-  employee         user     @relation(fields: [employeeId], references: [id])
+  employee         User     @relation(fields: [employeeId], references: [id])
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 

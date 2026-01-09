@@ -9,6 +9,7 @@ import {
 } from "../utils/attendanceRules.js";
 import { isSameDay } from '../helpers/isSameDay.js';
 import { getDatesBetween } from '../helpers/getDatesBetween.js';
+import { getDaysBetween } from '../helpers/getDaysBetween.js';
 
 
 // check in
@@ -356,7 +357,7 @@ export const getMonthlySummary = async (req, res) => {
             error: error.message
         });
     }
-}
+};
 
 // apply leave
 export const applyLeave = async (req, res) => {
@@ -364,77 +365,192 @@ export const applyLeave = async (req, res) => {
         const employeeId = req.user.id;
         const { fromDate, toDate, type, reason } = req.body;
 
-        if (!employeeId || !fromDate || !toDate || !type || !reason) return res.status(400).json({
-            success: false,
-            message: "Please provide all fields",
+        if (!fromDate || !toDate || !type) {
+            return res.status(400).json({
+                success: false,
+                message: "fromDate, toDate and type are required",
+            });
+        }
+
+        if (!["CASUAL", "SICK", "PAID", "UNPAID"].includes(type)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid leave type",
+            });
+        }
+
+        const start = new Date(fromDate);
+        const end = new Date(toDate);
+
+        if (start > end) {
+            return res.status(400).json({
+                success: false,
+                message: "fromDate cannot be greater than toDate",
+            });
+        }
+
+        // check existing leaves
+        const existingLeave = await prisma.leave.findFirst({
+            where: {
+                employeeId,
+                OR: [
+                    {
+                        fromDate: { lte: end },
+                        toDate: { gte: start },
+                    },
+                ],
+            },
         });
 
-        if (!["CASUAL", "SICK", "PAID", "UNPAID"].includes(type)) return res.status(400).json({
-            success: false,
-            message: "Invalid leave type",
-        });
+        if (existingLeave) {
+            return res.status(400).json({
+                success: false,
+                message: "Leave already exists in selected date range",
+            });
+        }
 
-        if (new Date(fromDate) > new Date(toDate)) return res.status(400).json({
-            success: false,
-            message: "Invalid date range"
-        });
+        // checks leave balance (for paid types)
+        if (type !== "UNPAID") {
+            const year = new Date().getFullYear();
+
+            const balance = await prisma.leaveBalance.findUnique({
+                where: {
+                    employeeId_year: {
+                        employeeId,
+                        year,
+                    },
+                },
+            });
+
+            if (!balance) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Leave balance not found",
+                });
+            }
+
+            const days = getDaysBetween(start, end);
+
+            if (type === "CASUAL" && balance.casualLeft < days) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Insufficient casual leaves",
+                });
+            }
+
+            if (type === "SICK" && balance.sickLeft < days) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Insufficient sick leaves",
+                });
+            }
+
+            if (type === "PAID" && balance.paidLeft < days) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Insufficient paid leaves",
+                });
+            }
+        }
 
         const leave = await prisma.leave.create({
             data: {
                 employeeId,
-                fromDate: new Date(fromDate),
-                toDate: new Date(toDate),
+                fromDate: start,
+                toDate: end,
                 type,
-                reason
+                reason: reason || null,
             },
         });
 
-        return res.status(200).json({
+        return res.status(201).json({
             success: true,
             message: "Leave request generated successfully",
-            leave
+            leave,
         });
 
     } catch (error) {
-        console.error("applyLeave error", error.message);
+        console.error("applyLeave error", error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error",
-            error: error.message
         });
     }
-}
+};
 
 // get leave balance
 export const getLeaveBalance = async (req, res) => {
     try {
-        const employeeId = req.user.id;
+        const employeeId = Number(req.user.id);
         const year = new Date().getFullYear();
 
-        const balance = await prisma.leaveBalance.findUnique({
+        let balance = await prisma.leaveBalance.findUnique({
             where: {
                 employeeId_year: {
                     employeeId,
                     year,
+                },
+            },
+        });
+
+        if (!balance) {
+            balance = await prisma.leaveBalance.create({
+                data: {
+                    employeeId,
+                    year,
+                },
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "leave balance fetched successfully",
+            balance,
+        });
+
+    } catch (error) {
+        console.error("getLeaveBalance error", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
+};
+
+// get my active leaves 
+export const getMyActiveLeaves = async (req, res) => {
+    try {
+        const employeeId = req.user.id;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const leaves = await prisma.leave.findMany({
+            where: {
+                employeeId,
+                toDate: {
+                    gte: today
                 }
+            },
+            orderBy: {
+                fromDate: "asc"
             }
         });
 
         return res.status(200).json({
             success: true,
-            message: "Leave balance fetched successfully",
-            balance
+            leaves
         });
 
     } catch (error) {
-        console.error("getLeaveBalance error", error.message);
+        console.error("getMyActiveLeaves error", error);
         return res.status(500).json({
             success: false,
-            message: "Internal Server Error",
-            error: error.message
+            message: "Internal Server Error"
         });
     }
-}
+};
+
 
 // change default password
 export const changeDefaultPassword = async (req, res) => {
@@ -486,4 +602,4 @@ export const changeDefaultPassword = async (req, res) => {
             error: error.message,
         });
     }
-}
+};

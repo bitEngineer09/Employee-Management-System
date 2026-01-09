@@ -7,6 +7,7 @@ import {
     getAttendance,
     getLeaveBalance,
     getMonthlySummary,
+    getMyActiveLeaves,
     getTodayAttendance,
 } from '../controllers/employee.controller.js'
 import { forgotPassword, resetPassword } from '../controllers/auth.controller.js';
@@ -16,6 +17,7 @@ import { requireAuth } from '../middlewares/requireAuth.js';
 // zod imports
 import { validate } from '../middlewares/zodValidator.js';
 import { changeDefaultPasswordSchema } from '../validators/auth.zod.js';
+
 
 const router = express.Router();
 
@@ -35,6 +37,7 @@ router.get("/attendance/today", getTodayAttendance);
 // leave routes
 router.post("/leave", applyLeave);
 router.get("/leave-balance", getLeaveBalance);
+router.get("/active-leave", getMyActiveLeaves);
 
 // change default password
 router.patch("/change-password",
