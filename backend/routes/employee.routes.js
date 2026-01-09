@@ -7,6 +7,7 @@ import {
     getAttendance,
     getLeaveBalance,
     getMonthlySummary,
+    getTodayAttendance,
 } from '../controllers/employee.controller.js'
 import { forgotPassword, resetPassword } from '../controllers/auth.controller.js';
 import { isAuth } from '../middlewares/isAuth.js';
@@ -29,6 +30,7 @@ router.post("/attendance/check-in", checkin);
 router.patch("/attendance/check-out", checkout);
 router.get("/attendance", getAttendance);
 router.get("/attendance/summary", getMonthlySummary);
+router.get("/attendance/today", getTodayAttendance);
 
 // leave routes
 router.post("/leave", applyLeave);

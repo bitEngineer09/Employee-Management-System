@@ -86,7 +86,6 @@ export const checkin = async (req, res) => {
     }
 };
 
-
 // check out
 export const checkout = async (req, res) => {
     try {
@@ -161,7 +160,6 @@ export const checkout = async (req, res) => {
     }
 };
 
-
 // get attendance report
 export const getAttendance = async (req, res) => {
     try {
@@ -235,6 +233,59 @@ export const getAttendance = async (req, res) => {
     }
 };
 
+// get today attendance
+export const getTodayAttendance = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const start = new Date();
+        start.setHours(0, 0, 0, 0);
+
+        const end = new Date();
+        end.setHours(23, 59, 59, 999);
+
+        const attendance = await prisma.attendance.findFirst({
+            where: {
+                employeeId: userId,
+                date: {
+                    gte: start,
+                    lte: end,
+                },
+            },
+            select: {
+                id: true,
+                checkIn: true,
+                checkOut: true,
+                status: true,
+                workingHours: true,
+            },
+        });
+
+        if (!attendance) {
+            return res.status(200).json({
+                success: true,
+                data: {
+                    checkIn: null,
+                    checkOut: null,
+                    status: "ABSENT",
+                },
+                message: "No attendance found for today",
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data: attendance,
+        });
+
+    } catch (error) {
+        console.error("getTodayAttendance error", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    };
+};
 
 // get monthly summary
 export const getMonthlySummary = async (req, res) => {
