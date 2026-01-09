@@ -43,11 +43,11 @@ const AttendanceTable = () => {
     };
 
     return (
-        <>
+        <div className="mt-11">
             {/* Header */}
             <div className="flex items-center justify-between gap-4 mb-6">
                 <h2 className="text-xl font-semibold text-(--text-primary)">
-                    My Attendance
+                    My Attendance Record
                 </h2>
 
                 {/* Filters */}
@@ -161,7 +161,7 @@ const AttendanceTable = () => {
                     </tbody>
                 </table>
             </div>
-        </>
+        </div>
     );
 };
 

@@ -72,7 +72,7 @@ const StyledWrapper = styled.div`
     position: relative;
     padding: 12px 27px;
     border-radius: 12px;
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     color: white;
     background: ${({ colors }) => colors.front};
     transform: translateY(-4px);

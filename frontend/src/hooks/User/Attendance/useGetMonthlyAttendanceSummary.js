@@ -1,13 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { getMonthlyAttendanceSummary } from "../../api/attendance.api";
+import { getMonthlyAttendanceSummaryApi } from "../../../api/attendance.api";
 
-const useGetMohtlyAttendanceSummary = () => {
+
+const useGetMohtlyAttendanceSummary = (month) => {
     const { data, isLoading, error } = useQuery({
-        queryKey: ["empMonthlyAttendance"],
+        queryKey: ["empMonthlyAttendanceSummary", month],
         queryFn: async () => {
-            const res = await getMonthlyAttendanceSummary();
+            const res = await getMonthlyAttendanceSummaryApi({month});
             return res?.data;
         },
+        enabled: !!month,
         retry: false,
     });
     return {
