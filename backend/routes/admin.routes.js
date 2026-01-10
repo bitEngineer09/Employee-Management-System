@@ -1,4 +1,6 @@
 import express from "express";
+
+// employees
 import {
     createEmployee,
     getAllEmployees,
@@ -7,6 +9,7 @@ import {
     updateEmployeeStatus,
 } from "../controllers/admin/user.controller.js";
 
+// attendance
 import {
     adminAttendance,
     getEmpAttendance,
@@ -14,6 +17,7 @@ import {
     getTodayEmployeesAttendance,
 } from "../controllers/admin/attendance.controller.js";
 
+// leaves
 import {
     createHoliday,
     getHolidays,
@@ -22,19 +26,22 @@ import {
     approveRejectLeave,
 } from "../controllers/admin/leave.controller.js";
 
+// payroll
 import {
     getPayRoll,
-    getPaySlip,
     generatePayroll,
-    generatePayslipPDF,
     regeneratePayroll,
 } from "../controllers/admin/payroll.controller.js";
 
+// password
+import { forgotPassword, resetPassword } from "../controllers/auth.controller.js";
+import { getDashboardStats } from "../controllers/admin/dashboardStats.controller.js";
+
+// middlewares
 import { isAuth } from "../middlewares/isAuth.js";
 import { requireAuth } from "../middlewares/requireAuth.js";
 import { isAdmin } from "../middlewares/isAdmin.js";
-import { forgotPassword, resetPassword } from "../controllers/auth.controller.js";
-import { getDashboardStats } from "../controllers/admin/dashboardStats.controller.js";
+
 
 const router = express.Router();
 
@@ -69,8 +76,6 @@ router.patch("/leaves/:id", approveRejectLeave);
 // pay roll routes
 router.get("/payroll", getPayRoll);
 router.post("/payroll/generate", generatePayroll);
-router.get("/payslip", getPaySlip);
-router.get("/payslip/pdf", generatePayslipPDF);
 router.post("/payroll/regenerate", regeneratePayroll);
 
 // dashboard routes

@@ -104,6 +104,6 @@ export const getDepartmentStats = async (req, res) => {
             success: false,
             message: "Internal Server Error",
             error: error.message,
-        })
-    }
-}
+        });
+    };
+};
