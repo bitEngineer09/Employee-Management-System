@@ -1,4 +1,5 @@
 import { refreshTheTokens, verifyToken } from "../services/auth.services.js";
+import { prisma } from "../utils/client.js";
 
 export const isAuth = async (req, res, next) => {
     try {
@@ -10,16 +11,33 @@ export const isAuth = async (req, res, next) => {
         if (accessToken) {
             try {
                 const decoded = verifyToken(accessToken);
-                req.user = decoded; // { id, name, email, role, sessionId }
+
+                const session = await prisma.session.findUnique({
+                    where: { id: decoded.sessionId }
+                });
+
+                if (!session || !session.valid) {
+                    throw new Error("Session expired");
+                }
+
+                req.user = decoded;
                 return next();
             } catch (err) {
-                console.log("Access token invalid or expired");
+                console.log("Access token invalid or session expired");
             }
         }
 
         if (refreshToken) {
             try {
                 const { newAccessToken, newRefreshToken, user } = await refreshTheTokens(refreshToken);
+
+                const session = await prisma.session.findUnique({
+                    where: { id: user.sessionId }
+                });
+
+                if (!session || !session.valid) {
+                    throw new Error("Session expired");
+                }
 
                 req.user = user;
 
@@ -39,13 +57,14 @@ export const isAuth = async (req, res, next) => {
 
                 return next();
             } catch (err) {
-                console.log("Refresh token invalid:", err.message);
+                console.log("Refresh token invalid or session expired:", err.message);
                 req.user = null;
-                return next();
             }
         }
 
+        req.user = null;
         return next();
+
     } catch (error) {
         console.error("isAuth middleware fatal error:", error);
         req.user = null;

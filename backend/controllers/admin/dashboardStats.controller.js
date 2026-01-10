@@ -2,66 +2,70 @@ import { prisma } from "../../utils/client.js";
 
 export const getDashboardStats = async (req, res) => {
     try {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
 
-        const totalEmployees = await prisma.user.count({
-            where: { role: "EMPLOYEE" },
-        });
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const totalEmployees = await prisma.user.count();
 
         const presentEmployees = await prisma.attendance.count({
             where: {
-                date: today,
-                status: "PRESENT",
-                employee: {
-                    role: "EMPLOYEE",
-                    isActive: true,
+                date: {
+                    gte: startOfDay,
+                    lte: endOfDay,
                 },
+                status: "PRESENT",
             },
         });
 
-        const activeEmployees = await prisma.user.count({
+        const onLeaveEmployees = await prisma.attendance.findMany({
             where: {
-                role: "EMPLOYEE",
-                isActive: true
-            },
-        });
-
-        const inactiveEmployees = await prisma.user.count({
-            where: { isActive: false }
-        });
-
-        const onLeaveEmployees = await prisma.leave.findMany({
-            where: {
-                status: "APPROVED",
-                fromDate: { lte: today },
-                toDate: { gte: today },
+                date: {
+                    gte: startOfDay,
+                    lte: endOfDay,
+                },
+                status: {
+                    in: ["LEAVE_PAID", "LEAVE_UNPAID"],
+                },
             },
             distinct: ["employeeId"],
         });
 
-        const onLeaveCount = onLeaveEmployees.length;
+
+        const leaveIds = onLeaveEmployees.map(l => l.employeeId);
 
         const absentEmployees = await prisma.attendance.count({
             where: {
-                date: today,
-                status: "ABSENT",
-                employeeId: {
-                    notIn: onLeaveEmployees.map(l => l.employeeId),
+                date: {
+                    gte: startOfDay,
+                    lte: endOfDay,
                 },
+                status: "ABSENT",
+                ...(leaveIds.length > 0 && {
+                    employeeId: { notIn: leaveIds },
+                }),
             },
+        });
+
+        const activeEmployees = await prisma.user.count({
+            where: { isActive: true },
+        });
+
+        const inactiveEmployees = await prisma.user.count({
+            where: { isActive: false },
         });
 
         const departments = await prisma.department.count();
 
         return res.status(200).json({
             success: true,
-            message: "admin dashboard stats fetched successfully",
             totalEmployees,
             activeEmployees,
             presentEmployees,
             absentEmployees,
-            onLeaveEmployees: onLeaveCount,
+            onLeaveEmployees: onLeaveEmployees.length,
             inactiveEmployees,
             departments,
         });
@@ -71,10 +75,9 @@ export const getDashboardStats = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Internal Server Error",
-            error: error.message,
         });
     }
-}
+};
 
 export const getDepartmentStats = async (req, res) => {
     try {
@@ -90,7 +93,7 @@ export const getDepartmentStats = async (req, res) => {
                 }
             }
         });
-        
+
         return res.status(200).json({
             success: true,
             message: "employees in each department data",

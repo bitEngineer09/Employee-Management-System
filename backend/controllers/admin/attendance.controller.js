@@ -189,41 +189,49 @@ export const getMonthlyAttendanceSummary = async (req, res) => {
 
 // get today attendance summary
 export const getTodayEmployeesAttendance = async (req, res) => {
-  try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    try {
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
 
-    const employees = await prisma.user.findMany({
-      where: { role: "EMPLOYEE" },
-      select: {
-        id: true,
-        name: true,
-        employeeId: true,
-        isActive: true,
-        department: {
-          select: { id: true, name: true }
-        },
-        designation: true,
-        attendances: {
-          where: { date: today },
-          select: {
-            status: true,
-          }
-        }
-      }
-    });
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
 
-    return res.status(200).json({
-      success: true,
-      message: "Today attendance fetched successfully",
-      data: employees,
-    });
+        const employees = await prisma.user.findMany({
+            where: { role: "EMPLOYEE" },
+            select: {
+                id: true,
+                name: true,
+                employeeId: true,
+                isActive: true,
+                department: {
+                    select: { id: true, name: true }
+                },
+                designation: true,
+                attendances: {
+                    where: {
+                        date: {
+                            gte: startOfDay,
+                            lte: endOfDay,
+                        }
+                    },
+                    select: {
+                        status: true,
+                    }
+                }
+            }
+        });
 
-  } catch (error) {
-    console.error("getTodayEmployeesAttendance error", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error"
-    });
-  }
+        return res.status(200).json({
+            success: true,
+            message: "Today attendance fetched successfully",
+            data: employees,
+        });
+
+    } catch (error) {
+        console.error("getTodayEmployeesAttendance error", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
 };

@@ -31,9 +31,6 @@ import {
 import { validate } from '../middlewares/zodValidator.js';
 import { changeDefaultPasswordSchema } from '../validators/auth.zod.js';
 
-
-
-
 const router = express.Router();
 
 // password routes

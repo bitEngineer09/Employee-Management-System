@@ -33,6 +33,12 @@ export const verifyToken = (token) => {
 export const authenticate = async (req, res, user) => {
     const { id, name, email, role } = user;
 
+    // remove all previous sessions
+    await prisma.session.updateMany({
+        where: { userId: id, valid: true },
+        data: { valid: false }
+    });
+
     const session = await createSession({
         ip: req.ip,
         userAgent: req.headers["user-agent"],

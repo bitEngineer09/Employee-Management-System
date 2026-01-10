@@ -118,14 +118,16 @@ export const getDepartmentById = async (req, res) => {
             });
         }
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
 
         const department = await prisma.department.findUnique({
             where: { id: Number(departmentId) },
             include: {
                 users: {
-                    where: { isActive: true },
                     select: {
                         id: true,
                         name: true,
@@ -137,7 +139,10 @@ export const getDepartmentById = async (req, res) => {
                         monthlySalary: true,
                         attendances: {
                             where: {
-                                date: today,
+                                date: {
+                                    gte: startOfDay,
+                                    lte: endOfDay,
+                                },
                             },
                             select: { status: true },
                         },
@@ -154,6 +159,9 @@ export const getDepartmentById = async (req, res) => {
         }
 
         const totalEmployees = department.users.length;
+        const activeEmployees = department.users.filter(u => u.isActive).length;
+        const inactiveEmployees = department.users.filter(u => !u.isActive).length;
+
         let present = 0;
         let absent = 0;
         let onLeave = 0;
@@ -164,7 +172,6 @@ export const getDepartmentById = async (req, res) => {
             if (status === "PRESENT" || status === "HALF_DAY") present++;
             else if (status === "ABSENT") absent++;
             else if (status === "LEAVE_PAID" || status === "LEAVE_UNPAID") onLeave++;
-            else absent++;
         });
 
         return res.status(200).json({
@@ -174,8 +181,8 @@ export const getDepartmentById = async (req, res) => {
                 name: department.name,
                 createdAt: department.createdAt,
                 totalEmployees,
-                activeEmployees: totalEmployees,
-                inactiveEmployees: 0,
+                activeEmployees,
+                inactiveEmployees,
                 attendance: {
                     present,
                     absent,
@@ -187,7 +194,7 @@ export const getDepartmentById = async (req, res) => {
                     designation: emp.designation,
                     email: emp.email,
                     phone: emp.phoneNumber,
-                    salary: emp.salary,
+                    salary: emp.monthlySalary,
                     isActive: emp.isActive,
                     joinedOn: emp.createdAt,
                 })),
@@ -203,6 +210,7 @@ export const getDepartmentById = async (req, res) => {
         });
     }
 };
+
 
 // update department
 export const updateDepartment = async (req, res) => {
@@ -408,55 +416,60 @@ export const departmentAttendanceSummary = async (req, res) => {
 // department wise attendance summary
 export const departmentWiseTodayAttendance = async (req, res) => {
     try {
-        const today = new Date();
-        today.setHours(0, 0, 0,);
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
 
-        const employees = await prisma.user.findMany({
-            where: {
-                role: "EMPLOYEE",
-                isActive: true,
-                department: {
-                    isActive: true,
-                },
-            },
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const departments = await prisma.department.findMany({
+            where: { isActive: true },
             select: {
                 id: true,
-                department: {
-                    select: { name: true },
-                },
-                attendances: {
+                name: true,
+                users: {
                     where: {
-                        date: today,
+                        isActive: true,
+                        role: "EMPLOYEE",
                     },
                     select: {
-                        status: true
+                        id: true,
+                        attendances: {
+                            where: {
+                                date: {
+                                    gte: startOfDay,
+                                    lte: endOfDay,
+                                },
+                            },
+                            select: {
+                                status: true,
+                            },
+                        },
                     },
                 },
             },
         });
 
-        const result = {};
-        employees.forEach(emp => {
-            const departmentName = emp?.department?.name;
-            if (!result[departmentName]) {
-                result[departmentName] = {
-                    department: departmentName,
-                    total: 0,
-                    present: 0,
-                };
-            }
+        const result = departments.map(dept => {
+            let present = 0;
 
-            result[departmentName].total += 1;
-            const status = emp.attendances[0]?.status;
+            dept.users.forEach(user => {
+                const status = user.attendances[0]?.status;
+                if (status === "PRESENT" || status === "HALF_DAY") {
+                    present++;
+                }
+            });
 
-            if (status === "PRESENT" || status === "HALF_DAY") {
-                result[departmentName].present += 1;
-            }
+            return {
+                department: dept.name,
+                total: dept.users.length,
+                present,
+            };
         });
 
         return res.status(200).json({
             success: true,
-            data: Object.values(result),
+            data: result,
         });
 
     } catch (error) {
@@ -464,7 +477,6 @@ export const departmentWiseTodayAttendance = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Internal Server Error",
-            error: error.message,
         });
     }
-}
+};
