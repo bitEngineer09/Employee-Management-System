@@ -16,7 +16,7 @@ const DepartmentDetail = () => {
     const { departmentDetail, loading } = useGetDepartmentById(id);
     const department = departmentDetail?.department;
     const employees = department?.employees;
-
+    console.log(department)
     // Pagination
     const totalPages = Math.ceil(employees?.length / ITEMS_PER_PAGE);
     const pagintedEmployees = useMemo(() => {

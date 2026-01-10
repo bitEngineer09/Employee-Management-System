@@ -23,7 +23,7 @@ const EmployeeStatusBarChart = ({ data }) => {
 
           <Bar
             dataKey="value"
-            barSize={44}
+            barSize={70}
             radius={[6, 6, 0, 0]}
           >
             <Cell fill="#4f46e5" />

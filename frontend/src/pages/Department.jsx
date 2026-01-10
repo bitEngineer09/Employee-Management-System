@@ -23,7 +23,9 @@ const Department = () => {
 
   // department data
   const { departmentData } = useGetDepartment();
-  const departments = departmentData?.departments || [];
+  const departments = useMemo(() => {
+    return departmentData?.departments ?? [];
+  }, [departmentData]);
 
   // pagingation 
   const totalPages = Math.ceil(departments.length / ITEMS_PER_PAGE);

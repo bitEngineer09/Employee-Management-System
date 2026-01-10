@@ -96,19 +96,23 @@ const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPage
                                         </div>
                                     </td>
 
-                                    {/* Active Employees */}
+                                    {/* Active Department*/}
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span
-                                            className="
-                                                px-3 py-1
-                                                inline-flex
-                                                text-xs leading-5
-                                                font-semibold
-                                                rounded-full
-                                                bg-green-950 text-green-300
-                                                border border-green-800
-                                            ">
-                                            {dept?.activeCount} Active
+                                            className={`
+                                               px-3 py-1
+                                               inline-flex
+                                               text-xs leading-5
+                                               font-semibold
+                                               rounded-full
+                                               bg-green-950 text-green-300
+                                               border
+                                               ${dept?.isActive === true
+                                                    ? 'bg-green-950 text-green-300 border border-green-800'
+                                                    : 'bg-red-950 text-red-300 border border-red-800'
+                                                }
+                                            `}>
+                                            {dept?.isActive ? "Active" : "Inactive"}
                                         </span>
                                     </td>
 

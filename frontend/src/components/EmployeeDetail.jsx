@@ -4,7 +4,7 @@ import PageLoader from './Loader/PageLoader';
 import useGetEmployeeById from '../hooks/Admin/useGetEmployeeById';
 
 // icons
-import { Mail, Phone, Briefcase, Building2, CalendarDays, IndianRupee, CheckCircle2, } from 'lucide-react';
+import { Mail, Phone, Briefcase, Building2, CalendarDays, IndianRupee, CheckCircle2, XCircle, } from 'lucide-react';
 
 const EmployeeDetail = () => {
 

@@ -26,12 +26,12 @@ const SummaryEmployeePopup = ({ type, employees, onClose }) => {
 
             case "PRESENT":
                 return employees.filter(emp =>
-                    emp.attendances[0]?.status === "PRESENT"
+                    emp.attendances?.some(a => a.status === "PRESENT")
                 );
 
             case "ABSENT":
                 return employees.filter(emp =>
-                    emp.attendances[0]?.status === "ABSENT"
+                    emp.attendances?.some(a => a.status === "ABSENT")
                 );
 
             case "TOTAL":

@@ -141,7 +141,7 @@ const EmployeeRecords = ({
                                         {/* action buttons */}
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <button
-                                                onClick={() => navigate(`/emp/${employee?.id}`)}
+                                                onClick={() => navigate(`/admin/emp/${employee?.id}`)}
                                                 className="text-blue-400 hover:text-(--blue-primary) mr-4 transition-colors"
                                                 title="View Employee"
                                             >
@@ -167,7 +167,7 @@ const EmployeeRecords = ({
                     </tbody>
                 </table>
             </div>
-            
+
             {/* Pagination controls */}
             <div className="flex justify-end items-center gap-4 mt-6 text-(--text-secondary)">
                 <button

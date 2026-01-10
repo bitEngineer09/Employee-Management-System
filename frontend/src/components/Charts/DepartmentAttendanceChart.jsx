@@ -21,7 +21,8 @@ const DepartmentAttendanceBarChart = ({ data }) => {
                     <XAxis dataKey="department" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="present" radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="present" fill="#00D492" radius={[6, 6, 0, 0]}
+                    />
                 </BarChart>
             </ResponsiveContainer>
         </div>
