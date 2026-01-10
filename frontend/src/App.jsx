@@ -10,7 +10,6 @@ import AuthLayout from './Layout/AuthLayout';
 import Department from './pages/Department';
 import Employee from './pages/Employee';
 import AdminDashboard from './pages/AdminDashboard';
-import UserDashboard from './pages/User/UserDashboard';
 import Auth from './pages/Auth';
 import SettingsPage from './pages/SettingsPage';
 
@@ -27,6 +26,7 @@ import useAuth from './hooks/Auth/useAuth';
 import Attendance from './pages/User/Attendance';
 import Leave from './pages/User/Leave';
 import Salary from './pages/User/Salary';
+import Profile from './components/Profile';
 
 
 const App = () => {
@@ -51,13 +51,13 @@ const App = () => {
                   <Route path="/admin/settings" element={<SettingsPage />} />
                 </>
                 : <>
-                  <Route path="/" element={<UserDashboard />} />
-                  <Route path="/emp/attendance" element={<Attendance />} />
+                  <Route path="/" element={<Attendance />} />
                   <Route path="/emp/leave" element={<Leave />} />
                   <Route path="/emp/salary" element={<Salary />} />
                   <Route path="/emp/settings" element={<SettingsPage />} />
                 </>
             }
+            <Route path="/profile" element={<Profile />} />
           </Route>
         </Route>
 

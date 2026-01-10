@@ -28,21 +28,24 @@ const Sidebar = () => {
             <div className="flex flex-col mt-1 gap-1">
 
                 {/* Profile */}
-                <div
-                    className='
+                <NavLink
+                    to="/profile"
+                    className={({ isActive }) => `
                         flex items-center justify-center
-                        border-2 border-transparent
-                        hover:bg-cyan-700/20 hover:border-2
-                        hover:border-cyan-500
+                        border-2
                         rounded-xl p-3
                         gap-4 my-4 tracking-wider 
                         text-sm cursor-pointer
                         transition-all duration-200
-                    '>
+                        ${isActive
+                            ? "bg-cyan-700/20 border-cyan-500"
+                            : "border-transparent hover:bg-cyan-700/20 hover:border-cyan-500"
+                        }
+                    `}>
                     <div
                         className='
                             flex items-center justify-center
-                            bg-linear-to-r from-blue-500 to-indigo-500
+                            bg-linear-to-r from-blue-500 to-cyan-500
                             size-12 text-(--text-secondary)
                             rounded-full
                             text-3xl font-semibold
@@ -51,7 +54,7 @@ const Sidebar = () => {
                         <p>{currentUser?.user?.name}</p>
                         <p>{currentUser?.user?.designation}</p>
                     </div>
-                </div>
+                </NavLink>
 
                 {
                     (ROLE === "ADMIN" ? sidebarAdminContent : sideBarUserContent).map((item, index) => {

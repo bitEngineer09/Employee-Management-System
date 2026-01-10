@@ -34,33 +34,26 @@ export const sidebarAdminContent = [
 
 // sidebar for user
 export const sideBarUserContent = [
-        {
-        name: "Dashboard",
-        icon: <LayoutDashboard />,
-        path: "/",
-        style:
-            "border-2 border-transparent bg-emerald-700/10 hover:border-emerald-600 text-emerald-400",
-    },
     {
         name: "Attendance",
         icon: <User />,
-        path: "/emp/attendance",
+        path: "/",
         style:
             "border-2 border-transparent bg-cyan-700/10 hover:border-cyan-600 text-cyan-400",
     },
     {
         name: "Leave",
-        icon: <TentTree/>,
+        icon: <TentTree />,
         path: "/emp/leave",
         style:
             "border-2 border-transparent bg-purple-700/10 hover:border-purple-600 text-purple-400",
     },
-     {
+    {
         name: "Salary",
-        icon: <IndianRupee/>,
+        icon: <IndianRupee />,
         path: "/emp/salary",
         style:
-            "border-2 border-transparent bg-purple-700/10 hover:border-purple-600 text-purple-400",
+            "border-2 border-transparent bg-green-700/10 hover:border-green-600 text-green-400",
     },
     {
         name: "Settings",

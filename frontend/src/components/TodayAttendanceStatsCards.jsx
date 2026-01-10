@@ -5,11 +5,12 @@ const TodayAttendanceStatsCards = ({ name, index, bgColor, hover, value, color, 
         <div
             key={index}
             className={`
+                    w-71 h-32
                     border-2 border-transparent
                     flex items-center justify-between
                     text-(--text-secondary)
                     bg-(--bg-primary)
-                    p-5 rounded-2xl
+                    px-5 rounded-2xl
                     transition-all
                     ${bgColor}
                     ${hover}
