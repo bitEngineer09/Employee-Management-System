@@ -2,6 +2,7 @@ import { prisma } from "../../utils/client.js";
 import { getPayrollCalculator } from "../../utils/payRollCalc.js";
 import { deductionCalculator } from "../../utils/deductionCalculator.js";
 import { getWorkingDaysInMonth } from "../../utils/getWorkingDaysInMonth.js";
+import { getMonthRange } from "../../utils/getMonthRange.js";
 
 // get pay roll of employee
 export const getPayRoll = async (req, res) => {
@@ -26,7 +27,7 @@ export const getPayRoll = async (req, res) => {
                 success: false,
                 message: "Salary not configured for employee"
             });
-        }
+        };
 
         const { startDate, endDate } = getMonthRange(month);
         if (!startDate || !endDate) return res.status(400).json({
@@ -114,7 +115,7 @@ export const generatePayroll = async (req, res) => {
 
         const attendance = await prisma.attendance.findMany({
             where: {
-                employeeId,
+                employeeId: Number(employeeId),
                 date: {
                     gte: new Date(startDate),
                     lte: new Date(endDate),
@@ -159,12 +160,15 @@ export const generatePayroll = async (req, res) => {
 export const regeneratePayroll = async (req, res) => {
     try {
         const { employeeId, month } = req.body;
-        if (!employeeId || !month) return res.status(400).json({
-            success: false,
-            message: "Please provide all fields",
-        });
 
-        const deleted = await prisma.payroll.deleteMany({
+        if (!employeeId || !month) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide all fields",
+            });
+        }
+
+        await prisma.payroll.delete({
             where: {
                 employeeId_month: {
                     employeeId: Number(employeeId),
@@ -173,19 +177,24 @@ export const regeneratePayroll = async (req, res) => {
             },
         });
 
-        if (deleted.count === 0) return res.status(400).json({
-            success: false,
-            message: "No existing payroll found",
-        });
-
         return generatePayroll(req, res);
 
     } catch (error) {
         console.error("regeneratePayroll error", error.message);
+
+        // Prisma error when record not found
+        if (error.code === "P2025") {
+            return res.status(400).json({
+                success: false,
+                message: "No existing payroll found to regenerate",
+            });
+        }
+
         return res.status(500).json({
             success: false,
             message: "Internal Server Error",
             error: error.message,
         });
     }
-}
+};
+
