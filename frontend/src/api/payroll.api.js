@@ -1,7 +1,7 @@
 import { axiosInstance } from "../lib/axios"
 
 // get payroll 
-export const getPayroll = ({ employeeId, month }) => {
+export const getPayrollApi = ({ employeeId, month }) => {
     return axiosInstance.get("/admin/payroll", {
         params: {
             employeeId,
@@ -11,11 +11,11 @@ export const getPayroll = ({ employeeId, month }) => {
 };
 
 // generate payroll 
-export const generatePayroll = (data) => {
+export const generatePayrollApi = (data) => {
     return axiosInstance.post("/admin/payroll/generate", data);
 };
 
 // regenerate payroll
-export const regeneratePayroll = (data) => {
+export const regeneratePayrollApi = (data) => {
     return axiosInstance.post("/admin/payroll/regenerate", data);
 };

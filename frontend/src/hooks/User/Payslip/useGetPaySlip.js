@@ -1,16 +1,20 @@
 import { useQuery } from '@tanstack/react-query';
 import { getPaySlipApi } from '../../../api/payslip.api';
 
-const useGetPaySlip = () => {
+const useGetPaySlip = (month) => {
     const { data, isLoading, error } = useQuery({
-        queryKey: ["paySlip"],
+        queryKey: ["paySlip", month],
         queryFn: async () => {
-            const res = await getPaySlipApi();
-            return res?.data;
-        }
+            if (!month) return null;
+            const res = await getPaySlipApi(month);
+            return res?.data?.payslip;
+        },
+        enabled: !!month,
+        retry: false,
     });
+
     return {
-        getPaySlip: data,
+        payslip: data,
         isLoading,
         error,
     };

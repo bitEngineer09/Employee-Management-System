@@ -1,19 +1,21 @@
 import { useQuery } from '@tanstack/react-query';
-import { getPayroll } from '../../../api/payroll.api';
+import { getPayrollApi } from '../../../api/payroll.api';
 
 const useGetPayroll = (employeeId, month) => {
-    const { data, isLoading, error } = useQuery({
+    const { data, isLoading, error, refetch } = useQuery({
         queryKey: ["payroll", employeeId, month],
         queryFn: async () => {
-            const res = await getPayroll({ employeeId, month });
-            return res.data;
+            const res = await getPayrollApi({ employeeId, month });
+            return res?.data;
         },
+        enabled: false,
         retry: false,
     });
     return {
-        allEmployees: data,
+        getPayroll: data,
         isLoading,
         error,
+        fetchPayroll: refetch,
     }
 }
 

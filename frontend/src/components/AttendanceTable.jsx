@@ -17,7 +17,6 @@ const AttendanceTable = () => {
     const { getEmpAttendance, isLoading, error, fetchAttendance, } = useGetEmpAttendance(from, to);
 
     const attendance = getEmpAttendance?.data?.attendance || [];
-    console.log(attendance)
 
     const getStatus = (status) => {
         switch (status) {

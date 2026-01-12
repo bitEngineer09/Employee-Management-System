@@ -10,7 +10,7 @@ const Leave = () => {
   const { getLeaveBalance, isLoading: balanceLoading } = useGetLeaveBalance();
   const { getActiveLeave } = useGetActiveLeave();
   const leaves = getActiveLeave?.leaves
-  console.log(leaves);
+  // console.log(leaves);
 
   const [formData, setFormData] = useState({
     type: "",
@@ -163,7 +163,7 @@ const Leave = () => {
             <div className="bg-(--text-secondary) rounded-2xl">
 
               {
-                leaves?.length === 0 && <p className="text-gray-500 text-sm">No active leaves</p>
+                leaves?.length === 0 && <p className="text-gray-500 text-sm p-3">No active leaves</p>
               }
 
               {

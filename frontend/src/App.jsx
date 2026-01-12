@@ -27,6 +27,7 @@ import Attendance from './pages/User/Attendance';
 import Leave from './pages/User/Leave';
 import Salary from './pages/User/Salary';
 import Profile from './components/Profile';
+import Payroll from './pages/Payroll';
 
 
 const App = () => {
@@ -48,6 +49,7 @@ const App = () => {
                   <Route path="/admin/dept" element={<Department />} />
                   <Route path="/admin/department/:id" element={<DepartmentDetail />} />
                   <Route path="/admin/emp/:id" element={<EmployeeDetail />} />
+                  <Route path="/admin/payroll" element={<Payroll />} />
                   <Route path="/admin/settings" element={<SettingsPage />} />
                 </>
                 : <>

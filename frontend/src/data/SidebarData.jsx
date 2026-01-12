@@ -1,4 +1,5 @@
 import { Home, IndianRupee, LayoutDashboard, Settings, TentTree, User } from 'lucide-react';
+import Payroll from '../pages/Payroll';
 
 // sidebar for admin
 export const sidebarAdminContent = [
@@ -22,6 +23,13 @@ export const sidebarAdminContent = [
         path: "/admin/dept",
         style:
             "border-2 border-transparent bg-purple-700/10 hover:border-purple-600 text-purple-400",
+    },
+    {
+        name: "Payroll",
+        icon: <IndianRupee />,
+        path: "/admin/payroll",
+        style:
+            "border-2 border-transparent bg-yellow-700/10 hover:border-yellow-600 text-yellow-400",
     },
     {
         name: "Settings",

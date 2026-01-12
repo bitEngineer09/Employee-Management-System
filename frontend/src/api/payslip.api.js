@@ -1,11 +1,18 @@
 import { axiosInstance } from '../lib/axios';
 
 // get payslip
-export const getPaySlipApi = () => {
-    return axiosInstance.get("/employee/payslip");
+export const getPaySlipApi = (month) => {
+    return axiosInstance.get("/employee/payslip", {
+        params: {
+            month,
+        },
+    });
 };
 
 // get payslip pdf
-export const getPaySlipPdfApi = () => {
-    return axiosInstance.get("/employee/payslip/pdf");
+export const getPaySlipPdfApi = (month) => {
+    return axiosInstance.get("/employee/payslip/pdf", {
+        params: { month },
+        responseType: "blob",
+    });
 };
