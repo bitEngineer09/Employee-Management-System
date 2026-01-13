@@ -23,7 +23,7 @@ const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPage
 
     const navigate = useNavigate();
 
-    const { deactiveDepartment, isLoading } = useDeleteDepartment();
+    const { deactivateDepartment, isLoading } = useDeleteDepartment();
 
     return (
         <div className='mt-8 overflow-x-auto custom-scrollbar'>
@@ -145,7 +145,10 @@ const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPage
                                             <Edit2 size={18} />
                                         </button>
                                         <button
-                                            onClick={() => setDeleteDept(!deleteDept)}
+                                            onClick={() => {
+                                                setSelectedDepartment(dept);
+                                                setDeleteDept(true);
+                                            }}
                                             className="text-red-400 hover:text-red-500 transition-colors"
                                             title="Delete Department"
                                         >
@@ -193,12 +196,17 @@ const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPage
 
             {/* Delete department popup */}
             {
-                deleteDept && (
+                deleteDept && selectedDepartment && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
                         <Remove
-                            s
-                            setState={setDeleteDept}
-                            method={deactiveDepartment}
+                            onClose={() => {
+                                setSelectedDepartment(null);
+                                setDeleteDept(false);
+                            }}
+                            method={() => {
+                                deactivateDepartment(selectedDepartment?.id)
+                                setSelectedDepartment(null);
+                            }}
                             isLoading={isLoading}
                             icon={<Home />}
                             header={"Remove Department"}

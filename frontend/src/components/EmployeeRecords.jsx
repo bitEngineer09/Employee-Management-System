@@ -334,8 +334,7 @@ const EmployeeRecords = ({
                     bg-black/60 backdrop-blur-sm
                 ">
                         <Remove
-                            state={true}
-                            setState={() => {
+                            onClose={() => {
                                 setActionType(null);
                                 setSelectedEmployee(null);
                             }}

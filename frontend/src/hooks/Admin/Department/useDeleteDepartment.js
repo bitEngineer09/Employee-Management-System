@@ -1,10 +1,13 @@
-import {useMutation} from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deactivateDepartmentApi } from '../../../api/department.api';
 import toast from 'react-hot-toast';
+
 export const useDeleteDepartment = () => {
-    const {mutate, isLoading, error} = useMutation({
+    const queryClient = useQueryClient();
+    const { mutate, isLoading, error } = useMutation({
         mutationFn: deactivateDepartmentApi,
         onSuccess: () => {
+            queryClient.invalidateQueries(["departments"]);
             toast.success("Department deactivated");
         },
         onError: (error) => {

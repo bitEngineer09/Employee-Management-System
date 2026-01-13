@@ -3,8 +3,7 @@ import ButtonLoader from '../../components/Loader/ButtonLoader'
 import { X } from 'lucide-react';
 
 const Remove = ({
-    state,
-    setState,
+    onClose,
     method,
     isLoading,
     header,
@@ -30,7 +29,7 @@ const Remove = ({
                     </p>
                 </div>
                 <X
-                    onClick={() => setState(!state)}
+                    onClick={onClose}
                     className='cursor-pointer text-2xl text-(--bg-secondary) hover:text-red-700 transition-colors'
                 />
             </div>
@@ -55,7 +54,7 @@ const Remove = ({
 
                 <button
                     disabled={isLoading}
-                    onClick={setState}
+                    onClick={onClose}
                     className='
                         flex-1 bg-emerald-600
                         text-white py-3

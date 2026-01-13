@@ -104,8 +104,9 @@ const Sidebar = () => {
                 logoutPopupOpen && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
                         <Remove
-                            state={logoutPopupOpen}
-                            setState={setLogoutPopupOpen}
+                            onClose={() => {
+                                setLogoutPopupOpen(false);
+                            }}
                             method={logout}
                             isLoading={isLoading}
                             icon={<LogOut />}
