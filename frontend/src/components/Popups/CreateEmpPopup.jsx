@@ -49,7 +49,7 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
             '>
             <div className='flex items-center justify-between mb-6'>
                 <div>
-                    <h1 className='flex items-center gap-1 text-2xl font-semibold text-(--bg-secondary)'>Create Employee <User/></h1>
+                    <h1 className='flex items-center gap-1 text-2xl font-semibold text-(--bg-secondary)'>Create Employee <User /></h1>
                     <p className='text-(--text-disabled) text-sm mt-1'>Enter employee details</p>
                 </div>
                 <RxCross2
@@ -84,7 +84,7 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
                     <input
                         type="email"
                         name="email"
-                        required    
+                        required
                         onChange={handleChange}
                         value={formData.email}
                         placeholder="Enter email"

@@ -15,3 +15,7 @@ export const logoutApi = () => {
 export const userInfoApi = () => {
     return axiosInstance.get("/auth/me");
 };
+
+export const changeDefaultPasswordApi = (data) => {
+    return axiosInstance.patch("/employee/change-password", data);
+};
