@@ -16,12 +16,21 @@ export const createEmployee = async (req, res) => {
             monthlySalary
         } = req.body;
 
-        if (!name || !email || !departmentId || !designation || !monthlySalary || !gender || !dob || !phoneNumber) {
+        if (
+            !name
+            || !email
+            || !departmentId
+            || !designation
+            || !monthlySalary
+            || !gender
+            || !dob
+            || !phoneNumber
+        )
             return res.status(400).json({
                 success: false,
                 message: "Please provide all fields"
             });
-        }
+
         const empId = await generateEmployeeId();
         const basicSalary = Number(monthlySalary) * 0.4;
 
@@ -170,12 +179,10 @@ export const getEmployeeById = async (req, res) => {
             }
         });
 
-        if (!employee) {
-            return res.status(404).json({
-                success: false,
-                message: "Employee not found"
-            });
-        }
+        if (!employee) return res.status(404).json({
+            success: false,
+            message: "Employee not found"
+        });
 
         return res.status(200).json({
             success: true,
@@ -297,6 +304,87 @@ export const updateEmployeeStatus = async (req, res) => {
             success: false,
             message: "Internal Server Error",
             error: error.message,
+        });
+    }
+};
+
+// delete employee
+export const deactivateEmployee = async (req, res) => {
+    try {
+        const empId = Number(req.params.id);
+        if (!empId) return res.status(400).json({
+            success: false,
+            message: "employee id not found"
+        });
+
+        const employee = await prisma.user.findUnique({
+            where: {
+                id: empId,
+            },
+        });
+
+        if (!employee) return res.status(400).json({
+            success: false,
+            message: "No employee found",
+        });
+
+        if (!employee.isActive) return res.status(400).json({
+            success: false,
+            message: "Employee is already deactivated"
+        });
+
+        await prisma.user.update({
+            where: { id: empId },
+            data: { isActive: false },
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Employee deactivated successfully",
+        });
+
+    } catch (error) {
+        console.error("delete employee controller error", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+
+// permanent delete employee
+export const permanentDeleteEmployee = async (req, res) => {
+    try {
+        const empId = Number(req.params.id);
+
+        if (!empId) return res.status(400).json({
+            success: false,
+            message: "Employee id not provided",
+        });
+
+        const employee = await prisma.user.findUnique({
+            where: { id: empId },
+        });
+
+        if (!employee) return res.status(404).json({
+            success: false,
+            message: "Employee not found",
+        });
+
+        await prisma.user.delete({
+            where: { id: empId },
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Employee permanently deleted",
+        });
+
+    } catch (error) {
+        console.error("permanent delete employee error", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
         });
     }
 };

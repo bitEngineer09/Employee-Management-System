@@ -135,86 +135,141 @@ export const approveRejectLeave = async (req, res) => {
     try {
         const adminId = req.user.id;
         const { status } = req.body;
+        const leaveId = Number(req.params.id);
 
-        if (!["APPROVED", "REJECTED"].includes(status)) return res.status(400).json({
-            success: false,
-            message: "Invalid status",
+        if (!["APPROVED", "REJECTED"].includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid status. Must be APPROVED or REJECTED",
+            });
+        }
+
+        const existingLeave = await prisma.leave.findUnique({
+            where: { id: leaveId },
         });
 
-        const leave = await prisma.leave.update({
-            where: {
-                id: Number(req.params.id),
-            },
-            data: {
-                status,
-                approvedBy: adminId
-            },
-        });
+        if (!existingLeave) {
+            return res.status(404).json({
+                success: false,
+                message: "Leave request not found",
+            });
+        }
 
-        // if status got approved then deduct the casual leaves balance
-        if (status === "APPROVED" && leave.type === "CASUAL") {
+        if (existingLeave.status !== "PENDING") {
+            return res.status(400).json({
+                success: false,
+                message: "Leave already processed",
+            });
+        }
+
+        const result = await prisma.$transaction(async (tx) => {
+            // 1. Update leave status
+            const leave = await tx.leave.update({
+                where: { id: leaveId },
+                data: {
+                    status,
+                    approvedBy: adminId,
+                },
+            });
+
+            // Agar reject hai to yahin return
+            if (status === "REJECTED") {
+                return leave;
+            }
+
+            // 2. Leave approved → balance + attendance handle karo
             const year = new Date(leave.fromDate).getFullYear();
             const days = getDaysBetween(leave.fromDate, leave.toDate);
 
-            const balance = await prisma.leaveBalance.findUnique({
+            const balance = await tx.leaveBalance.findUnique({
                 where: {
                     employeeId_year: {
                         employeeId: leave.employeeId,
-                        year
+                        year,
                     },
                 },
             });
 
-            if (!balance || balance.casualLeft < days) return res.status(400).json({
-                success: false,
-                message: "Insuffucient casual leaves balance",
-            });
+            if (!balance) {
+                throw new Error("Leave balance not found for employee");
+            }
 
-            await prisma.leaveBalance.update({
-                where: { id: balance.id },
-                data: {
-                    casualLeft: balance.casualLeft - days,
-                },
-            });
+            let updateBalanceData = {};
 
-            const current = new Date(leave.fromDate);
+            if (leave.type === "CASUAL") {
+                if (balance.casualLeft < days) {
+                    throw new Error("Insufficient casual leave balance");
+                }
+                updateBalanceData.casualLeft = balance.casualLeft - days;
+            }
+
+            if (leave.type === "SICK") {
+                if (balance.sickLeft < days) {
+                    throw new Error("Insufficient sick leave balance");
+                }
+                updateBalanceData.sickLeft = balance.sickLeft - days;
+            }
+
+            if (leave.type === "PAID") {
+                if (balance.paidLeft < days) {
+                    throw new Error("Insufficient paid leave balance");
+                }
+                updateBalanceData.paidLeft = balance.paidLeft - days;
+            }
+
+            if (Object.keys(updateBalanceData).length > 0) {
+                await tx.leaveBalance.update({
+                    where: { id: balance.id },
+                    data: updateBalanceData,
+                });
+            }
+
+            // 3. Attendance mark karo for leave duration
+            const start = new Date(leave.fromDate);
             const end = new Date(leave.toDate);
+            const current = new Date(start);
 
-
-            // jab tak leave hai, tab tak employee ka status me leave show karna hai
             while (current <= end) {
-                await prisma.attendance.upsert({
+                await tx.attendance.upsert({
                     where: {
                         employeeId_date: {
                             employeeId: leave.employeeId,
-                            date: new Date(current)
-                        }
+                            date: new Date(current),
+                        },
                     },
                     update: {
-                        status: leave.type === "PAID" ? "LEAVE_PAID" : "LEAVE_UNPAID"
+                        status:
+                            leave.type === "UNPAID"
+                                ? "LEAVE_UNPAID"
+                                : "LEAVE_PAID",
                     },
                     create: {
-                        employeeId,
-                        date,
-                        status: leave.type === "PAID" ? "LEAVE_PAID" : "LEAVE_UNPAID"
-                    }
+                        employeeId: leave.employeeId,
+                        date: new Date(current),
+                        status:
+                            leave.type === "UNPAID"
+                                ? "LEAVE_UNPAID"
+                                : "LEAVE_PAID",
+                    },
                 });
 
                 current.setDate(current.getDate() + 1);
             }
-        }
+
+            return leave;
+        });
 
         return res.status(200).json({
             success: true,
-            leave,
+            message: `Leave ${status.toLowerCase()} successfully`,
+            leave: result,
         });
-
     } catch (error) {
-        console.error("approveRejectLeave error", error.message);
+        console.error("approveRejectLeave error:", error.message);
+
         return res.status(500).json({
             success: false,
-            message: "Internal Server Error",
-            error: error.message,
+            message: error.message || "Internal Server Error",
         });
     }
 };

@@ -109,7 +109,7 @@ model Attendance {
   workingHours Float?
   status       AttendanceStatus
 
-  employee       User            @relation(fields: [employeeId], references: [id])
+  employee       User            @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   attendanceLogs AttendanceLog[]
 
   createdAt DateTime @default(now())
@@ -157,7 +157,7 @@ model Leave {
   approvedBy   Int?
   approvedByUser User? @relation("approvedBy", fields: [approvedBy], references: [id])
 
-  employee   User        @relation(fields: [employeeId], references: [id])
+  employee   User        @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
@@ -173,7 +173,7 @@ model LeaveBalance {
   sickLeft   Int @default(8)
   paidLeft   Int @default(10)
 
-  employee User @relation(fields: [employeeId], references: [id])
+  employee User @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
   @@unique([employeeId, year])
 }
@@ -189,7 +189,7 @@ model Payroll {
   netSalary        Float
   totalWorkingDays Int
   payableDays      Int
-  employee         User     @relation(fields: [employeeId], references: [id])
+  employee         User     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 

@@ -3,8 +3,10 @@ import express from "express";
 // employees
 import {
     createEmployee,
+    deactivateEmployee,
     getAllEmployees,
     getEmployeeById,
+    permanentDeleteEmployee,
     updateEmployee,
     updateEmployeeStatus,
 } from "../controllers/admin/user.controller.js";
@@ -57,6 +59,8 @@ router.get("/employees", getAllEmployees);
 router.get("/employee/:id", getEmployeeById);
 router.put("/employee/:id", updateEmployee);
 router.patch("/employee/:id/status", updateEmployeeStatus);
+router.patch("/employee/:id", deactivateEmployee);
+router.delete("/employee/:id", permanentDeleteEmployee);
 
 // attendance routes
 router.patch("/attendance/:id", adminAttendance);

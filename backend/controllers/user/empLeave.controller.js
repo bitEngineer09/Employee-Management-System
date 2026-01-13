@@ -174,6 +174,16 @@ export const getMyActiveLeaves = async (req, res) => {
                     gte: today
                 }
             },
+            include: {
+                approvedByUser: {
+                    select: {
+                        id: true,
+                        name: true,
+                        department: true,
+                        designation: true
+                    }
+                }
+            },
             orderBy: {
                 fromDate: "asc"
             }
