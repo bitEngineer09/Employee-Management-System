@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
-import useDeleteDepartment from '../hooks/Admin/Department/useDeleteDepartment';
 import EditEmployeePopup from './Popups/EditEmployeePopup';
 import Remove from './Popups/Remove';
 import { useNavigate } from 'react-router-dom';
+import useDeactivateEmployee from '../hooks/Admin/useDeactivateEmployee';
+import usePermanentDeleteEmployee from '../hooks/Admin/usePremanentDeleteEmployee';
 
 // icons
-import { Mail, Phone, Edit2, Trash2, Eye, User } from 'lucide-react';
+import { Mail, Phone, Edit2, Trash2, Eye, User, Ban } from 'lucide-react';
 
 // table header data
 const tableHeader = [
@@ -24,10 +25,16 @@ const EmployeeRecords = ({
     totalPages
 }) => {
 
-    const [deleteEmp, setDeleteEmp] = useState(false);
-    const [updateEmp, setUpdateEmp] = useState(false);
-    const { deactivateDepartment, isLoading } = useDeleteDepartment();
     const navigate = useNavigate();
+
+    const [updateEmp, setUpdateEmp] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [actionType, setActionType] = useState(null);
+
+    // hooks
+    const { deactivateEmployee, isLoading: deactivating } = useDeactivateEmployee();
+    const { permanentDeleteEmployee, isLoading: deleting } = usePermanentDeleteEmployee();
+
 
     return (
         <>
@@ -35,7 +42,12 @@ const EmployeeRecords = ({
                 <table className='w-full border border-(--border-primary) border-collapse'>
 
                     {/* table header */}
-                    <thead className="bg-blue-700/20 border-b border-(--border-primary) sticky top-0 z-10">
+                    <thead
+                        className="
+                        bg-blue-700/20
+                        -b border-(--border-primary)
+                        sticky top-0 z-10
+                    ">
                         <tr>
                             {
                                 tableHeader.map((header, index) =>
@@ -75,13 +87,17 @@ const EmployeeRecords = ({
                                                     bg-(--blue-primary)
                                                     rounded-full 
                                                     flex items-center justify-center
-                                                    font-semibold text-white
+                                                    font-semibold text-(--text-primary)
                                                 ">
                                                     {employee?.name?.charAt(0)}
                                                 </div>
                                                 <div className="ml-4">
-                                                    <div className="text-sm font-medium text-white">{employee?.name}</div>
-                                                    <div className="text-sm text-(--text-tertiary)">Joined {employee?.createdAt?.split("T")[0]}</div>
+                                                    <div className="text-sm font-medium text-(--text-primary)">
+                                                        {employee?.name}
+                                                    </div>
+                                                    <div className="text-sm text-(--text-tertiary)">
+                                                        Joined {employee?.createdAt?.split("T")[0]}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
@@ -148,14 +164,19 @@ const EmployeeRecords = ({
                                                 <Eye size={18} />
                                             </button>
                                             <button
-                                                onClick={() => setUpdateEmp(!updateEmp)}
+                                                onClick={() => { () => setUpdateEmp(true) }}
                                                 className="text-blue-400 hover:text-(--blue-primary) mr-4 transition-colors"
+                                                title='Edit employee'
                                             >
                                                 <Edit2 size={18} />
                                             </button>
                                             <button
-                                                onClick={() => setDeleteEmp(!deleteEmp)}
+                                                onClick={() => {
+                                                    setSelectedEmployee(employee);
+                                                    setActionType("OPTIONS");
+                                                }}
                                                 className="text-red-400 hover:text-red-500 transition-colors"
+                                                title="Manage Employee"
                                             >
                                                 <Trash2 size={18} />
                                             </button>
@@ -194,28 +215,137 @@ const EmployeeRecords = ({
             {/* update employee popup */}
             {
                 updateEmp && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                        <EditEmployeePopup updateEmp={updateEmp} setUpdateEmp={setUpdateEmp} />
+                    <div
+                        className="
+                        fixed inset-0 z-50
+                        flex items-center justify-center 
+                        bg-black/50 backdrop-blur-sm
+                    ">
+                        <EditEmployeePopup employee={selectedEmployee} setUpdateEmp={setUpdateEmp} />
                     </div>
                 )
             }
 
-            {/* delete employee popup */}
+            {/* Manage employee popup (acitvate / deactivate ) */}
             {
-                deleteEmp && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                actionType === "OPTIONS" && selectedEmployee && (
+                    <div
+                        className="
+                        fixed inset-0 z-50
+                        flex items-center justify-center
+                        bg-black/60 backdrop-blur-sm
+                    ">
+                        <div className="bg-[#0B0B0B] border border-(--border-primary) rounded-xl p-6 w-95">
+
+                            <h2 className="text-lg flex justify-between font-semibold text-(--text-primary) mb-2">
+                                Manage Employee <p>ID: {selectedEmployee?.id}</p>
+                            </h2>
+                            <p className="text-sm text-(--text-tertiary) mb-4">
+                                {selectedEmployee.name} ({selectedEmployee.email})
+                            </p>
+
+                            <div className="flex flex-col gap-3">
+
+                                {/* Deactivate */}
+                                <button
+                                    onClick={() => setActionType("DEACTIVATE")}
+                                    className="
+                                    w-full px-4 py-2
+                                    flex gap-2 justify-center items-center
+                                    rounded-lg bg-yellow-900/30
+                                    border border-yellow-700
+                                    text-yellow-300 
+                                    hover:bg-yellow-900/50 transition
+                                ">
+                                    Deactivate Employee <Ban size={18} />
+                                </button>
+
+                                {/* Permanent Delete */}
+                                <button
+                                    onClick={() => setActionType("DELETE")}
+                                    className="
+                                    w-full px-4 py-2
+                                    flex gap-2 justify-center items-center
+                                    rounded-lg bg-red-900/30
+                                    border border-red-700
+                                    text-red-300
+                                    hover:bg-red-900/50 transition
+                                ">
+                                    Delete Permanently <Trash2 size={18} />
+                                </button>
+
+                                {/* Cancel */}
+                                <button
+                                    onClick={() => {
+                                        setActionType(null);
+                                        setSelectedEmployee(null);
+                                    }}
+                                    className="
+                                    w-full px-4 py-2
+                                    rounded-lg 
+                                    border border-(--border-primary)
+                                    text-(--text-secondary)
+                                    hover:bg-(--border-subtle)
+                                ">
+                                    Cancel
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+
+            {/* Deactive confirmation popup */}
+            {
+                actionType === "DEACTIVATE" && selectedEmployee && (
+                    <div
+                        className="
+                    fixed inset-0 z-10
+                    flex items-center justify-center 
+                    bg-black/60 backdrop-blur-sm
+                ">
                         <Remove
-                            state={deleteEmp}
-                            setState={setDeleteEmp}
-                            method={deactivateDepartment}
-                            isLoading={isLoading}
-                            icon={<User />}
-                            header={"Remove Employee"}
-                            subHeader={"Are you sure you want to remove this employee ?"}
+                            state={true}
+                            setState={() => {
+                                setActionType(null);
+                                setSelectedEmployee(null);
+                            }}
+                            method={() => deactivateEmployee(selectedEmployee.id)}
+                            isLoading={deactivating}
+                            icon={<Ban />}
+                            header={"Deactivate Employee"}
+                            subHeader={"Employee will be inactive but all data will remain safe. Continue?"}
                         />
                     </div>
                 )
             }
+
+            {/* Permanent Delete confirmation popup */}
+            {
+                actionType === "DELETE" && selectedEmployee && (
+                    <div
+                        className="
+                    fixed inset-0 z-10
+                    flex items-center justify-center
+                    bg-black/60 backdrop-blur-sm
+                ">
+                        <Remove
+                            state={true}
+                            setState={() => {
+                                setActionType(null);
+                                setSelectedEmployee(null);
+                            }}
+                            method={() => permanentDeleteEmployee(selectedEmployee.id)}
+                            isLoading={deleting}
+                            icon={<Trash2 />}
+                            header={"Delete Employee Permanently"}
+                            subHeader={"This will remove employee and all related data. This action cannot be undone!"}
+                        />
+                    </div>
+                )
+            }
+
         </>
 
     )

@@ -14,6 +14,7 @@ const Remove = ({
 
     return (
         <div
+            onClick={(e) => e.stopPropagation()}
             className='
                 w-lg
                 bg-white rounded-2xl 
@@ -54,7 +55,7 @@ const Remove = ({
 
                 <button
                     disabled={isLoading}
-                    onClick={() => setState(!state)}
+                    onClick={setState}
                     className='
                         flex-1 bg-emerald-600
                         text-white py-3

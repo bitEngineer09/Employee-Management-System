@@ -12,6 +12,12 @@ import Employee from './pages/Employee';
 import AdminDashboard from './pages/AdminDashboard';
 import Auth from './pages/Auth';
 import SettingsPage from './pages/SettingsPage';
+import LeaveAdmin from './pages/LeaveAdmin';
+import Payroll from './pages/Payroll';
+import Leave from './pages/User/Leave';
+import Attendance from './pages/User/Attendance';
+import Salary from './pages/User/Salary';
+import Profile from './pages/Profile';
 
 // routes
 import ProtectedRoute from './components/Routes/ProtectedRoute';
@@ -23,11 +29,6 @@ import EmployeeDetail from './components/EmployeeDetail';
 
 // hooks
 import useAuth from './hooks/Auth/useAuth';
-import Attendance from './pages/User/Attendance';
-import Leave from './pages/User/Leave';
-import Salary from './pages/User/Salary';
-import Profile from './components/Profile';
-import Payroll from './pages/Payroll';
 
 
 const App = () => {
@@ -49,6 +50,7 @@ const App = () => {
                   <Route path="/admin/dept" element={<Department />} />
                   <Route path="/admin/department/:id" element={<DepartmentDetail />} />
                   <Route path="/admin/emp/:id" element={<EmployeeDetail />} />
+                  <Route path="/admin/leave" element={<LeaveAdmin />} />
                   <Route path="/admin/payroll" element={<Payroll />} />
                   <Route path="/admin/settings" element={<SettingsPage />} />
                 </>

@@ -1,5 +1,11 @@
-import { Home, IndianRupee, LayoutDashboard, Settings, TentTree, User } from 'lucide-react';
-import Payroll from '../pages/Payroll';
+import {
+    Home,
+    IndianRupee,
+    LayoutDashboard,
+    Settings,
+    TentTree,
+    User
+} from 'lucide-react';
 
 // sidebar for admin
 export const sidebarAdminContent = [
@@ -25,18 +31,25 @@ export const sidebarAdminContent = [
             "border-2 border-transparent bg-purple-700/10 hover:border-purple-600 text-purple-400",
     },
     {
+        name: "Leave",
+        icon: <TentTree />,
+        path: "/admin/leave",
+        style:
+            "border-2 border-transparent bg-orange-700/10 hover:border-orange-600 text-orange-400",
+    },
+    {
         name: "Payroll",
         icon: <IndianRupee />,
         path: "/admin/payroll",
         style:
-            "border-2 border-transparent bg-yellow-700/10 hover:border-yellow-600 text-yellow-400",
+            "border-2 border-transparent bg-lime-700/10 hover:border-lime-600 text-lime-400",
     },
     {
         name: "Settings",
         icon: <Settings />,
         path: "/admin/settings",
         style:
-            "border-2 border-transparent bg-amber-700/10 hover:border-amber-600 text-amber-400",
+            "border-2 border-transparent bg-slate-700/10 hover:border-slate-600 text-slate-400",
     },
 ];
 

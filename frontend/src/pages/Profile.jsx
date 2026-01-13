@@ -1,8 +1,8 @@
 import React from 'react';
 import { User, Mail, Phone, Calendar, Briefcase, DollarSign, Building } from 'lucide-react';
 import useAuth from '../hooks/Auth/useAuth';
-import ErrorPage from './Loader/ErrorPage';
-import PageLoader from './Loader/PageLoader';
+import ErrorPage from '../components/Loader/ErrorPage';
+import PageLoader from '../components/Loader/PageLoader';
 
 const Profile = () => {
 

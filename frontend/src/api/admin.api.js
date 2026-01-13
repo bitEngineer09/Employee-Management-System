@@ -34,3 +34,13 @@ export const updateEmployeeStatusApi = (id, data) => {
 export const todayEmployeesAttendanceApi = () => {
     return axiosInstance.get("/admin/attendance/today-employees");
 };
+
+// deactivate Employee
+export const deactivateEmployeeApi = (id) => {
+    return axiosInstance.patch(`/admin/employee/${id}`);
+};
+
+// permanently delete employee
+export const permanentDeleteEmployeeApi = (id) => {
+    return axiosInstance.delete(`/admin/employee/${id}`);
+};

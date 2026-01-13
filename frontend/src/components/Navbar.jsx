@@ -27,21 +27,19 @@ const Navbar = () => {
 
             {/* Search */}
             {
-                location.pathname !== "/auth" ?
-                    <div className='flex items-center justify-center mx-auto'>
-                        <div className='flex items-center rounded-lg border border-(--border-secondary) px-2'>
-                            <IoSearch />
-                            <input
-                                name=''
-                                placeholder='search'
-                                className='w-200 p-2 outline-none' />
-                        </div>
+                location.pathname !== "/auth" &&
+                <div className='flex items-center justify-center mx-auto'>
+                    <div className='flex items-center rounded-lg border border-(--border-secondary) px-2'>
+                        <IoSearch />
+                        <input
+                            name=''
+                            placeholder='search'
+                            className='w-200 p-2 outline-none' />
                     </div>
-                    :
-                    null
+                </div>
             }
         </div>
-    )
+    );
 }
 
 export default Navbar;

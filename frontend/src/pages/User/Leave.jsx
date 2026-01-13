@@ -67,20 +67,29 @@ const Leave = () => {
         {/* Apply Leave Form */}
         <div className="grid grid-cols-2 gap-4 mt-6">
           <div>
-            <h2 className="text-xl text-(--text-secondary) font-semibold mb-4">Apply Leave</h2>
-            <div className="bg-(--text-secondary) rounded-2xl mt-2 p-6">
+            <h2 className="text-xl text-white font-semibold mb-4">Apply Leave</h2>
+            <div className="bg-gray-800 rounded-2xl mt-2 p-6">
 
               <form onSubmit={handleSubmit} className="space-y-4">
 
                 {/* Leave Type */}
                 <div>
-                  <label htmlFor="type" className="block text-sm font-medium mb-1">Leave Type</label>
+                  <label
+                    htmlFor="type"
+                    className="block text-sm font-medium mb-1 text-gray-300">Leave Type</label>
                   <select
                     name="type"
                     id="type"
                     value={formData?.type}
                     onChange={handleChange}
-                    className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+                    className="
+                    w-full bg-gray-700
+                    text-gray-100 border
+                    border-gray-600
+                    rounded-lg px-3 py-2
+                    focus:outline-none focus:ring-2
+                    focus:ring-blue-500
+                  "
                     required
                   >
                     <option value="">Select type</option>
@@ -94,44 +103,67 @@ const Leave = () => {
                 {/* Dates */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="from" className="block text-sm font-medium mb-1">From Date</label>
+                    <label
+                      htmlFor="from"
+                      className="block text-sm font-medium mb-1 text-gray-300">From Date</label>
                     <input
                       type="date"
                       id="from"
                       name="fromDate"
                       value={formData?.fromDate}
                       onChange={handleChange}
-                      className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
                       required
-                    />
+                      className="
+                      w-full bg-gray-700
+                      text-gray-100 border
+                      border-gray-600
+                      rounded-lg px-3 py-2
+                      focus:outline-none focus:ring-2
+                      focus:ring-blue-500
+                    "/>
                   </div>
 
                   <div>
-                    <label htmlFor="to" className="block text-sm font-medium mb-1">To Date</label>
+                    <label
+                      htmlFor="to"
+                      className="block text-sm font-medium mb-1 text-gray-300">To Date</label>
                     <input
                       type="date"
                       name="toDate"
                       id="to"
                       value={formData?.toDate}
                       onChange={handleChange}
-                      className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
                       required
-                    />
+                      className="
+                      w-full bg-gray-700
+                      text-gray-100 border
+                      border-gray-600
+                      rounded-lg px-3 py-2
+                      focus:outline-none focus:ring-2
+                      focus:ring-blue-500
+                    "/>
                   </div>
                 </div>
 
                 {/* Reason */}
                 <div>
-                  <label htmlFor="reason" className="block text-sm font-medium mb-1">Reason (optional)</label>
+                  <label
+                    htmlFor="reason"
+                    className="block text-sm font-medium mb-1 text-gray-300">Reason (optional)</label>
                   <textarea
                     name="reason"
                     id="reason"
                     value={formData?.reason}
                     onChange={handleChange}
                     rows="3"
-                    className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
                     placeholder="Enter reason for leave"
-                  />
+                    className="
+                    w-full bg-gray-700 text-gray-100 
+                    border border-gray-600 rounded-lg 
+                    px-3 py-2
+                     focus:outline-none focus:ring-2
+                     focus:ring-blue-500 placeholder-gray-400
+                    "/>
                 </div>
 
                 {/* Submit */}
@@ -140,7 +172,7 @@ const Leave = () => {
                     type="submit"
                     disabled={applying}
                     className="
-                    bg-stone-900 text-(--text-secondary)
+                    bg-blue-600 text-white
                     px-6 py-2 rounded-lg 
                     hover:bg-blue-700
                     transition 
@@ -156,48 +188,48 @@ const Leave = () => {
 
           {/* active leaves */}
           <div>
-            <h2 className="text-xl text-(--text-secondary) font-semibold mb-4">
+            <h2 className="text-xl text-white font-semibold mb-4">
               Your Active Leaves
             </h2>
 
-            <div className="bg-(--text-secondary) rounded-2xl">
+            <div className="bg-gray-800 rounded-2xl p-4 space-y-3">
 
               {
-                leaves?.length === 0 && <p className="text-gray-500 text-sm p-3">No active leaves</p>
+                leaves?.length === 0 && <p className="text-gray-400 text-sm p-3">No active leaves</p>
               }
 
               {
                 leaves?.map(leave => (
                   <div
-                    key={leave.id}
+                    key={leave?.id}
                     className="
-                    border border-gray-200 rounded-xl p-4
+                    border border-gray-700 rounded-xl p-4 bg-gray-750
                     flex flex-col gap-1
-                    hover:shadow-sm transition
+                    hover:bg-gray-700 hover:shadow-lg transition
                     ">
                     <div className="flex justify-between items-center">
-                      <span className="font-medium">{leave.type}{" "} LEAVE</span>
+                      <span className="font-medium text-gray-100">{leave?.type}{" "} LEAVE</span>
 
                       <span
                         className={`
-                          text-sm px-4 py-2 rounded-full
-                          ${leave.status === "PENDING" && "bg-amber-100 text-amber-700"}
-                          ${leave.status === "APPROVED" && "bg-emerald-100 text-emerald-700"}
-                          ${leave.status === "REJECTED" && "bg-red-100 text-red-700"}
+                          text-sm px-4 py-2 rounded-full font-medium
+                          ${leave.status === "PENDING" && "bg-amber-900 text-amber-200"}
+                          ${leave.status === "APPROVED" && "bg-emerald-900 text-emerald-200"}
+                          ${leave.status === "REJECTED" && "bg-red-900 text-red-200"}
                           `}>
                         {leave.status}
                       </span>
                     </div>
 
-                    <p className="text-sm text-gray-600">
-                      From: {new Date(leave.fromDate).toLocaleDateString("en-IN", {
+                    <p className="text-sm text-gray-400">
+                      From: {new Date(leave?.fromDate).toLocaleDateString("en-IN", {
                         day: "2-digit",
                         month: "short",
                         year: "numeric",
                       })}
                       <br />
                       To:{" "}
-                      {new Date(leave.toDate).toLocaleDateString("en-IN", {
+                      {new Date(leave?.toDate).toLocaleDateString("en-IN", {
                         day: "2-digit",
                         month: "short",
                         year: "numeric",
@@ -205,12 +237,17 @@ const Leave = () => {
                     </p>
 
                     {
-                      leave.reason && <p className="text-sm text-gray-500 italic">"{leave.reason}"</p>
+                      leave?.reason && <p className="text-sm text-gray-400 italic">"{leave?.reason}"</p>
                     }
 
                     {
-                      leave.approvedBy ? <p className="text-sm text-gray-500 italic">"{leave.approvedBy}"</p> : ""
+                      leave?.approvedByUser && (
+                        <p className="text-sm text-gray-400 italic">
+                          Approved by: {leave?.approvedByUser?.name} ({leave?.approvedByUser?.designation})
+                        </p>
+                      )
                     }
+
                   </div>
                 ))
               }

@@ -13,4 +13,14 @@ export const getLeaveBalanceApi = () => {
 // get active leave
 export const getActiveLeave = () => {
     return axiosInstance.get("/employee/active-leave");
-}
+};
+
+// get all leaves (ADMIN)
+export const getAllLeavesApi = () => {
+    return axiosInstance.get("/admin/leaves");
+};
+
+// approve / reject leave (ADMIN)
+export const approveRejectLeaveApi = ({ id, status }) => {
+    return axiosInstance.patch(`/admin/leaves/${id}`, { status });
+};
