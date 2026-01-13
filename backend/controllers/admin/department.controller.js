@@ -48,6 +48,7 @@ export const getDepartments = async (req, res) => {
             select: {
                 id: true,
                 name: true,
+                description: true,
                 createdAt: true,
                 isActive: true,
                 users: {
@@ -80,6 +81,7 @@ export const getDepartments = async (req, res) => {
                 name: dept.name,
                 createdAt: dept.createdAt,
                 isActive: dept.isActive,
+                description: dept.description,
                 totalEmployees,
                 activeEmployees,
                 inactiveEmployees,
@@ -210,7 +212,6 @@ export const getDepartmentById = async (req, res) => {
         });
     }
 };
-
 
 // update department
 export const updateDepartment = async (req, res) => {

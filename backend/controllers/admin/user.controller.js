@@ -204,6 +204,7 @@ export const getEmployeeById = async (req, res) => {
 export const updateEmployee = async (req, res) => {
     try {
         const empId = req.params.id;
+        console.log(empId)
 
         if (!empId) return res.status(400).json({
             success: false,

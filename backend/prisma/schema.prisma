@@ -44,36 +44,35 @@ enum LeaveType {
 
 // models
 model User {
-  id             Int             @id @default(autoincrement())
-  name           String
-  email          String          @unique(map: "User_email_key")
-  password       String
-  role           String          @default("EMPLOYEE")
-  employeeId     String?         @unique
+  id         Int     @id @default(autoincrement())
+  name       String
+  email      String  @unique(map: "User_email_key")
+  password   String
+  role       String  @default("EMPLOYEE")
+  employeeId String? @unique
 
-  gender         Gender?
-  dob            DateTime?       @db.Date
-  phoneNumber    String?         @unique
+  gender      Gender?
+  dob         DateTime? @db.Date
+  phoneNumber String?   @unique
 
+  departmentId Int?
+  department   Department? @relation(fields: [departmentId], references: [id])
+  designation  String?
 
-  departmentId   Int?
-  department     Department?     @relation(fields: [departmentId], references: [id])
-  designation    String?
+  isActive      Boolean @default(true)
+  monthlySalary Float?
+  basicSalary   Float?
 
-  isActive       Boolean         @default(true)
-  monthlySalary  Float?
-  basicSalary    Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  
   sessions       Session[]
   attendances    Attendance[]
   attendanceLogs AttendanceLog[] @relation("changedBy")
   leaves         Leave[]
-  approvedLeaves  Leave[] @relation("approvedBy")
+  approvedLeaves Leave[]         @relation("approvedBy")
   leaveBalance   LeaveBalance[]
-  payrolls        Payroll[]
+  payrolls       Payroll[]
 }
 
 model Session {
@@ -102,7 +101,7 @@ model Department {
 model Attendance {
   id         Int      @id @default(autoincrement())
   employeeId Int
-  date       DateTime 
+  date       DateTime
 
   checkIn      DateTime?
   checkOut     DateTime?
@@ -148,21 +147,20 @@ model Holiday {
 model Leave {
   id         Int         @id @default(autoincrement())
   employeeId Int
-  fromDate   DateTime    
-  toDate     DateTime    
+  fromDate   DateTime
+  toDate     DateTime
   type       LeaveType
   reason     String?
   status     LeaveStatus @default(PENDING)
 
-  approvedBy   Int?
+  approvedBy     Int?
   approvedByUser User? @relation("approvedBy", fields: [approvedBy], references: [id])
 
-  employee   User        @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employee User @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
-
 
 model LeaveBalance {
   id         Int @id @default(autoincrement())
@@ -177,7 +175,6 @@ model LeaveBalance {
 
   @@unique([employeeId, year])
 }
-
 
 model Payroll {
   id               Int      @id @default(autoincrement())
