@@ -5,25 +5,32 @@ import { User } from 'lucide-react';
 import ButtonLoader from '../Loader/ButtonLoader';
 import { SquarePen, Pencil } from 'lucide-react';
 
-const EditEmployeePopup = ({ updateEmp, setUpdateEmp }) => {
-    const { updateEmployee, isLoading } = useUpdateEmployeeById()
+const EditEmployeePopup = ({ employee, setUpdateEmp }) => {
+    const { updateEmployee, isLoading } = useUpdateEmployeeById();
+    console.log(employee)
 
-    const [formData, setFormData] = useState({
-        name: "",
-        departmentId: "",
-        designation: "",
-        salary: "",
-    });
+    const [formData, setFormData] = useState(() => ({
+        name: employee?.name || "",
+        departmentId: employee?.department?.id || "",
+        designation: employee?.designation || "",
+        monthlySalary: employee?.monthlySalary || "",
+    }));
 
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(formData);
+
         updateEmployee({
-            name: formData?.name,
-            departmentId: formData?.departmentId,
-            designation: formData?.designation,
-            salary: formData?.salary,
+            id: employee.id,
+            data: {
+                name: formData.name,
+                departmentId: Number(formData.departmentId),
+                designation: formData.designation,
+                monthlySalary: Number(formData.monthlySalary),
+            }
         });
+
+        setUpdateEmp(false);
     };
 
     const handleChange = (e) => {
@@ -35,6 +42,7 @@ const EditEmployeePopup = ({ updateEmp, setUpdateEmp }) => {
 
     return (
         <div
+            onClick={(e) => e.stopPropagation()}
             className='
                 bg-white 
                 w-full max-w-2xl
@@ -52,7 +60,7 @@ const EditEmployeePopup = ({ updateEmp, setUpdateEmp }) => {
                     </p>
                 </div>
                 <RxCross2
-                    onClick={() => setUpdateEmp(!updateEmp)}
+                    onClick={() => setUpdateEmp(false)}
                     className='cursor-pointer text-2xl text-(--bg-secondary) hover:text-red-700 transition-colors'
                 />
             </div>
@@ -66,7 +74,6 @@ const EditEmployeePopup = ({ updateEmp, setUpdateEmp }) => {
                     <input
                         type="text"
                         name="name"
-                        required
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="Enter Department name"
@@ -81,15 +88,17 @@ const EditEmployeePopup = ({ updateEmp, setUpdateEmp }) => {
                         '/>
                 </div>
 
+                {/* Department ID */}
                 <div className='flex flex-col gap-2'>
-                    <label htmlFor='deptId' className='flex items-center gap-1 text-sm font-medium text-(--bg-secondary)'>
+                    <label
+                        htmlFor='deptId'
+                        className='flex items-center gap-1 text-sm font-medium text-(--bg-secondary)'>
                         Department ID <SquarePen size={15} />
                     </label>
                     <input
                         type="text"
-                        name="deptId"
+                        name="departmentId"
                         id="deptId"
-                        required
                         value={formData.departmentId}
                         onChange={handleChange}
                         placeholder="Enter Department ID"
@@ -101,19 +110,20 @@ const EditEmployeePopup = ({ updateEmp, setUpdateEmp }) => {
                            focus:border-blue-400
                             focus:ring-3 focus:ring-blue-400
                             transition-all
-                        '
-                    />
+                        '/>
                 </div>
 
+                {/* Designation */}
                 <div className='flex flex-col gap-2'>
-                    <label htmlFor='designation' className='flex items-center gap-1 text-sm font-medium text-(--bg-secondary)'>
+                    <label
+                        htmlFor='designation'
+                        className='flex items-center gap-1 text-sm font-medium text-(--bg-secondary)'>
                         Designation <SquarePen size={15} />
                     </label>
                     <input
                         type="text"
                         name="designation"
                         id="designation"
-                        required
                         value={formData.designation}
                         onChange={handleChange}
                         placeholder="Change Designation"
@@ -128,16 +138,16 @@ const EditEmployeePopup = ({ updateEmp, setUpdateEmp }) => {
                         '/>
                 </div>
 
+                {/* Monthly Salary */}
                 <div className='flex flex-col gap-2'>
                     <label htmlFor='salary' className='flex items-center gap-1 text-sm font-medium text-(--bg-secondary)'>
                         Salary <SquarePen size={15} />
                     </label>
                     <input
                         type="text"
-                        name="salary"
+                        name="monthlySalary"
                         id="salary"
-                        required
-                        value={formData.salary}
+                        value={formData.monthlySalary}
                         onChange={handleChange}
                         placeholder="Enter new salary"
                         className='

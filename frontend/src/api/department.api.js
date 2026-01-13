@@ -21,7 +21,7 @@ export const getDepartmentByIdApi = (id) => {
 };
 
 // update department
-export const updateDepartmentApi = (id, data) => {
+export const updateDepartmentApi = ({id, data}) => {
     return axiosInstance.patch(`/department/update/${id}`, data);
 };
 

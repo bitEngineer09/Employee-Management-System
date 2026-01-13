@@ -16,9 +16,13 @@ const tableHeader = [
 ];
 
 const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPages }) => {
+    const [selectedDepartment, setSelectedDepartment] = useState(null);
+
     const [updateDept, setUpdateDept] = useState(false);
     const [deleteDept, setDeleteDept] = useState(false);
+
     const navigate = useNavigate();
+
     const { deactiveDepartment, isLoading } = useDeleteDepartment();
 
     return (
@@ -131,7 +135,10 @@ const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPage
                                             <Eye size={18} />
                                         </button>
                                         <button
-                                            onClick={() => setUpdateDept(!updateDept)}
+                                            onClick={() => {
+                                                setSelectedDepartment(dept);
+                                                setUpdateDept(true)
+                                            }}
                                             className="text-green-400 hover:text-green-500 mr-4 transition-colors"
                                             title="Edit Department"
                                         >
@@ -177,9 +184,9 @@ const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPage
 
             {/* update department popup */}
             {
-                updateDept && (
+                updateDept && selectedDepartment && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-                        <EditDepartmentPopup updateDept={updateDept} setUpdateDept={setUpdateDept} />
+                        <EditDepartmentPopup department={selectedDepartment} setUpdateDept={setUpdateDept} />
                     </div>
                 )
             }
@@ -189,7 +196,7 @@ const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPage
                 deleteDept && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
                         <Remove
-                            state={deleteDept}
+                            s
                             setState={setDeleteDept}
                             method={deactiveDepartment}
                             isLoading={isLoading}

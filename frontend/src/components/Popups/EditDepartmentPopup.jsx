@@ -5,21 +5,26 @@ import { House } from 'lucide-react';
 import ButtonLoader from '../Loader/ButtonLoader';
 import { SquarePen, Pencil } from 'lucide-react';
 
-const EditDepartmentPopup = ({ updateDept, setUpdateDept }) => {
+const EditDepartmentPopup = ({ department, setUpdateDept }) => {
     const { updateDepartment, isLoading } = useUpdateDepartment();
+    console.log(department)
 
     const [formData, setFormData] = useState({
-        name: "",
-        description: "",
+        name: department?.name || "",
+        description: department?.description || "",
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log(formData);
         updateDepartment({
-            name: formData.name,
-            description: formData.description,
+            id: department?.id,
+            data: {
+                name: formData.name,
+                description: formData.description,
+            }
         });
+        setUpdateDept(false);
     };
 
     const handleChange = (e) => {
@@ -48,7 +53,7 @@ const EditDepartmentPopup = ({ updateDept, setUpdateDept }) => {
                     </p>
                 </div>
                 <RxCross2
-                    onClick={() => setUpdateDept(!updateDept)}
+                    onClick={() => setUpdateDept(false)}
                     className='cursor-pointer text-2xl text-(--bg-secondary) hover:text-red-700 transition-colors'
                 />
             </div>

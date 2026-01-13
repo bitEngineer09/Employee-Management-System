@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 
 const useUpdateEmployeeById = () => {
     const queryClient = useQueryClient();
-    const {mutate, isLoading, error} = useMutation({
+    const { mutate, isLoading, error } = useMutation({
         mutationFn: updateEmployeeApi,
         onSuccess: () => {
             queryClient.invalidateQueries(["allEmployees"]);

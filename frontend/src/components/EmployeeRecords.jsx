@@ -164,7 +164,10 @@ const EmployeeRecords = ({
                                                 <Eye size={18} />
                                             </button>
                                             <button
-                                                onClick={() => { () => setUpdateEmp(true) }}
+                                                onClick={() => {
+                                                    setSelectedEmployee(employee);
+                                                    setUpdateEmp(true)
+                                                }}
                                                 className="text-blue-400 hover:text-(--blue-primary) mr-4 transition-colors"
                                                 title='Edit employee'
                                             >

@@ -21,7 +21,7 @@ export const getEmployeeByIdApi = (id) => {
 };
 
 // update employee
-export const updateEmployeeApi = (id, data) => {
+export const updateEmployeeApi = ({id, data}) => {
     return axiosInstance.put(`/admin/employee/${id}`, data);
 };
 
