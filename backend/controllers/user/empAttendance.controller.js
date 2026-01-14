@@ -363,6 +363,7 @@ export const changeDefaultPassword = async (req, res) => {
     try {
         const userId = req.user.id;
         const { oldPassword, newPassword } = req.body;
+        console.log(oldPassword, newPassword)
 
         const employee = await prisma.user.findUnique({
             where: { id: userId }

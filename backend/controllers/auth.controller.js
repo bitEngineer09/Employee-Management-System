@@ -2,6 +2,7 @@ import { prisma } from '../utils/client.js';
 import argon2 from 'argon2';
 import { authenticate, clearSession } from '../services/auth.services.js';
 import { generateOtp } from '../utils/generateOtp.js'
+import { sendOtpToEmail } from '../utils/sendOtpEmail.js';
 
 // user sign up
 export const signupController = async (req, res) => {
@@ -200,7 +201,7 @@ export const resetPassword = async (req, res) => {
             message: "Please provide all fields",
         });
 
-        const otpRecord = await prisma.passwordResetOtp.findUnique({
+        const otpRecord = await prisma.passwordResetOtp.findFirst({
             where: {
                 email,
                 otp,
@@ -220,7 +221,9 @@ export const resetPassword = async (req, res) => {
 
         await prisma.user.update({
             where: { email },
-            password: hashedPassword,
+            data: {
+                password: hashedPassword,
+            },
         });
 
         await prisma.passwordResetOtp.update({
