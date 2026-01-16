@@ -47,9 +47,8 @@ import { isAdmin } from "../middlewares/isAdmin.js";
 
 const router = express.Router();
 
-// password routes
-router.post("/forgot-password", forgotPassword);
-router.post("/reset-password", resetPassword);
+// get holiday
+router.get("/holiday", getHolidays);
 
 router.use(isAuth, requireAuth, isAdmin);
 
@@ -71,7 +70,6 @@ router.get("/attendance/today-employees", getTodayEmployeesAttendance);
 // holiday routes
 router.post("/holiday", createHoliday);
 router.delete("/holiday/:id", deleteHoliday);
-router.get("/holiday", getHolidays);
 
 // leave routes
 router.get("/leaves", getAllLeaves);
