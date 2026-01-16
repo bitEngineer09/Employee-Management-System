@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import EditDepartmentPopup from '../Popups/EditDepartmentPopup';
 import Remove from '../Popups/Remove';
 import useDeleteDepartment from '../../hooks/Admin/Department/useDeleteDepartment';
+import AnimateModal from '../Animation/AnimateModal';
 
 // table header data
 const tableHeader = [
@@ -187,6 +188,7 @@ const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPage
             </div>
 
             {/* update department popup */}
+            <AnimateModal isOpen={updateDept}>
             {
                 updateDept && selectedDepartment && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -194,6 +196,7 @@ const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPage
                     </div>
                 )
             }
+            </AnimateModal>
 
             {/* Delete department popup */}
             {

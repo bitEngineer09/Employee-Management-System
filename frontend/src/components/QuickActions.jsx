@@ -4,6 +4,7 @@ import CreateEmpPopup from "../components/Popups/CreateEmpPopup";
 import CreateDepartmentPopup from '../components/Popups/CreateDepartmentPopup';
 import CreateHolidayPopup from '../components/Popups/CreateHolidayPopup';
 import { useNavigate } from "react-router-dom";
+import AnimateModal from './Animation/AnimateModal';
 
 const QuickActions = () => {
     const navigate = useNavigate();
@@ -39,6 +40,7 @@ const QuickActions = () => {
             </div>
 
             {/* Popup */}
+            <AnimateModal isOpen={createEmp}>
             {
                 createEmp && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -46,7 +48,9 @@ const QuickActions = () => {
                     </div>
                 )
             }
+            </AnimateModal>
 
+            <AnimateModal isOpen={createDept}>
             {
                 createDept && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -54,7 +58,9 @@ const QuickActions = () => {
                     </div>
                 )
             }
+            </AnimateModal>
 
+            <AnimateModal isOpen={createHldy}>
             {
                 createHldy && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -62,6 +68,7 @@ const QuickActions = () => {
                     </div>
                 )
             }
+            </AnimateModal>
         </div>
     )
 }

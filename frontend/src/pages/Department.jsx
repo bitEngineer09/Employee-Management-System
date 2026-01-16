@@ -11,6 +11,7 @@ import useGetDepartment from '../hooks/Admin/Department/useGetDepartment';
 
 // icons
 import { Building, House, Plus } from 'lucide-react';
+import AnimateModal from '../components/Animation/AnimateModal';
 
 // constants
 const ITEMS_PER_PAGE = 6;
@@ -86,6 +87,7 @@ const Department = () => {
       </div>
 
       {/* create department popup */}
+      <AnimateModal isOpen={createDept}>
       {
         createDept && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -93,6 +95,7 @@ const Department = () => {
           </div>
         )
       }
+      </AnimateModal>
 
       {/* Summary table department popup*/}
       {

@@ -7,6 +7,7 @@ import usePermanentDeleteEmployee from '../hooks/Admin/usePremanentDeleteEmploye
 
 // icons
 import { Mail, Phone, Edit2, Trash2, Eye, User, Ban } from 'lucide-react';
+import AnimateModal from './Animation/AnimateModal';
 
 // table header data
 const tableHeader = [
@@ -215,18 +216,20 @@ const EmployeeRecords = ({
             </div>
 
             {/* update employee popup */}
-            {
-                updateEmp && (
-                    <div
-                        className="
-                        fixed inset-0 z-50
-                        flex items-center justify-center 
-                        bg-black/50 backdrop-blur-sm
-                    ">
-                        <EditEmployeePopup employee={selectedEmployee} setUpdateEmp={setUpdateEmp} />
-                    </div>
-                )
-            }
+            <AnimateModal isOpen={updateEmp}>
+                {
+                    updateEmp && (
+                        <div
+                            className="
+                            fixed inset-0 z-50
+                            flex items-center justify-center 
+                            bg-black/50 backdrop-blur-sm
+                            ">
+                            <EditEmployeePopup employee={selectedEmployee} setUpdateEmp={setUpdateEmp} />
+                        </div>
+                    )
+                }
+            </AnimateModal>
 
             {/* Manage employee popup (acitvate / deactivate ) */}
             {

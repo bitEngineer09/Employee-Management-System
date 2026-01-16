@@ -12,6 +12,8 @@ import useTodayEmployeesAttendance from '../hooks/Admin/useTodayEmployeesAttenda
 
 // icons 
 import { Plus, User, Funnel } from 'lucide-react';
+import { AnimatePresence, motion as Motion } from 'motion/react';
+import AnimateModal from '../components/Animation/AnimateModal';
 
 // constants
 const FILTER_CONFIG = {
@@ -118,13 +120,11 @@ const Employee = () => {
       </div>
 
       {/* Popup */}
-      {
-        createEmp && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <CreateEmpPopup createEmp={createEmp} setCreateEmp={setCreateEmp} />
-          </div>
-        )
-      }
+      <AnimateModal isOpen={createEmp}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <CreateEmpPopup createEmp={createEmp} setCreateEmp={setCreateEmp} />
+        </div>
+      </AnimateModal>
 
       {/* Employee stats */}
       <EmployeeStats onCardClick={(type) => setSummaryType(type)} />
