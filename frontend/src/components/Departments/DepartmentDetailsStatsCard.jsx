@@ -1,6 +1,7 @@
 import React from 'react';
 import useAuth from '../../hooks/Auth/useAuth';
-import { BadgeCheck, Ban, House, TentTree, User } from 'lucide-react';
+import { Ban, TentTree, User } from 'lucide-react';
+import { AnimatedItem, StaggerContainer } from '../Animation/StaggerContainer';
 
 const DepartmentDetailsStatsCard = ({ department }) => {
     const { currentUser } = useAuth();
@@ -12,41 +13,41 @@ const DepartmentDetailsStatsCard = ({ department }) => {
             number: department?.attendance?.present,
             icon: <User />,
             color: "bg-emerald-600/20 text-emerald-400",
-            bgColor: "bg-emerald-600/10"
+            bgColor: "bg-emerald-600/20"
         },
         {
             name: "Absent Employees",
             number: department?.attendance?.absent,
             icon: <Ban />,
             color: "bg-red-600/20 text-red-400",
-            bgColor: "bg-red-600/10"
+            bgColor: "bg-red-600/20"
         },
         {
             name: "On Leave",
             number: department?.attendance?.onLeave,
             icon: <TentTree />,
             color: "bg-amber-600/20 text-amber-400",
-            bgColor: "bg-amber-600/10"
+            bgColor: "bg-amber-600/20"
         },
         {
             name: "Inactive Employees",
             number: department?.inactiveEmployees,
             icon: <Ban />,
             color: "bg-orange-600/20 text-orange-400",
-            bgColor: "bg-orange-600/10"
+            bgColor: "bg-orange-600/20"
         },
 
     ];
     return (
         <div className='w-full h-full my-5'>
-            <div className='grid grid-cols-4 gap-4'>
+            <StaggerContainer className='grid grid-cols-4 gap-4'>
                 {
                     isAdmin && (
                         stats.map((stat, index) => {
                             const { name, number, icon, color, bgColor } = stat;
                             return (
+                                <AnimatedItem key={index}>
                                 <div
-                                    key={index}
                                     className={`
                                         flex items-center justify-between
                                         text-(--text-secondary)
@@ -69,10 +70,11 @@ const DepartmentDetailsStatsCard = ({ department }) => {
                                         {icon}
                                     </div>
                                 </div>
+                                </AnimatedItem>
                             )
                         }))
                 }
-            </div>
+            </StaggerContainer>
         </div>
     )
 }

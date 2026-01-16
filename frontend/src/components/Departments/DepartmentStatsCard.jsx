@@ -2,6 +2,7 @@ import React from 'react'
 import useGetDepartment from '../../hooks/Admin/Department/useGetDepartment';
 import useAuth from '../../hooks/Auth/useAuth';
 import { getDepartmentStatsCard } from '../../data/SummaryCards';
+import { AnimatedItem, StaggerContainer } from '../Animation/StaggerContainer';
 
 const DepartmentStatsCard = ({ onCardClick }) => {
     const { currentUser } = useAuth();
@@ -16,15 +17,17 @@ const DepartmentStatsCard = ({ onCardClick }) => {
 
     return (
         <div className='w-full h-full my-5'>
-            <div className='grid grid-cols-4 gap-4'>
+            <StaggerContainer className='grid grid-cols-3 gap-4'>
                 {
                     isAdmin && (
                         departmentStatsCardData.map((stat, index) => {
                             const { name, number, icon, color, bgColor, hover, type } = stat;
                             return (
+                                <AnimatedItem
+                                    key={index}
+                                >
                                 <div
                                     onClick={() => onCardClick(type)}
-                                    key={index}
                                     className={`
                                         border-2 border-transparent
                                         flex items-center justify-between
@@ -50,10 +53,11 @@ const DepartmentStatsCard = ({ onCardClick }) => {
                                         {icon}
                                     </div>
                                 </div>
+                                </AnimatedItem>
                             )
                         }))
                 }
-            </div>
+            </StaggerContainer>
         </div>
     )
 }

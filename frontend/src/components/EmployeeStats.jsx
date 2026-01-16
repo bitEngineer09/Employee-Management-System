@@ -2,6 +2,7 @@ import React from 'react'
 import useAuth from '../hooks/Auth/useAuth';
 import useAdminDashboard from '../hooks/Admin/useAdminDashboard';
 import { getEmployeeStatsCard } from '../data/SummaryCards';
+import { AnimatedItem, StaggerContainer } from './Animation/StaggerContainer';
 
 const EmployeeStats = ({ onCardClick }) => {
     const { currentUser } = useAuth();
@@ -17,15 +18,15 @@ const EmployeeStats = ({ onCardClick }) => {
 
     return (
         <div className='w-full h-full my-5'>
-            <div className='grid grid-cols-4 gap-4'>
+            <StaggerContainer className='grid grid-cols-4 gap-4'>
                 {
                     isAdmin && (
                         employeeStatsCardData.map((stat, index) => {
                             const { name, number, icon, color, bgColor, hover, type } = stat;
                             return (
+                                <AnimatedItem key={index}>
                                 <div
                                     onClick={() => onCardClick(type)}
-                                    key={index}
                                     className={`
                                         border-2 border-transparent
                                         flex items-center justify-between
@@ -51,10 +52,11 @@ const EmployeeStats = ({ onCardClick }) => {
                                         {icon}
                                     </div>
                                 </div>
+                                </AnimatedItem>
                             )
                         }))
                 }
-            </div>
+            </StaggerContainer>
         </div>
     )
 }

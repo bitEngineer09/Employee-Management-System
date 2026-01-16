@@ -25,6 +25,7 @@ import DepartmentStatsBarChart from '../components/Charts/DepartmentStatsBarChar
 import AttendanceSummaryPieChart from '../components/Charts/AttendanceSummaryPieChart';
 import DepartmentAttendanceBarChart from '../components/Charts/DepartmentAttendanceChart';
 import UpcomingHolidays from '../components/UpcomingHolidays';
+import { AnimatedItem, StaggerContainer } from '../components/Animation/StaggerContainer';
 
 const AdminDashboard = () => {
 
@@ -85,20 +86,22 @@ const AdminDashboard = () => {
       </header>
 
       {/* summary cards */}
-      <div className='grid grid-cols-4 gap-4 mt-9'>
+      <StaggerContainer className='grid grid-cols-4 gap-4 mt-7'>
         {
           isAdmin && (
             dashboardStatsCardData.map((stat, index) => {
               const { name, number, icon, color, bgColor, hover, type } = stat;
               return (
-                <div
-                  onClick={
-                    type === "TOTAL" || type === "PRESENT" || type === "ABSENT"
-                      ? () => setSummaryType(type)
-                      : () => setSummaryTypeDepartments(type)
-                  }
+                <AnimatedItem
                   key={index}
-                  className={`
+                >
+                  <div
+                    onClick={
+                      type === "TOTAL" || type === "PRESENT" || type === "ABSENT"
+                        ? () => setSummaryType(type)
+                        : () => setSummaryTypeDepartments(type)
+                    }
+                    className={`
                     border-2 border-transparent
                   flex items-center justify-between
                   text-(--text-secondary)
@@ -108,28 +111,46 @@ const AdminDashboard = () => {
                   ${bgColor}
                   ${hover}
                   `}>
-                  <div className='flex flex-col gap-2'>
-                    <p>{name}</p>
-                    <p className='text-3xl font-medium'>{number}</p>
-                  </div>
-                  <div
-                    className={`
+                    <div className='flex flex-col gap-2'>
+                      <p>{name}</p>
+                      <p className='text-3xl font-medium'>{number}</p>
+                    </div>
+                    <div
+                      className={`
                     size-12
                     text-2xl
                     flex items-center justify-center
                     rounded-full
                     ${color}
                   `}>
-                    {icon}
+                      {icon}
+                    </div>
                   </div>
-                </div>
+                </AnimatedItem>
               )
             }))
         }
+      </StaggerContainer>
+
+      <div className="grid grid-cols-2 gap-6 mt-6">
+
+        {/* Active / Inactive Pie */}
+        <div className="bg-blue-700/10 rounded-2xl p-4">
+          <AttendanceSummaryPieChart
+            data={activeInactivePieData}
+            header={"Active / Inactive"}
+          />
+        </div>
+
+        {/* Quick Actions */}
+        <div className="bg-blue-700/10 rounded-2xl p-5">
+          <QuickActions />
+        </div>
+
       </div>
 
       {/* Quick actions */}
-      <QuickActions />
+      {/* <QuickActions /> */}
 
       {/* Charts */}
       <div className="grid grid-cols-2 gap-6 w-full mt-9">
@@ -150,9 +171,9 @@ const AdminDashboard = () => {
         <DepartmentAttendanceBarChart data={departmentWiseAttendance?.data || []} />
       </div>
 
-      <div className="bg-blue-700/10 rounded-2xl mt-6 p-4">
+      {/* <div className="bg-blue-700/10 rounded-2xl mt-6 p-4">
         <AttendanceSummaryPieChart data={activeInactivePieData} header={"Active / Inactive"} />
-      </div>
+      </div> */}
 
       <div className='pb-7'>
         <UpcomingHolidays />
