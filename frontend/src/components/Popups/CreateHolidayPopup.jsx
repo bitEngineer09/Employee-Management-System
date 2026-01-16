@@ -31,24 +31,36 @@ const CreateHolidayPopup = ({ createHldy, setCreateHldy }) => {
     return (
         <div
             className='
-                bg-white 
+                bg-modal-gradient
                 w-full max-w-2xl
                 rounded-2xl 
                 p-6 shadow-2xl 
                 border border-(--border-primary)
             '>
             <div className='flex items-center justify-between mb-6'>
-                <div>
-                    <h1 className='flex items-center gap-2 text-2xl font-semibold text-(--bg-secondary)'>
-                        Create Holiday <TentTree />
-                    </h1>
-                    <p className='text-(--text-disabled) text-sm mt-1'>
-                        Add holiday details
-                    </p>
+                <div className="flex items-center gap-3 mb-5">
+                    <div
+                        className="
+                        w-12 h-12 
+                        text-pink-400
+                        flex items-center justify-center 
+                        bg-pink-700/20 rounded-xl
+                        border border-pink-400
+                    ">
+                        <TentTree size={24} />
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-semibold text-(--text-primary)">
+                            Add Holiday
+                        </h2>
+                        <p className="text-sm text-(--text-tertiary) mt-0.5">
+                            Enter Holiday details
+                        </p>
+                    </div>
                 </div>
                 <RxCross2
                     onClick={() => setCreateHldy(!createHldy)}
-                    className='cursor-pointer text-2xl text-(--bg-secondary) hover:text-red-700 transition-colors'
+                    className='cursor-pointer text-2xl text-(--text-secondary) hover:text-red-700 transition-colors'
                 />
             </div>
 
@@ -56,7 +68,7 @@ const CreateHolidayPopup = ({ createHldy, setCreateHldy }) => {
 
                 {/* Holiday Name */}
                 <div className='col-span-2 flex flex-col gap-2'>
-                    <label className='text-sm font-medium text-(--bg-secondary)'>
+                    <label className='text-sm font-medium text-(--text-secondary)'>
                         Holiday Name
                     </label>
                     <input
@@ -70,17 +82,16 @@ const CreateHolidayPopup = ({ createHldy, setCreateHldy }) => {
                             border border-(--border-primary)
                             py-3 px-4
                             outline-none rounded-xl
-                            text-(--bg-secondary)
+                            text-(--text-secondary)
                             focus:border-pink-400
                             focus:ring-3 focus:ring-pink-400
                             transition-all
-                        '
-                    />
+                        '/>
                 </div>
 
                 {/* Holiday Date */}
                 <div className='col-span-2 flex flex-col gap-2'>
-                    <label className='text-sm font-medium text-(--bg-secondary)'>
+                    <label className='text-sm font-medium text-(--text-secondary)'>
                         Holiday Date
                     </label>
                     <input
@@ -93,12 +104,11 @@ const CreateHolidayPopup = ({ createHldy, setCreateHldy }) => {
                             border border-(--border-primary)
                             py-3 px-4
                             outline-none rounded-xl
-                            text-(--bg-secondary)
+                            text-(--text-secondary)
                             focus:border-pink-400
                             focus:ring-3 focus:ring-pink-400
-                            transition-all
-                        '
-                    />
+                            transition-all scheme-dark
+                        '/>
                 </div>
 
                 {/* Buttons */}
@@ -118,11 +128,11 @@ const CreateHolidayPopup = ({ createHldy, setCreateHldy }) => {
                         type="button"
                         onClick={() => setCreateHldy(false)}
                         className='
-                            flex-1 bg-gray-200
-                            text-(--bg-secondary)
-                            py-3 rounded-xl
-                            hover:bg-gray-300
                             cursor-pointer
+                            flex-1 bg-slate-700
+                            hover:bg-slate-600
+                            text-(--text-secondary)
+                            py-3 rounded-xl
                             transition-colors font-medium
                         '>
                         Cancel

@@ -1,15 +1,17 @@
 import React from 'react';
 import { IoSearch } from "react-icons/io5";
 import { FaTeamspeak } from "react-icons/fa";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
     const location = useLocation();
+    const navigate = useNavigate();
+
     return (
         <div
             className='
                 w-full h-15 px-2 
-                bg-(--bg-tertiary)
+                bg-navbar-gradient
                 text-(--text-primary)
                 flex items-center
                 relative
@@ -17,7 +19,9 @@ const Navbar = () => {
                 border-(--border-primary)
             '>
             {/* Logo */}
-            <div className='absolute left-5 flex items-center gap-2 text-2xl'>
+            <div
+                onClick={() => navigate("/")}
+                className='absolute left-5 flex items-center gap-2 text-2xl cursor-pointer'>
                 <FaTeamspeak />
                 <p>
                     <span className="font-bold">T</span>eam{" "}

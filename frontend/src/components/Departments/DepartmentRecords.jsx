@@ -28,7 +28,7 @@ const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPage
     return (
         <div className='mt-8 overflow-x-auto custom-scrollbar'>
             <table className='w-full border border-(--border-primary) border-collapse'>
-                <thead className="bg-purple-700/20 border-b border-(--border-primary) sticky top-0 z-10">
+                <thead className="border-b border-(--border-primary) sticky top-0 z-10">
                     <tr>
                         {
                             tableHeader.map((header) =>
@@ -36,6 +36,7 @@ const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPage
                                     key={header.name}
                                     className="
                                         px-6 py-3
+                                        bg-table-header
                                         text-left text-xs
                                         font-medium text-(--text-secondary)
                                         uppercase tracking-wider
@@ -46,7 +47,7 @@ const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPage
                     </tr>
                 </thead>
 
-                <tbody className="bg-black">
+                <tbody className="bg-black/50">
                     {
                         departments?.map((dept) => {
                             return (
@@ -56,7 +57,7 @@ const DepartmentRecords = ({ departments, currentPage, setCurrentPage, totalPage
                                         transition-colors
                                         text-(--text-secondary)
                                         border-b border-(--border-primary)
-                                        hover:bg-(--border-subtle)
+                                        hover:bg-slate-900
                                     "
                                 >
                                     {/* Department Name */}

@@ -3,9 +3,10 @@ import React, { useState } from 'react'
 import CreateEmpPopup from "../components/Popups/CreateEmpPopup";
 import CreateDepartmentPopup from '../components/Popups/CreateDepartmentPopup';
 import CreateHolidayPopup from '../components/Popups/CreateHolidayPopup';
+import { useNavigate } from "react-router-dom";
 
 const QuickActions = () => {
-
+    const navigate = useNavigate();
     const [createEmp, setCreateEmp] = useState(false);
     const [createDept, setCreateDept] = useState(false);
     const [createHldy, setCreateHldy] = useState(false);
@@ -30,7 +31,9 @@ const QuickActions = () => {
                     className="flex items-center justify-center gap-4 border-2 border-(--border-secondary) rounded-full p-4 cursor-pointer hover:font-medium hover:text-pink-600 hover:border-pink-600 hover:bg-pink-600/10 transition-all">
                     Create Holiday <TentTree />
                 </div>
-                <div className="flex items-center justify-center gap-4 border-2 border-(--border-secondary) rounded-full p-4 cursor-pointer hover:font-medium hover:text-amber-600 hover:border-amber-600 hover:bg-amber-600/10 transition-all">
+                <div
+                    onClick={() => navigate("/settings")}
+                    className="flex items-center justify-center gap-4 border-2 border-(--border-secondary) rounded-full p-4 cursor-pointer hover:font-medium hover:text-amber-600 hover:border-amber-600 hover:bg-amber-600/10 transition-all">
                     Change Password <Lock />
                 </div>
             </div>

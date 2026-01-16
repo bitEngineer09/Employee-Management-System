@@ -1,12 +1,13 @@
 import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { changeDefaultPasswordApi } from '../../api/auth.api';
+import { resetPasswordApi } from '../../api/auth.api';
 
-const useChangeDefaultPassword = () => {
+
+const useResetPassword = () => {
     const { mutate, isLoading, error } = useMutation({
-        mutationFn: changeDefaultPasswordApi,
+        mutationFn: resetPasswordApi,
         onSuccess: () => {
-            toast.success("Password changed successfully");
+            toast.success("Password reset successfully");
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || error?.response?.data?.errors[0]?.message || "Something went wrong");
@@ -14,10 +15,10 @@ const useChangeDefaultPassword = () => {
         },
     });
     return {
-        changeDefaultPassword: mutate,
+        resetPassword: mutate,
         isLoading,
         error,
-    }
+    };
 };
 
-export default useChangeDefaultPassword;
+export default useResetPassword;

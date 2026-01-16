@@ -1,9 +1,8 @@
 import React from 'react';
 
-const TodayAttendanceStatsCards = ({ name, index, bgColor, hover, value, color, icon }) => {
+const TodayAttendanceStatsCards = ({ name, bgColor, hover, value, color, icon }) => {
     return (
         <div
-            key={index}
             className={`
                     w-71 h-32
                     border-2 border-transparent

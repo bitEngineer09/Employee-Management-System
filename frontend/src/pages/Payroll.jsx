@@ -67,7 +67,17 @@ const Payroll = () => {
     return (
         <div>
             <p className="flex items-center gap-2 text-(--text-secondary) text-3xl font-medium mb-5">
-                Payroll <IndianRupee size={28} strokeWidth={2} />
+                <div
+                    className="
+                    w-11 h-11 
+                    text-(--blue-light)
+                    flex items-center justify-center 
+                    bg-(--blue-primary)/20 rounded-xl
+                    border border-(--blue-primary)
+                    ">
+                    <IndianRupee size={24} />
+                </div>
+                Payroll
             </p>
 
             {/* preview section */}
@@ -102,7 +112,7 @@ const Payroll = () => {
                             onChange={(e) => setEmployeeId(e.target.value)}
                             className="
                             border border-gray-600
-                            bg-gray-700 text-gray-100
+                            bg-slate-800 text-gray-100
                             p-3 rounded-lg
                             focus:outline-none focus:ring-2
                             focus:ring-blue-500
@@ -117,7 +127,7 @@ const Payroll = () => {
                             onChange={(e) => setMonth(e.target.value)}
                             className="
                             border border-gray-600
-                            bg-gray-700 text-gray-100
+                            bg-slate-800 text-gray-100
                             p-3 rounded-lg focus:outline-none
                             focus:ring-2 focus:ring-blue-500
                         "/>
@@ -139,7 +149,7 @@ const Payroll = () => {
 
             {/* preview data */}
             {getPayroll && (
-                <div className="border border-gray-700 p-6 rounded-lg bg-gray-800 mb-10 space-y-3">
+                <div className="border border-gray-700 p-6 rounded-lg bg-slate-800 mb-10 space-y-3">
                     <PayrollRow label="Employee" value={getPayroll?.employee?.name} />
                     <PayrollRow label="Month" value={getPayroll?.month} />
                     <PayrollRow label="Total Working Days" value={getPayroll?.payRoll?.totalWorkingDays} />

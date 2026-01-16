@@ -6,7 +6,7 @@ const useGetHolidays = () => {
         queryKey: ["holidays"],
         queryFn: async () => {
             const res = await getHolidaysApi();
-            return res.data;
+            return res.data.holidays;
         },
         retry: false,
     })

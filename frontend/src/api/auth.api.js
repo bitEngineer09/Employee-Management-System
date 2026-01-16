@@ -19,3 +19,11 @@ export const userInfoApi = () => {
 export const changeDefaultPasswordApi = (data) => {
     return axiosInstance.patch("/employee/change-password", data);
 };
+
+export const forgotPasswordApi = (data) => {
+    return axiosInstance.post("/auth/forgot-password", data);
+};
+
+export const resetPasswordApi = (data) => {
+    return axiosInstance.post("/auth/reset-password", data);
+};

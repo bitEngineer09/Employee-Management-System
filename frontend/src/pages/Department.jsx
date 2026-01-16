@@ -10,7 +10,7 @@ import SummaryDepartmentPopup from '../components/Popups/SummaryTablesPopup/Summ
 import useGetDepartment from '../hooks/Admin/Department/useGetDepartment';
 
 // icons
-import { House, Plus } from 'lucide-react';
+import { Building, House, Plus } from 'lucide-react';
 
 // constants
 const ITEMS_PER_PAGE = 6;
@@ -41,7 +41,17 @@ const Department = () => {
         {/* header */}
         <header className='flex justify-between'>
           <p className='flex items-center gap-2 text-(--text-secondary) text-3xl font-medium'>
-            Department Records <House size={28} strokeWidth={2} />
+            <div
+              className="
+              w-11 h-11 
+              text-(--blue-light)
+              flex items-center justify-center 
+              bg-(--blue-primary)/20 rounded-xl
+              border border-(--blue-primary)
+              ">
+              <Building size={24} />
+            </div>
+            Department Records
           </p>
 
           {/* Create Department */}
@@ -49,11 +59,11 @@ const Department = () => {
             onClick={() => setCreateDept(!createDept)}
             className='
             flex items-center 
-            gap-2
-            text-(--text-secondary)
-            border border-gray-300
-            hover:border-purple-500
-            hover:text-purple-600
+            gap-2 bg-gray-800
+            text-gray-300
+            border border-gray-700  
+            hover:border-purple-400
+            hover:text-purple-400
             transition-colors 
             cursor-pointer
             px-4 py-3 rounded-xl

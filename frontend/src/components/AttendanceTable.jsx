@@ -55,14 +55,14 @@ const AttendanceTable = () => {
                         type="date"
                         value={from}
                         onChange={(e) => setFrom(e.target.value)}
-                        className="px-3 py-2 rounded-md bg-black border border-(--border-primary) text-(--text-secondary) scheme-dark"
+                        className="px-3 py-2 rounded-md bg-slate-800 border border-(--border-primary) text-(--text-secondary) scheme-dark"
                     />
 
                     <input
                         type="date"
                         value={to}
                         onChange={(e) => setTo(e.target.value)}
-                        className="px-3 py-2 rounded-md bg-black border border-(--border-primary) text-(--text-secondary) scheme-dark"
+                        className="px-3 py-2 rounded-md bg-slate-800 border border-(--border-primary) text-(--text-secondary) scheme-dark"
                     />
 
                     <button
@@ -90,15 +90,20 @@ const AttendanceTable = () => {
                             {tableHeader?.map((head, i) => (
                                 <th
                                     key={i}
-                                    className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-(--text-secondary)"
-                                >
+                                    className="
+                                    px-6 py-3 text-left 
+                                    text-xs font-medium
+                                    uppercase tracking-wider 
+                                    text-(--text-secondary)
+                                    bg-table-header
+                                ">
                                     {head.name}
                                 </th>
                             ))}
                         </tr>
                     </thead>
 
-                    <tbody className="bg-black/40 text-(--text-secondary)">
+                    <tbody className="bg-black/50 text-(--text-secondary)">
                         {isLoading ? (
                             <tr>
                                 <td colSpan={5} className="px-6 py-6 text-center">

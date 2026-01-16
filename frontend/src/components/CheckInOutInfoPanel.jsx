@@ -19,7 +19,7 @@ const CheckInOutInfoPanel = () => {
                 flex flex-col gap-4
                 p-5 rounded-xl
                 border border-(--border-primary)
-                bg-(--bg-secondary)
+                bg-modal-gradient
                 text-(--text-secondary)
             ">
             {/* Date */}
@@ -51,7 +51,7 @@ const CheckInOutInfoPanel = () => {
                 <div className="p-2 rounded-full bg-yellow-500/10 text-yellow-400 mt-1">
                     <AlertCircle size={16} />
                 </div>
-                <p className="text-sm text-(--text-tertiary)">
+                <p className="text-sm text-yellow-400">
                     Missing check-out may affect your working hours and salary calculation.
                 </p>
             </div>

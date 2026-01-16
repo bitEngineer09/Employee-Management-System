@@ -25,14 +25,19 @@ const DepartmentDetail = () => {
         return employees?.slice(startIndex, endIndex);
     }, [employees, currentPage]);
 
-    
+
     if (loading) return <PageLoader />
 
     return (
         <div className="space-y-8">
 
             {/* Header Section */}
-            <div className="bg-(--border-subtle) p-6 rounded-2xl border border-(--border-primary)">
+            <div 
+                className="
+                bg-linear-to-br from-slate-900 to-slate-800 
+                p-6 rounded-2xl
+                border border-(--border-primary)
+            ">
                 <div className="flex justify-between items-center">
                     <div>
                         <h1 className="text-3xl font-semibold text-white tracking-wide">{department?.name}</h1>
@@ -57,7 +62,7 @@ const DepartmentDetail = () => {
             </div>
 
             {/* Head Info */}
-            <div className="bg-(--border-subtle) p-6 rounded-2xl border border-(--border-primary)">
+            <div className="bg-linear-to-br from-slate-900 to-slate-800 p-6 rounded-2xl border border-(--border-primary)">
                 <h2 className="text-xl text-white mb-4 flex items-center gap-2">
                     <User size={20} /> Department Head
                 </h2>

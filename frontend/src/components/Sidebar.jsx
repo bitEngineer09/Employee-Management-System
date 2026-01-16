@@ -19,11 +19,8 @@ const Sidebar = () => {
                 px-4 pb-3
                 relative
                 flex flex-col justify-between
-                bg-(--bg-secondary)
+                bg-sidebar-gradient
             ">
-            {/* Border on Right */}
-            {/* <div className="absolute top-0 right-0 w-0.5 h-full bg-linear-to-b from-purple-500 via-linear-500 via-cyan-500 to-pink-500"></div> */}
-            {/* <div className="absolute top-0 right-0 w-0.5 h-full bg-stone-900"></div> */}
 
             <div className="flex flex-col mt-1 gap-1">
 
@@ -34,7 +31,7 @@ const Sidebar = () => {
                         flex items-center justify-center
                         border-2
                         rounded-xl p-3
-                        gap-4 my-4 tracking-wider 
+                        gap-4 mt-2 tracking-wider 
                         text-sm cursor-pointer
                         transition-all duration-200
                         ${isActive
@@ -48,11 +45,11 @@ const Sidebar = () => {
                             bg-linear-to-r from-blue-500 to-cyan-500
                             size-12 text-(--text-secondary)
                             rounded-full
-                            text-3xl font-semibold
+                            text-3xl font-semibold shrink-0
                     '>{currentUser?.user?.name?.charAt(0)?.toUpperCase()}</div>
                     <div className='flex flex-col text-(--text-secondary)'>
-                        <p>{currentUser?.user?.name}</p>
-                        <p>{currentUser?.user?.designation}</p>
+                        <p className='text-(--text-primary)'>{currentUser?.user?.name}</p>
+                        <p className='text-xs text-(--text-tertiary)'>{currentUser?.user?.designation}</p>
                     </div>
                 </NavLink>
 

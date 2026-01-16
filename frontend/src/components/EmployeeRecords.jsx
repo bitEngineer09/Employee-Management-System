@@ -44,8 +44,7 @@ const EmployeeRecords = ({
                     {/* table header */}
                     <thead
                         className="
-                        bg-blue-700/20
-                        -b border-(--border-primary)
+                        border border-(--border-primary)
                         sticky top-0 z-10
                     ">
                         <tr>
@@ -54,7 +53,7 @@ const EmployeeRecords = ({
                                     <th
                                         key={index}
                                         className="
-                                        px-6 py-3
+                                        px-6 py-3 bg-table-header
                                         text-left text-xs
                                         font-medium text-(--text-secondary)
                                         uppercase tracking-wider
@@ -66,7 +65,7 @@ const EmployeeRecords = ({
                     </thead>
 
                     {/* table body data */}
-                    <tbody className="bg-black">
+                    <tbody className="bg-black/50">
                         {
                             employees?.map((employee) => {
                                 return (
@@ -76,7 +75,7 @@ const EmployeeRecords = ({
                                             transition-colors
                                             text-(--text-secondary)
                                             border-b border-(--border-primary)
-                                            hover:bg-(--border-subtle)
+                                            hover:bg-slate-900
                                             ">
                                         {/* name & joined at */}
                                         <td className="px-6 py-4 whitespace-nowrap">

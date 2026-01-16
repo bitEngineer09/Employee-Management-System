@@ -41,7 +41,7 @@ const MonthlyAttendanceSummaryCard = () => {
                         value={month}
                         onChange={(e) => setMonth(e.target.value)}
                         className="
-                        bg-black border border-(--border-primary)
+                        bg-slate-800 border border-(--border-primary)
                         text-(--text-secondary)
                         rounded-lg px-4 py-2
                         focus:outline-none focus:ring-2 focus:ring-blue-500

@@ -55,7 +55,7 @@ const LeaveAdmin = () => {
             <h1 className="text-2xl font-semibold mb-4 text-(--text-primary)">Leave Requests</h1>
 
             {/* Leave table */}
-            <div className="overflow-x-auto bg-gray-800 rounded-lg shadow-lg">
+            <div className="overflow-x-auto bg-modal-gradient rounded-lg shadow-lg">
                 <table className="min-w-full text-sm">
 
                     {/* table header */}

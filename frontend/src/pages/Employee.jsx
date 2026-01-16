@@ -84,18 +84,30 @@ const Employee = () => {
   return (
     <div className='relative'>
       <div className='flex items-center justify-between'>
-        <p className='flex items-center gap-2 text-(--text-secondary) text-3xl font-medium'>Employee Records <User size={28} strokeWidth={2} /></p>
+        <p className='flex items-center gap-2 text-(--text-secondary) text-3xl font-medium'>
+          <div
+            className="
+            w-11 h-11 
+            text-(--blue-light)
+            flex items-center justify-center 
+            bg-(--blue-primary)/20 rounded-xl
+            border border-(--blue-primary)
+            ">
+            <User size={24} />
+          </div>
+          Employee Records
+        </p>
 
         {/* Create Employee */}
         <button
           onClick={() => setCreateEmp(!createEmp)}
           className='
             flex items-center 
-            gap-2
-            text-(--text-secondary)
-            border border-gray-300
-            hover:border-blue-500
-            hover:text-blue-600
+            gap-2 bg-gray-800
+            text-gray-300
+            border border-gray-700  
+            hover:border-cyan-400
+            hover:text-cyan-400
             transition-colors 
             cursor-pointer
             px-4 py-3 rounded-xl

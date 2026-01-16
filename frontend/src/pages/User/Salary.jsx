@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import useGetPaySlip from '../../hooks/User/Payslip/useGetPaySlip';
 import useGeneratePayslipPdf from '../../hooks/User/Payslip/useGeneratePayslipPdf';
-import { AlertCircle, Download, Eye } from "lucide-react";
+import { AlertCircle, Download, Eye, IndianRupee } from "lucide-react";
 import ButtonLoader from '../../components/Loader/ButtonLoader';
 
 const Salary = () => {
@@ -27,7 +27,17 @@ const Salary = () => {
   return (
     <div>
       {/* header */}
-      <h1 className="text-3xl font-bold mb-6 text-(--text-secondary)">
+      <h1 className="flex items-center gap-2 text-3xl font-bold mb-6 text-(--text-secondary)">
+        <div
+          className="
+            w-11 h-11 
+            text-(--blue-light)
+            flex items-center justify-center 
+            bg-(--blue-primary)/20 rounded-xl
+            border border-(--blue-primary)
+            ">
+          <IndianRupee size={24} />
+        </div>
         My Payslip
       </h1>
 
@@ -42,7 +52,7 @@ const Salary = () => {
               setMonth(e.target.value);
               setShowPreview(false);
             }}
-            className="border border-gray-600 bg-gray-700 text-gray-100 p-3 scheme-dark rounded-lg"
+            className="border border-gray-600 bg-slate-800 text-gray-100 p-3 scheme-dark rounded-lg"
           />
         </div>
 

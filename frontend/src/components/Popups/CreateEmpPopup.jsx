@@ -3,8 +3,9 @@ import { RxCross2 } from "react-icons/rx";
 import useCreateEmployee from '../../hooks/Admin/useCreateEmployee';
 import { User } from 'lucide-react';
 
-const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
+const CreateEmpPopup = ({ setCreateEmp }) => {
     const { createEmployee } = useCreateEmployee();
+
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -18,7 +19,7 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(formData)
+
         createEmployee({
             name: formData.name,
             email: formData.email,
@@ -36,193 +37,116 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
             ...formData,
             [e.target.name]: e.target.value,
         });
-    }
+    };
 
     return (
         <div
             className='
-                bg-white 
+                bg-modal-gradient
                 w-full max-w-2xl
                 rounded-2xl 
                 p-6 shadow-2xl 
                 border border-(--border-primary)
             '>
             <div className='flex items-center justify-between mb-6'>
-                <div>
-                    <h1 className='flex items-center gap-1 text-2xl font-semibold text-(--bg-secondary)'>Create Employee <User /></h1>
-                    <p className='text-(--text-disabled) text-sm mt-1'>Enter employee details</p>
+                <div className="flex items-center gap-3 mb-5">
+                    <div
+                        className="
+                        w-12 h-12 
+                        text-(--blue-light)
+                        flex items-center justify-center 
+                        bg-(--blue-primary)/20 rounded-xl
+                        border border-(--blue-primary)
+                    ">
+                        <User size={24} />
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-semibold text-(--text-primary)">
+                            Add Employee
+                        </h2>
+                        <p className="text-sm text-(--text-tertiary) mt-0.5">
+                            Enter employee details
+                        </p>
+                    </div>
                 </div>
+
                 <RxCross2
-                    onClick={() => setCreateEmp(!createEmp)}
-                    className='cursor-pointer text-2xl text-(--bg-secondary) hover:text-red-700 transition-colors'
+                    onClick={() => setCreateEmp(false)}
+                    className='cursor-pointer text-2xl text-(--text-secondary) hover:text-red-700 transition-colors'
                 />
             </div>
 
             <form onSubmit={handleSubmit} className='grid grid-cols-2 gap-6'>
-                <div className='flex flex-col gap-2'>
-                    <label htmlFor='name' className='text-sm font-medium text-(--bg-secondary)'>Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        required
-                        onChange={handleChange}
-                        value={formData.name}
-                        placeholder="Enter name"
-                        className='
-                            border border-(--border-primary)
-                            py-3 px-4
-                            outline-none rounded-xl
-                            text-(--bg-secondary)
-                            focus:border-(--blue-active)
-                            focus:ring-3 focus:ring-(--blue-light)
-                            transition-all
-                        '/>
-                </div>
 
-                <div className='flex flex-col gap-2'>
-                    <label htmlFor='email' className='text-sm font-medium text-(--bg-secondary)'>Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        required
-                        onChange={handleChange}
-                        value={formData.email}
-                        placeholder="Enter email"
-                        className='
-                            border border-(--border-primary)
-                            py-3 px-4
-                            outline-none rounded-xl
-                            text-(--bg-secondary)
-                            focus:border-(--blue-active)
-                            focus:ring-3 focus:ring-(--blue-light)
-                            transition-all
-                        '/>
-                </div>
+                <InputCard
+                    label="Name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Enter name"
+                />
 
-                <div className='flex flex-col gap-2'>
-                    <label htmlFor='gender' className='text-sm font-medium text-(--bg-secondary)'>Gender</label>
-                    <select
-                        name="gender"
-                        value={formData?.gender}
-                        onChange={handleChange}
-                        required
-                        className='
-                            border border-(--border-primary)
-                            py-3 px-4
-                            outline-none rounded-xl
-                            text-(--bg-secondary)
-                            focus:border-(--blue-active)
-                            focus:ring-3 focus:ring-(--blue-light)
-                            transition-all
-                        '>
-                        <option value="">Select Gender</option>
-                        <option value="MALE">Male</option>
-                        <option value="FEMALE">Female</option>
-                        <option value="OTHER">Other</option>
-                    </select>
-                </div>
+                <InputCard
+                    label="Email"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Enter email"
+                />
 
-                <div className='flex flex-col gap-2'>
-                    <label htmlFor='dob' className='text-sm font-medium text-(--bg-secondary)'>
-                        Date of Birth
-                    </label>
-                    <input
-                        type="date"
-                        name="dob"
-                        value={formData?.dob}
-                        onChange={handleChange}
-                        required
-                        className='
-                            border border-(--border-primary)
-                            py-3 px-4
-                            outline-none rounded-xl
-                            text-(--bg-secondary)
-                            focus:border-(--blue-active)
-                            focus:ring-3 focus:ring-(--blue-light)
-                            transition-all
-                        '/>
-                </div>
+                <SelectCard
+                    label="Gender"
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    options={[
+                        { value: "", label: "Select Gender" },
+                        { value: "MALE", label: "Male" },
+                        { value: "FEMALE", label: "Female" },
+                        { value: "OTHER", label: "Other" },
+                    ]}
+                />
 
-                <div className='flex flex-col gap-2'>
-                    <label htmlFor='phone' className='text-sm font-medium text-(--bg-secondary)'>Phone</label>
-                    <input
-                        type="text"
-                        name="phone"
-                        required
-                        onChange={handleChange}
-                        value={formData?.phone}
-                        placeholder="Enter Phone Number"
-                        className='
-                            border border-(--border-primary)
-                            py-3 px-4
-                            outline-none rounded-xl
-                            text-(--bg-secondary)
-                            focus:border-(--blue-active)
-                            focus:ring-3 focus:ring-(--blue-light)
-                            transition-all
-                        '/>
-                </div>
+                <InputCard
+                    label="Date of Birth"
+                    type="date"
+                    name="dob"
+                    value={formData.dob}
+                    onChange={handleChange}
+                />
 
+                <InputCard
+                    label="Phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    placeholder="Enter Phone Number"
+                />
 
-                <div className='flex flex-col gap-2'>
-                    <label htmlFor='departmentId' className='text-sm font-medium text-(--bg-secondary)'>Department ID</label>
-                    <input
-                        type="text"
-                        name="departmentId"
-                        required
-                        onChange={handleChange}
-                        value={formData.departmentId}
-                        placeholder="Enter department ID"
-                        className='
-                            border border-(--border-primary)
-                            py-3 px-4
-                            outline-none rounded-xl
-                            text-(--bg-secondary)
-                            focus:border-(--blue-active)
-                            focus:ring-3 focus:ring-(--blue-light)
-                            transition-all
-                        '/>
-                </div>
+                <InputCard
+                    label="Department ID"
+                    name="departmentId"
+                    value={formData.departmentId}
+                    onChange={handleChange}
+                    placeholder="Enter department ID"
+                />
 
-                <div className='flex flex-col gap-2'>
-                    <label htmlFor='designation' className='text-sm font-medium text-(--bg-secondary)'>Designation</label>
-                    <input
-                        type="text"
-                        name="designation"
-                        required
-                        onChange={handleChange}
-                        value={formData.designation}
-                        placeholder="Enter designation"
-                        className='
-                            border border-(--border-primary)
-                            py-3 px-4
-                            outline-none rounded-xl
-                            text-(--bg-secondary)
-                            focus:border-(--blue-active)
-                            focus:ring-3 focus:ring-(--blue-light)
-                            transition-all
-                        '/>
-                </div>
+                <InputCard
+                    label="Designation"
+                    name="designation"
+                    value={formData.designation}
+                    onChange={handleChange}
+                    placeholder="Enter designation"
+                />
 
-                <div className='flex flex-col gap-2 '>
-                    <label htmlFor='monthlySalary' className='text-sm font-medium text-(--bg-secondary)'>Monthly Salary</label>
-                    <input
-                        type="text"
-                        name="monthlySalary"
-                        required
-                        onChange={handleChange}
-                        value={formData.monthlySalary}
-                        placeholder="Enter monthly salary"
-                        className='
-                            border border-(--border-primary)
-                            py-3 px-4
-                            outline-none rounded-xl
-                            text-(--bg-secondary)
-                            focus:border-(--blue-active)
-                            focus:ring-3 focus:ring-(--blue-light)
-                            transition-all
-                        '/>
-                </div>
+                <InputCard
+                    label="Monthly Salary"
+                    name="monthlySalary"
+                    value={formData.monthlySalary}
+                    onChange={handleChange}
+                    placeholder="Enter monthly salary"
+                />
 
                 <div className='col-span-2 flex gap-4 mt-4'>
                     <button
@@ -236,15 +160,16 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
                         '>
                         Create Employee
                     </button>
+
                     <button
                         type="button"
                         onClick={() => setCreateEmp(false)}
                         className='
                             cursor-pointer
-                            flex-1 bg-gray-200
-                            text-(--bg-secondary)
+                            flex-1 bg-slate-700
+                            hover:bg-slate-600
+                            text-(--text-secondary)
                             py-3 rounded-xl
-                            hover:bg-gray-300
                             transition-colors font-medium
                         '>
                         Cancel
@@ -252,7 +177,82 @@ const CreateEmpPopup = ({ createEmp, setCreateEmp }) => {
                 </div>
             </form>
         </div>
-    )
-}
+    );
+};
 
-export default CreateEmpPopup
+export default CreateEmpPopup;
+
+
+const InputCard = ({
+    label,
+    type = "text",
+    name,
+    value,
+    onChange,
+    placeholder,
+}) => {
+    return (
+        <div className='flex flex-col gap-2'>
+            <label className='text-sm font-medium tracking-wide text-(--text-secondary)'>
+                {label}
+            </label>
+
+            <input
+                type={type}
+                name={name}
+                required
+                value={value}
+                onChange={onChange}
+                placeholder={placeholder}
+                className='
+                    border border-(--border-primary)
+                    py-3 px-4
+                    bg-slate-900/50
+                    outline-none rounded-xl
+                    text-(--text-secondary)
+                    focus:border-(--blue-active)
+                    focus:ring-3 focus:ring-(--blue-light)
+                    transition-all
+                '/>
+        </div>
+    );
+};
+
+
+const SelectCard = ({
+    label,
+    name,
+    value,
+    onChange,
+    options = [],
+}) => {
+    return (
+        <div className='flex flex-col gap-2'>
+            <label className='text-sm font-medium text-(--text-secondary)'>
+                {label}
+            </label>
+
+            <select
+                name={name}
+                value={value}
+                onChange={onChange}
+                required
+                className='
+                    border border-(--border-primary)
+                    py-3 px-4
+                    bg-slate-900/50
+                    outline-none rounded-xl
+                    text-(--text-secondary)
+                    focus:border-(--blue-active)
+                    focus:ring-3 focus:ring-(--blue-light)
+                    transition-all
+                '>
+                {options.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                    </option>
+                ))}
+            </select>
+        </div>
+    );
+};

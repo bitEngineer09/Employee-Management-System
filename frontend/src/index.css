@@ -22,10 +22,43 @@
     --blue-dark: #1e40af;         /* Dark blue (blue-800) */
     
     /* BORDER */
-    --border-primary: #262626;    /* Main border (neutral-800) */
-    --border-secondary: #404040;  /* Secondary border (neutral-700) */
+    --border-primary: #334155;    /* Main border (slate-700) */
+    --border-secondary: #1E293B;  /* Secondary border (neutral-700) */
     --border-focus: #3b82f6;      /* Focus border (blue-500) */
     --border-subtle: #171717;     /* Subtle border (neutral-900) */
+
+    /* GRADIENT COLORS */
+    --gradient-main-from: #030712;    /* gray-950 */
+    --gradient-main-via: #0f172a;     /* slate-900 */
+    --gradient-main-to: #030712;      /* gray-950 */
+    
+    --gradient-sidebar-from: #030712; /* gray-950 */
+    --gradient-sidebar-via: #0f172a;  /* slate-900 */
+    --gradient-sidebar-to: #030712;   /* gray-950 */
+    
+    --gradient-navbar-from: #030712;  /* gray-950 */
+    --gradient-navbar-via: #0f172a;   /* slate-900 */
+    --gradient-navbar-to: #030712;    /* gray-950 */
+    
+    --gradient-auth-from: #030712;    /* gray-950 */
+    --gradient-auth-via: #0f172a;     /* slate-900 */
+    --gradient-auth-to: #030712;      /* gray-950 */
+
+    /* LOGIN CARD GRADIENT */
+    --gradient-card-from: #0f172a;    /* slate-900 */
+    --gradient-card-via: #1e293b;     /* slate-800 */
+    --gradient-card-to: #0f172a;      /* slate-900 */
+
+     /* MODAL/CARD GRADIENT */
+    --gradient-modal-from: #0f172a;   /* slate-900 */
+    --gradient-modal-via: #1e293b;    /* slate-800 */
+    --gradient-modal-to: #0f172a;     /* slate-900 */
+
+    /* TABLE GRADIENTS */
+--gradient-table-header-from: #020617;      /* slate-950 */
+--gradient-table-header-via: #0f172a;       /* slate-900 */
+--gradient-table-header-to: #020617;        /* slate-950 */
+    
 }
 
 html, body {
@@ -33,6 +66,64 @@ html, body {
     padding: 0;
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
+}
+
+/* Gradient Utility Classes */
+.bg-main-gradient {
+    background: linear-gradient(to bottom right, 
+        var(--gradient-main-from), 
+        var(--gradient-main-via), 
+        var(--gradient-main-to)
+    );
+}
+
+.bg-sidebar-gradient {
+    background: linear-gradient(to bottom, 
+        var(--gradient-sidebar-from), 
+        var(--gradient-sidebar-via), 
+        var(--gradient-sidebar-to)
+    );
+}
+
+.bg-navbar-gradient {
+    background: linear-gradient(to right, 
+        var(--gradient-navbar-from), 
+        var(--gradient-navbar-via), 
+        var(--gradient-navbar-to)
+    );
+}
+
+.bg-auth-gradient {
+    background: linear-gradient(to bottom right, 
+        var(--gradient-auth-from), 
+        var(--gradient-auth-via), 
+        var(--gradient-auth-to)
+    );
+}
+
+.bg-login-card {
+    background: linear-gradient(to bottom right, 
+        var(--gradient-card-from), 
+        var(--gradient-card-via), 
+        var(--gradient-card-to)
+    );
+}
+
+.bg-modal-gradient {
+    background: linear-gradient(to bottom right, 
+        var(--gradient-modal-from), 
+        var(--gradient-modal-via), 
+        var(--gradient-modal-to)
+    );
+}
+
+/* Table Gradient Utility Classes */
+.bg-table-header {
+    background: linear-gradient(to right, 
+        var(--gradient-table-header-from), 
+        var(--gradient-table-header-via), 
+        var(--gradient-table-header-to)
+    );
 }
 
 

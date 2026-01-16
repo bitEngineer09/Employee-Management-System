@@ -39,7 +39,7 @@ const Profile = () => {
         <div>
             <div>
                 {/* Header Card */}
-                <div className="bg-gray-800 rounded-2xl mb-6 border-2 border-gray-700">
+                <div className="bg-navbar-gradient rounded-2xl mb-6 border border-(--border-primary)">
                     <div className="p-8">
                         <div className="flex items-end">
                             <div
@@ -83,7 +83,7 @@ const Profile = () => {
                 {/* Information */}
                 <div className="grid grid-cols-2 gap-6">
                     {/* Personal Information */}
-                    <div className="bg-gray-800 rounded-xl shadow-xl p-6 border border-gray-700">
+                    <div className="bg-navbar-gradient rounded-xl shadow-xl p-4 border border-(--border-primary)">
                         <h2 className="text-xl font-semibold text-(--text-primary) mb-4 flex items-center gap-2">
                             <User className="w-5 h-5 text-blue-400" />
                             Personal Information
@@ -97,7 +97,7 @@ const Profile = () => {
                     </div>
 
                     {/* Employment Information */}
-                    <div className="bg-gray-800 rounded-xl shadow-xl p-6 border border-gray-700">
+                    <div className="bg-navbar-gradient rounded-xl shadow-xl p-4 border border-(--border-primary)">
                         <h2 className="text-xl font-semibold text-(--text-primary) mb-4 flex items-center gap-2">
                             <Briefcase className="w-5 h-5 text-blue-400" />
                             Employment Details
@@ -111,7 +111,7 @@ const Profile = () => {
                     </div>
 
                     {/* Salary Information */}
-                    <div className="bg-gray-800 rounded-xl shadow-xl p-6 md:col-span-2 border border-gray-700">
+                    <div className="bg-navbar-gradient rounded-xl shadow-xl p-6 md:col-span-2 border border-(--border-primary)">
                         <h2 className="text-xl font-semibold text-(--text-primary) mb-4 flex items-center gap-2">
                             <DollarSign className="w-5 h-5 text-blue-400" />
                             Salary Information
@@ -148,13 +148,13 @@ const InfoCard = ({ icon, header, data }) => {
     if (!data) return null;
 
     return (
-        <div className="flex items-center gap-4">
-            <div className="w-5 h-5 text-gray-500 mt-0.5">
+        <div className="flex items-center gap-4 p-3 rounded-lg bg-slate-900/70 transition-colors">
+            <div className="w-10 h-10 flex items-center justify-center bg-blue-500/10 rounded-lg text-blue-400">
                 {icon}
             </div>
             <div>
-                <p className="text-sm text-(--text-tertiary)">{header}</p>
-                <p className="text-gray-200 font-medium">{data}</p>
+                <p className="text-xs text-slate-400 uppercase tracking-wide">{header}</p>
+                <p className="text-slate-200 font-medium mt-0.5">{data}</p>
             </div>
         </div>
     );

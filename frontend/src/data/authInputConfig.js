@@ -1,0 +1,41 @@
+export const getAuthInputData = () => [
+  {
+    name: "name",
+    label: "Name",
+    type: "text",
+    placeholder: "Enter your name",
+    showInSignup: true,
+  },
+  {
+    name: "email",
+    label: "Email",
+    type: "email",
+    placeholder: "Enter your email",
+    showInSignup: true,
+    showInLogin: true,
+  },
+  {
+    name: "password",
+    label: "Password",
+    type: "password",
+    placeholder: "Enter your password",
+    isPassword: true,
+    showInSignup: true,
+    showInLogin: true,
+  },
+  {
+    name: "confirmPassword",
+    label: "Confirm Password",
+    type: "password",
+    placeholder: "Confirm your password",
+    isPassword: true,
+    showInSignup: true,
+  },
+  {
+    name: "adminCode",
+    label: "Admin Code",
+    type: "password",
+    placeholder: "Enter admin code",
+    showInSignup: true,
+  },
+];

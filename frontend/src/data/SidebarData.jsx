@@ -47,7 +47,7 @@ export const sidebarAdminContent = [
     {
         name: "Settings",
         icon: <Settings />,
-        path: "/admin/settings",
+        path: "/settings",
         style:
             "border-2 border-transparent bg-slate-700/10 hover:border-slate-600 text-slate-400",
     },
@@ -79,7 +79,7 @@ export const sideBarUserContent = [
     {
         name: "Settings",
         icon: <Settings />,
-        path: "/emp/settings",
+        path: "/settings",
         style:
             "border-2 border-transparent bg-amber-700/10 hover:border-amber-600 text-amber-400",
     },

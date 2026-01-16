@@ -18,6 +18,7 @@ import Leave from './pages/User/Leave';
 import Attendance from './pages/User/Attendance';
 import Salary from './pages/User/Salary';
 import Profile from './pages/Profile';
+import ForgotPassword from './pages/ForgotPassword';
 
 // routes
 import ProtectedRoute from './components/Routes/ProtectedRoute';
@@ -52,15 +53,14 @@ const App = () => {
                   <Route path="/admin/emp/:id" element={<EmployeeDetail />} />
                   <Route path="/admin/leave" element={<LeaveAdmin />} />
                   <Route path="/admin/payroll" element={<Payroll />} />
-                  <Route path="/admin/settings" element={<SettingsPage />} />
                 </>
                 : <>
                   <Route path="/" element={<Attendance />} />
                   <Route path="/emp/leave" element={<Leave />} />
                   <Route path="/emp/salary" element={<Salary />} />
-                  <Route path="/emp/settings" element={<SettingsPage />} />
                 </>
             }
+            <Route path="/settings" element={<SettingsPage />} />
             <Route path="/profile" element={<Profile />} />
           </Route>
         </Route>
@@ -68,6 +68,7 @@ const App = () => {
         <Route element={<PublicRoute />}>
           <Route element={<AuthLayout />}>
             <Route path="/auth" element={<Auth />} />
+            <Route path="/auth/forgot-password" element={<ForgotPassword />} />
           </Route>
         </Route>
       </Routes>

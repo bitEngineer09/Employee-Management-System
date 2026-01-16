@@ -24,6 +24,7 @@ import EmployeeStatusBarChart from '../components/Charts/EmployeeStatusBarChart'
 import DepartmentStatsBarChart from '../components/Charts/DepartmentStatsBarChart';
 import AttendanceSummaryPieChart from '../components/Charts/AttendanceSummaryPieChart';
 import DepartmentAttendanceBarChart from '../components/Charts/DepartmentAttendanceChart';
+import UpcomingHolidays from '../components/UpcomingHolidays';
 
 const AdminDashboard = () => {
 
@@ -151,6 +152,10 @@ const AdminDashboard = () => {
 
       <div className="bg-blue-700/10 rounded-2xl mt-6 p-4">
         <AttendanceSummaryPieChart data={activeInactivePieData} header={"Active / Inactive"} />
+      </div>
+
+      <div className='pb-7'>
+        <UpcomingHolidays />
       </div>
 
       {/* summary table employees */}
