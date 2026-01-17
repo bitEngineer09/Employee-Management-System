@@ -44,3 +44,10 @@ export const deactivateEmployeeApi = (id) => {
 export const permanentDeleteEmployeeApi = (id) => {
     return axiosInstance.delete(`/admin/employee/${id}`);
 };
+
+// search employee
+export const searchEmployees = (query) => {
+    return axiosInstance.get(`/admin/employees/search`, {
+        params: { query }
+    });
+}

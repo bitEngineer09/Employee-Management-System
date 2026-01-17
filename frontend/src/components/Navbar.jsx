@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { IoSearch } from "react-icons/io5";
 import { FaTeamspeak } from "react-icons/fa";
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useSearchEmployees } from '../hooks/Admin/useSearchEmployee';
+import { useDebounce } from '../hooks/Admin/useDebounce';
 
 const Navbar = () => {
     const location = useLocation();
     const navigate = useNavigate();
+
+    const [search, setSearch] = useState("");
+    const debouncedSearch = useDebounce(search, 400);
+    const { employeeSearchData, isLoading } = useSearchEmployees(debouncedSearch);
+
 
     return (
         <div
@@ -32,16 +39,55 @@ const Navbar = () => {
             {/* Search */}
             {
                 location.pathname !== "/auth" &&
-                <div className='flex items-center justify-center mx-auto'>
+                <div className='flex items-center justify-center mx-auto relative bg-slate-950'>
                     <div className='flex items-center rounded-lg border border-(--border-secondary) px-2'>
                         <IoSearch />
                         <input
-                            name=''
-                            placeholder='search'
+                            type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder='Search employee...'
                             className='w-200 p-2 outline-none' />
                     </div>
                 </div>
             }
+
+            {
+                debouncedSearch && (
+                    <div
+                        className='
+                        absolute top-16 
+                        w-full bg-gray-800
+                        text-(--text-secondary)
+                        shadow-lg rounded max-h-60
+                        overflow-y-auto z-50
+                        '>
+                        {isLoading && <p className='p-2'>Searching...</p>}
+
+                        {employeeSearchData?.length === 0 && !isLoading && (
+                            <p className='p-2'>No employee found</p>
+                        )}
+
+                        {employeeSearchData?.map(emp => {
+                            const { id, name, employeeId } = emp;
+                            return (
+                                <div
+                                    key={emp.id}
+                                    className='p-2 hover:bg-slate-700 border-b border-slate-700 cursor-pointer'
+                                    onClick={() => {
+                                        navigate(`/admin/emp/${id}`);
+                                        setSearch("");
+                                    }}
+                                >
+                                    <p className='font-semibold'>{name}</p>
+                                    <p className='text-sm text-gray-500'>
+                                        {employeeId} • {emp.department?.name}
+                                    </p>
+                                </div>
+                            )
+                        })}
+                    </div>
+                )}
         </div>
     );
 }
