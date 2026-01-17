@@ -7,6 +7,7 @@ import {
     getAllEmployees,
     getEmployeeById,
     permanentDeleteEmployee,
+    searchEmployees,
     updateEmployee,
     updateEmployeeStatus,
 } from "../controllers/admin/user.controller.js";
@@ -49,6 +50,7 @@ const router = express.Router();
 
 // get holiday
 router.get("/holiday", getHolidays);
+router.get("/employees/search", searchEmployees);
 
 router.use(isAuth, requireAuth, isAdmin);
 
@@ -82,6 +84,5 @@ router.post("/payroll/regenerate", regeneratePayroll);
 
 // dashboard routes
 router.get("/admin-stats", getDashboardStats);
-
 
 export default router;

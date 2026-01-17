@@ -389,3 +389,70 @@ export const permanentDeleteEmployee = async (req, res) => {
         });
     }
 };
+
+// seach employes
+export const searchEmployees = async (req, res) => {
+    try {
+        const { query } = req.query;
+
+        if (!query || query.trim() === "") {
+            return res.status(400).json({
+                success: false,
+                message: "Search query is required"
+            });
+        }
+
+        const employees = await prisma.user.findMany({
+            where: {
+                role: "EMPLOYEE",
+                OR: [
+                    {
+                        name: {
+                            contains: query
+                        }
+                    },
+                    {
+                        email: {
+                            contains: query
+                        }
+                    },
+                    {
+                        employeeId: {
+                            contains: query
+                        }
+                    },
+                    {
+                        designation: {
+                            contains: query
+                        }
+                    },
+                    {
+                        department: {
+                            name: {
+                                contains: query
+                            }
+                        }
+                    }
+                ]
+            },
+            include: {
+                department: true
+            },
+            orderBy: {
+                createdAt: "desc"
+            }
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: employees
+        });
+
+    } catch (error) {
+        console.error("Search Employees Error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+};
