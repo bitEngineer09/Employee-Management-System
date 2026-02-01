@@ -2,63 +2,26 @@ import React from 'react'
 import useAuth from '../hooks/Auth/useAuth';
 import useAdminDashboard from '../hooks/Admin/useAdminDashboard';
 import { getEmployeeStatsCard } from '../data/SummaryCards';
-import { AnimatedItem, StaggerContainer } from './Animation/StaggerContainer';
+import StatsCardGrid from './Common/StatsCardGrid';
 
 const EmployeeStats = ({ onCardClick }) => {
     const { currentUser } = useAuth();
     const { role } = currentUser?.user || {};
-
     const isAdmin = role === "ADMIN";
-    // console.log(isAdmin);
 
     const { adminDashboardData } = useAdminDashboard();
-    // console.log(adminDashboardData);
-
     const employeeStatsCardData = getEmployeeStatsCard(adminDashboardData);
 
+    if (!isAdmin) return null;
+
     return (
-        <div className='w-full h-full my-5'>
-            <StaggerContainer className='grid grid-cols-4 gap-4'>
-                {
-                    isAdmin && (
-                        employeeStatsCardData.map((stat, index) => {
-                            const { name, number, icon, color, bgColor, hover, type } = stat;
-                            return (
-                                <AnimatedItem key={index}>
-                                <div
-                                    onClick={() => onCardClick(type)}
-                                    className={`
-                                        border-2 border-transparent
-                                        flex items-center justify-between
-                                        text-(--text-secondary)
-                                        bg-(--bg-primary)
-                                        p-5 rounded-2xl
-                                        transition-all
-                                        ${bgColor}
-                                        ${hover}
-                                    `}>
-                                    <div className='flex flex-col gap-2'>
-                                        <p>{name}</p>
-                                        <p className='text-3xl font-medium'>{number}</p>
-                                    </div>
-                                    <div
-                                        className={`
-                                            size-12
-                                            text-2xl
-                                            flex items-center justify-center
-                                            rounded-full
-                                            ${color}
-                                            `}>
-                                        {icon}
-                                    </div>
-                                </div>
-                                </AnimatedItem>
-                            )
-                        }))
-                }
-            </StaggerContainer>
-        </div>
+        <StatsCardGrid
+            data={employeeStatsCardData}
+            onCardClick={(type) => onCardClick(type)}
+            gridClass='grid grid-cols-2 xl:grid-cols-4 gap-4'
+            padding='p-5'
+        />
     )
 }
 
-export default EmployeeStats
+export default EmployeeStats;

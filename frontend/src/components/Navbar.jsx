@@ -4,6 +4,7 @@ import { FaTeamspeak } from "react-icons/fa";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSearchEmployees } from '../hooks/Admin/useSearchEmployee';
 import { useDebounce } from '../hooks/Admin/useDebounce';
+import useAuth from '../hooks/Auth/useAuth';
 
 const Navbar = () => {
     const location = useLocation();
@@ -13,6 +14,8 @@ const Navbar = () => {
     const debouncedSearch = useDebounce(search, 400);
     const { employeeSearchData, isLoading } = useSearchEmployees(debouncedSearch);
 
+    const { currentUser } = useAuth();
+    const ROLE = currentUser?.user?.role;
 
     return (
         <div
@@ -38,7 +41,7 @@ const Navbar = () => {
 
             {/* Search */}
             {
-                location.pathname !== "/auth" &&
+                (location.pathname !== "/auth" && ROLE == "ADMIN") &&
                 <div className='flex items-center justify-center mx-auto relative bg-slate-950'>
                     <div className='flex items-center rounded-lg border border-(--border-secondary) px-2'>
                         <IoSearch />
