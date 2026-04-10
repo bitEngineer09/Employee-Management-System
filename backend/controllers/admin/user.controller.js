@@ -1,458 +1,331 @@
 import { prisma } from '../../utils/client.js';
 import argon2 from 'argon2';
 import { generateEmployeeId } from '../../utils/employeeIdGenerator.js';
+import AppError from '../../utils/AppError.js';
+import asyncHandler from '../../utils/asyncHandler.js';
 
 // employe create
-export const createEmployee = async (req, res) => {
-    try {
-        const {
+export const createEmployee = asyncHandler(async (req, res) => {
+    const {
+        name,
+        email,
+        departmentId,
+        designation,
+        gender,
+        dob,
+        phoneNumber,
+        monthlySalary
+    } = req.body;
+
+    if (
+        !name
+        || !email
+        || !departmentId
+        || !designation
+        || !monthlySalary
+        || !gender
+        || !dob
+        || !phoneNumber
+    ) throw new AppError("Please provide all fields", 400);
+
+
+    const empId = await generateEmployeeId();
+    const basicSalary = Number(monthlySalary) * 0.4;
+
+    const isUserExisits = await prisma.user.findUnique({
+        where: { email }
+    });
+
+    if (isUserExisits) throw new AppError("User already exists. Try with different email id", 400);
+
+    const tempPassword = "Welcome@123";
+    const hashedPasword = await argon2.hash(tempPassword);
+
+    if (!hashedPasword) throw new AppError("Password hashing error", 400);
+
+    const newEmployee = await prisma.user.create({
+        data: {
             name,
             email,
-            departmentId,
+            password: hashedPasword,
+            employeeId: empId,
+            department: {
+                connect: { id: Number(departmentId) }
+            },
+            role: "EMPLOYEE",
             designation,
             gender,
-            dob,
+            dob: new Date(dob),
             phoneNumber,
-            monthlySalary
-        } = req.body;
+            monthlySalary: Number(monthlySalary),
+            basicSalary
+        }
+    });
 
-        if (
-            !name
-            || !email
-            || !departmentId
-            || !designation
-            || !monthlySalary
-            || !gender
-            || !dob
-            || !phoneNumber
-        )
-            return res.status(400).json({
-                success: false,
-                message: "Please provide all fields"
-            });
+    // adding by default 12 casual leaves
+    const currentYear = new Date().getFullYear();
+    await prisma.leaveBalance.create({
+        data: {
+            employeeId: newEmployee.id,
+            year: currentYear,
+            casualLeft: 12,
+        },
+    });
 
-        const empId = await generateEmployeeId();
-        const basicSalary = Number(monthlySalary) * 0.4;
-
-        const isUserExisits = await prisma.user.findUnique({
-            where: { email }
-        });
-
-        if (isUserExisits) return res.status(400).json({
-            success: false,
-            message: "User already exists. Try with different email id"
-        });
-
-        const tempPassword = "Welcome@123";
-        const hashedPasword = await argon2.hash(tempPassword);
-
-        if (!hashedPasword) return res.status(400).json({
-            success: false,
-            message: "Password hashing error",
-        });
-
-        const newEmployee = await prisma.user.create({
-            data: {
-                name,
-                email,
-                password: hashedPasword,
-                employeeId: empId,
-                department: {
-                    connect: { id: Number(departmentId) }
-                },
-                role: "EMPLOYEE",
-                designation,
-                gender,
-                dob: new Date(dob),
-                phoneNumber,
-                monthlySalary: Number(monthlySalary),
-                basicSalary
-            }
-        });
-
-        // adding by default 12 casual leaves
-        const currentYear = new Date().getFullYear();
-        await prisma.leaveBalance.create({
-            data: {
-                employeeId: newEmployee.id,
-                year: currentYear,
-                casualLeft: 12,
-            },
-        });
-
-        return res.status(201).json({
-            success: true,
-            message: "Employee created successfully",
-            empData: {
-                name: newEmployee.name,
-                email: newEmployee.email,
-                employeeId: newEmployee.employeeId,
-                department: newEmployee.department,
-                designation: newEmployee.designation,
-                role: newEmployee.role,
-            }
-        });
-
-    } catch (error) {
-        console.error("Employee create controller", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message
-        })
-    }
-};
+    return res.status(201).json({
+        success: true,
+        message: "Employee created successfully",
+        empData: {
+            name: newEmployee.name,
+            email: newEmployee.email,
+            employeeId: newEmployee.employeeId,
+            department: newEmployee.department,
+            designation: newEmployee.designation,
+            role: newEmployee.role,
+        }
+    });
+})
 
 // get all emp data
-export const getAllEmployees = async (req, res) => {
-    try {
-        const employees = await prisma.user.findMany({
-            where: { role: "EMPLOYEE" },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                employeeId: true,
-                department: {
-                    select: {
-                        id: true,
-                        name: true
-                    }
-                },
-                monthlySalary: true,
-                phoneNumber: true,
-                gender: true,
-                dob: true,
-                designation: true,
-                isActive: true,
-                createdAt: true,
-                updatedAt: true,
-            }
-        });
+export const getAllEmployees = asyncHandler(async (req, res) => {
+    const employees = await prisma.user.findMany({
+        where: { role: "EMPLOYEE" },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            employeeId: true,
+            department: {
+                select: {
+                    id: true,
+                    name: true
+                }
+            },
+            monthlySalary: true,
+            phoneNumber: true,
+            gender: true,
+            dob: true,
+            designation: true,
+            isActive: true,
+            createdAt: true,
+            updatedAt: true,
+        }
+    });
 
-        return res.status(200).json({
-            success: true,
-            message: "fetched data of all employees successfully",
-            data: employees
-        });
-
-    } catch (error) {
-        console.error("getAllEmployees error", error.message);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message,
-        })
-    }
-};
+    return res.status(200).json({
+        success: true,
+        message: "fetched data of all employees successfully",
+        data: employees
+    });
+});
 
 // get emp data by id
-export const getEmployeeById = async (req, res) => {
-    try {
+export const getEmployeeById = asyncHandler(async (req, res) => {
+    const empId = req.params.id;
+    // console.log(empId);
 
-        const empId = req.params.id;
-        console.log(empId);
-        if (!empId) return res.status(400).json({
-            success: false,
-            message: "employee id not provided",
-        });
+    if (!empId) throw new AppError("Employee id not provided", 400);
 
-        const employee = await prisma.user.findFirst({
-            where: { id: Number(empId), role: "EMPLOYEE" },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                phoneNumber: true,
-                employeeId: true,
-                department: {
-                    select: {
-                        id: true,
-                        name: true
-                    },
+    const employee = await prisma.user.findFirst({
+        where: { id: Number(empId), role: "EMPLOYEE" },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            phoneNumber: true,
+            employeeId: true,
+            department: {
+                select: {
+                    id: true,
+                    name: true
                 },
-                designation: true,
-                monthlySalary: true,
-                isActive: true,
-                createdAt: true,
-                updatedAt: true,
-            }
-        });
+            },
+            designation: true,
+            monthlySalary: true,
+            isActive: true,
+            createdAt: true,
+            updatedAt: true,
+        }
+    });
 
-        if (!employee) return res.status(404).json({
-            success: false,
-            message: "Employee not found"
-        });
+    if (!employee) throw new AppError("Employee not found", 400);
 
-        return res.status(200).json({
-            success: true,
-            message: "fetched employee data successfully",
-            data: employee,
-        });
-
-    } catch (error) {
-        console.error("getAllEmployeeById error", error.message);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message,
-        })
-    }
-};
+    return res.status(200).json({
+        success: true,
+        message: "fetched employee data successfully",
+        data: employee,
+    });
+});
 
 // update emp data
-export const updateEmployee = async (req, res) => {
-    try {
-        const empId = req.params.id;
-        console.log(empId)
+export const updateEmployee = asyncHandler(async (req, res) => {
+    const empId = req.params.id;
+    console.log(empId)
 
-        if (!empId) return res.status(400).json({
-            success: false,
-            message: "Employee id not provided",
-        });
+    if (!empId) throw new AppError("Employee id not provided", 400);
 
-        const { name, departmentId, designation, monthlySalary } = req.body;
+    const { name, departmentId, designation, monthlySalary } = req.body;
 
-        let basicSalary;
-        if (monthlySalary) {
-            basicSalary = monthlySalary * 0.4;
-        }
-
-        const employee = await prisma.user.findUnique({
-            where: { id: Number(empId) }
-        });
-
-        if (!employee || employee.role !== "EMPLOYEE") return res.status(400).json({
-            success: false,
-            message: "Employee not found",
-        });
-
-        const updatedEmployee = await prisma.user.update({
-            where: { id: Number(empId) },
-            data: {
-                name,
-                designation,
-                monthlySalary,
-                basicSalary,
-                department: departmentId
-                    ? { connect: { id: Number(departmentId) } }
-                    : undefined
-            },
-        });
-
-        return res.status(200).json({
-            success: true,
-            message: "Employee updated successfully",
-            updatedData: updatedEmployee,
-        })
-
-    } catch (error) {
-        console.error("updateEmployee error", error.message);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message,
-        })
+    let basicSalary;
+    if (monthlySalary) {
+        basicSalary = monthlySalary * 0.4;
     }
-};
+
+    const employee = await prisma.user.findUnique({
+        where: { id: Number(empId) }
+    });
+
+    if (!employee || employee.role !== "EMPLOYEE") throw new AppError("Employee not found", 400);
+
+    const updatedEmployee = await prisma.user.update({
+        where: { id: Number(empId) },
+        data: {
+            name,
+            designation,
+            monthlySalary,
+            basicSalary,
+            department: departmentId
+                ? { connect: { id: Number(departmentId) } }
+                : undefined
+        },
+    });
+
+    return res.status(200).json({
+        success: true,
+        message: "Employee updated successfully",
+        updatedData: updatedEmployee,
+    })
+});
 
 // update emp status
-export const updateEmployeeStatus = async (req, res) => {
-    try {
-        const empId = req.params.id;
-        const { status } = req.body;
+export const updateEmployeeStatus = asyncHandler(async (req, res) => {
+    const empId = req.params.id;
+    const { status } = req.body;
 
-        if (!empId) return res.status(400).json({
-            success: false,
-            message: "Employee id not provided"
-        });
+    if (!empId) throw new AppError("Employee id not provided", 400);
 
-        if (!["ACTIVE", "INACTIVE"].includes(status)) return res.status(400).json({
-            success: false,
-            message: "Invalid status",
-        });
+    if (!["ACTIVE", "INACTIVE"].includes(status)) throw new AppError("Invalid status", 400);
 
-        const employee = await prisma.user.findUnique({
-            where: { id: Number(empId) }
-        });
+    const employee = await prisma.user.findUnique({
+        where: { id: Number(empId) }
+    });
 
-        if (!employee || employee.role !== "EMPLOYEE") {
-            return res.status(404).json({
-                success: false,
-                message: "Employee not found"
-            });
+    if (!employee || employee.role !== "EMPLOYEE") throw new AppError("Employee not found", 400);
+
+    const isActive = status === "ACTIVE";
+
+    const updatedStatus = await prisma.user.update({
+        where: { id: Number(empId) },
+        data: { isActive }
+    });
+
+    return res.status(200).json({
+        success: true,
+        message: `Employee ${status.toLowerCase()} successfully`,
+        data: {
+            id: updatedStatus.id,
+            isActive: updatedStatus.isActive
         }
-
-        const isActive = status === "ACTIVE";
-
-        const updatedStatus = await prisma.user.update({
-            where: { id: Number(empId) },
-            data: { isActive }
-        });
-
-        return res.status(200).json({
-            success: true,
-            message: `Employee ${status.toLowerCase()} successfully`,
-            data: {
-                id: updatedStatus.id,
-                isActive: updatedStatus.isActive
-            }
-        });
-
-    } catch (error) {
-        console.error("updateEmployeeStatus error", error.message);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message,
-        });
-    }
-};
+    });
+});
 
 // delete employee
-export const deactivateEmployee = async (req, res) => {
-    try {
-        const empId = Number(req.params.id);
-        if (!empId) return res.status(400).json({
-            success: false,
-            message: "employee id not found"
-        });
+export const deactivateEmployee = asyncHandler(async (req, res) => {
+    const empId = Number(req.params.id);
+    if (!empId) throw new AppError("employee id not found", 400);
 
-        const employee = await prisma.user.findUnique({
-            where: {
-                id: empId,
-            },
-        });
+    const employee = await prisma.user.findUnique({
+        where: {
+            id: empId,
+        },
+    });
 
-        if (!employee) return res.status(400).json({
-            success: false,
-            message: "No employee found",
-        });
+    if (!employee) throw new AppError("No employee found", 400);
 
-        if (!employee.isActive) return res.status(400).json({
-            success: false,
-            message: "Employee is already deactivated"
-        });
+    if (!employee.isActive) throw new AppError("Employee is already deactivated", 400);
 
-        await prisma.user.update({
-            where: { id: empId },
-            data: { isActive: false },
-        });
+    await prisma.user.update({
+        where: { id: empId },
+        data: { isActive: false },
+    });
 
-        return res.status(200).json({
-            success: true,
-            message: "Employee deactivated successfully",
-        });
-
-    } catch (error) {
-        console.error("delete employee controller error", error.message);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error"
-        });
-    }
-};
+    return res.status(200).json({
+        success: true,
+        message: "Employee deactivated successfully",
+    });
+});
 
 // permanent delete employee
-export const permanentDeleteEmployee = async (req, res) => {
-    try {
-        const empId = Number(req.params.id);
+export const permanentDeleteEmployee = asyncHandler(async (req, res) => {
+    const empId = Number(req.params.id);
 
-        if (!empId) return res.status(400).json({
-            success: false,
-            message: "Employee id not provided",
-        });
+    if (!empId) throw new AppError("Employee id not provided", 400);
 
-        const employee = await prisma.user.findUnique({
-            where: { id: empId },
-        });
+    const employee = await prisma.user.findUnique({
+        where: { id: empId },
+    });
 
-        if (!employee) return res.status(404).json({
-            success: false,
-            message: "Employee not found",
-        });
+    if (!employee) throw new AppError("Employee not found", 400);
 
-        await prisma.user.delete({
-            where: { id: empId },
-        });
+    await prisma.user.delete({
+        where: { id: empId },
+    });
 
-        return res.status(200).json({
-            success: true,
-            message: "Employee permanently deleted",
-        });
-
-    } catch (error) {
-        console.error("permanent delete employee error", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-        });
-    }
-};
+    return res.status(200).json({
+        success: true,
+        message: "Employee permanently deleted",
+    });
+});
 
 // seach employes
-export const searchEmployees = async (req, res) => {
-    try {
-        const { query } = req.query;
+export const searchEmployees = asyncHandler(async (req, res) => {
+    const { query } = req.query;
 
-        if (!query || query.trim() === "") {
-            return res.status(400).json({
-                success: false,
-                message: "Search query is required"
-            });
-        }
+    if (!query || query.trim() === "") throw new AppError("Search query is required", 400);
 
-        const employees = await prisma.user.findMany({
-            where: {
-                role: "EMPLOYEE",
-                OR: [
-                    {
+    const employees = await prisma.user.findMany({
+        where: {
+            role: "EMPLOYEE",
+            OR: [
+                {
+                    name: {
+                        contains: query
+                    }
+                },
+                {
+                    email: {
+                        contains: query
+                    }
+                },
+                {
+                    employeeId: {
+                        contains: query
+                    }
+                },
+                {
+                    designation: {
+                        contains: query
+                    }
+                },
+                {
+                    department: {
                         name: {
                             contains: query
                         }
-                    },
-                    {
-                        email: {
-                            contains: query
-                        }
-                    },
-                    {
-                        employeeId: {
-                            contains: query
-                        }
-                    },
-                    {
-                        designation: {
-                            contains: query
-                        }
-                    },
-                    {
-                        department: {
-                            name: {
-                                contains: query
-                            }
-                        }
                     }
-                ]
-            },
-            include: {
-                department: true
-            },
-            orderBy: {
-                createdAt: "desc"
-            }
-        });
+                }
+            ]
+        },
+        include: {
+            department: true
+        },
+        orderBy: {
+            createdAt: "desc"
+        }
+    });
 
-        return res.status(200).json({
-            success: true,
-            data: employees
-        });
-
-    } catch (error) {
-        console.error("Search Employees Error:", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal server error"
-        });
-    }
-};
+    return res.status(200).json({
+        success: true,
+        data: employees
+    });
+});
