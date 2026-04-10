@@ -14,6 +14,7 @@ import authRouter from './routes/auth.routes.js';
 import adminRouter from './routes/admin.routes.js';
 import employeeRouter from './routes/employee.routes.js';
 import departmentRouter from './routes/department.routes.js';
+import errorMiddleware from './utils/error.middleware.js';
 
 
 const app = express();
@@ -45,6 +46,8 @@ app.use("/api/department", departmentRouter);
 
 
 startAutoAbsentCron(); // start cron
+
+app.use(errorMiddleware);
 
 app.listen(PORT, () => {
     console.log("Server is running at PORT:", PORT);
