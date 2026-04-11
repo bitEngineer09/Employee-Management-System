@@ -43,6 +43,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/employee", employeeRouter);
 app.use("/api/department", departmentRouter);
+// app.use("/api/department", departmentRouter);
 
 
 startAutoAbsentCron(); // start cron
