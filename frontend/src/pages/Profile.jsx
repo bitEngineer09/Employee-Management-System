@@ -44,12 +44,12 @@ const Profile = () => {
                         <div className="flex flex-col sm:flex-row items-center sm:items-end gap-4 sm:gap-0">
                             <div
                                 className="
-                                w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32
-                                flex items-center justify-center
-                                bg-linear-to-br from-blue-500 to-cyan-600
-                                rounded-full shadow-2xl
-                                border-4 border-gray-800
-                                ">
+                            w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32
+                            flex items-center justify-center
+                            bg-linear-to-br from-blue-500 to-cyan-600
+                            rounded-full shadow-2xl
+                            border-4 border-gray-800
+                        ">
                                 <span className="text-(--text-primary) text-3xl sm:text-4xl font-bold">
                                     {user?.name?.charAt(0)}
                                 </span>
@@ -140,6 +140,7 @@ const Profile = () => {
         </div>
     );
 };
+
 
 export default Profile;
 

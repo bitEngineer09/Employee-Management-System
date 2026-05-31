@@ -1,7 +1,7 @@
-export const requireAuth = async(req, res, next) => {
-    if (!req.user) return res.status(401).json({
-        success: false,
-        message: "Authentication Required"
-    })
+import AppError from "../utils/AppError.js";
+import asyncHandler from "../utils/asyncHandler.js";
+
+export const requireAuth = asyncHandler(async (req, res, next) => {
+    if (!req.user) throw new AppError("Authentication Required", 401)
     next();
-}
+});

@@ -9,6 +9,7 @@ import {
 } from "../../utils/attendanceRules.js";
 import { isSameDay } from '../../helpers/isSameDay.js';
 import { getDatesBetween } from '../../helpers/getDatesBetween.js';
+<<<<<<< HEAD
 import { compareFaces } from '../../services/faceComparison.service.js';
 import { isWithinOffice } from '../../services/locationValidation.service.js';
 
@@ -18,14 +19,19 @@ export const checkin = async (req, res) => {
     try {
         const userId = req.user?.id;
         const role = req.user?.role;
+=======
+import asyncHandler from '../../utils/asyncHandler.js';
+import AppError from '../../utils/AppError.js';
 
-        if (role !== "EMPLOYEE") {
-            return res.status(403).json({
-                success: false,
-                message: "Only employees can mark attendance",
-            });
-        }
+// check in
+export const checkin = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const role = req.user?.role;
+>>>>>>> 700ea03f3dd7f59a80e1c8c0c2060e100b5212f0
 
+    if (role !== "EMPLOYEE") throw new AppError("Only employees can mark attendance", 403);
+
+<<<<<<< HEAD
         const { faceDescriptor, lat, lng, deviceInfo } = req.body;
 
         // Validate required fields 
@@ -142,36 +148,74 @@ export const checkin = async (req, res) => {
                 locationLng: parseFloat(lng),
                 deviceInfo: deviceInfo || null,
                 changedBy: userId,
+=======
+    const now = new Date();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const existing = await prisma.attendance.findUnique({
+        where: {
+            employeeId_date: {
+                employeeId: userId,
+                date: today,
+>>>>>>> 700ea03f3dd7f59a80e1c8c0c2060e100b5212f0
             },
-        });
+        },
+    });
 
-        return res.status(200).json({
-            success: true,
-            message: `Checked in successfully (${status})`,
-            attendance,
-        });
-    } catch (error) {
-        console.error("checkin error", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-        });
+    if (existing?.checkIn) throw new AppError("Already checked in today", 400);
+
+    let status = "PRESENT";
+
+    const officeStart = new Date(today);
+    officeStart.setHours(OFFICE_START_HOUR, LATE_CHECKIN_MINUTES, 0, 0);
+
+    if (now > officeStart) {
+        status = "HALF_DAY";
     }
-};
 
+    const attendance = await prisma.attendance.upsert({
+        where: {
+            employeeId_date: {
+                employeeId: userId,
+                date: today,
+            },
+        },
+        update: {
+            checkIn: now,
+            status,
+        },
+        create: {
+            employeeId: userId,
+            date: today,
+            checkIn: now,
+            status,
+        },
+    });
+
+    return res.status(200).json({
+        success: true,
+        message: `Checked in successfully (${status})`,
+        attendance,
+    });
+});
+
+<<<<<<< HEAD
 // check out (with geolocation validation)
 export const checkout = async (req, res) => {
     try {
         const userId = req.user?.id;
         const role = req.user?.role;
+=======
+// check out
+export const checkout = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const role = req.user?.role;
+>>>>>>> 700ea03f3dd7f59a80e1c8c0c2060e100b5212f0
 
-        if (role !== "EMPLOYEE") {
-            return res.status(403).json({
-                success: false,
-                message: "Only employees can mark attendance",
-            });
-        }
+    if (role !== "EMPLOYEE") throw new AppError("Only employees can mark attendance", 403);
 
+<<<<<<< HEAD
         const { lat, lng, deviceInfo } = req.body;
 
         // Validate location 
@@ -194,30 +238,26 @@ export const checkout = async (req, res) => {
         const now = new Date(); // stores actual check-out time for accurate working hours calculation
         const today = new Date(); // normalize to today's date for lookup
         today.setHours(0, 0, 0, 0); 
+=======
+    const now = new Date();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+>>>>>>> 700ea03f3dd7f59a80e1c8c0c2060e100b5212f0
 
-        const attendance = await prisma.attendance.findUnique({
-            where: {
-                employeeId_date: {
-                    employeeId: userId,
-                    date: today,
-                },
+    const attendance = await prisma.attendance.findUnique({
+        where: {
+            employeeId_date: {
+                employeeId: userId,
+                date: today,
             },
-        });
+        },
+    });
 
-        if (!attendance || !attendance.checkIn) {
-            return res.status(400).json({
-                success: false,
-                message: "No check-in found for today",
-            });
-        }
+    if (!attendance || !attendance.checkIn) throw new AppError("No check-in found for today", 400);
 
-        if (attendance.checkOut) {
-            return res.status(400).json({
-                success: false,
-                message: "Already checked out",
-            });
-        }
+    if (attendance.checkOut) throw new AppError("Already checked out", 400);
 
+<<<<<<< HEAD
         
         const workingHours = (now.getTime() - attendance.checkIn.getTime()) / 3600000;
 
@@ -265,250 +305,219 @@ export const checkout = async (req, res) => {
             success: false,
             message: "Internal Server Error",
         });
+=======
+    const workingHours =
+        (now.getTime() - attendance.checkIn.getTime()) / 3600000;
+
+    let finalStatus = "ABSENT";
+
+    if (workingHours >= FULL_DAY_HOURS) {
+        finalStatus = "PRESENT";
+    } else if (workingHours >= HALF_DAY_HOURS) {
+        finalStatus = "HALF_DAY";
+>>>>>>> 700ea03f3dd7f59a80e1c8c0c2060e100b5212f0
     }
-};
+
+    const updatedAttendance = await prisma.attendance.update({
+        where: { id: attendance.id },
+        data: {
+            checkOut: now,
+            workingHours: Number(workingHours.toFixed(2)),
+            status: finalStatus,
+        },
+    });
+
+    return res.status(200).json({
+        success: true,
+        message: `Checked out successfully (${finalStatus})`,
+        attendance: updatedAttendance,
+    });
+});
 
 // get attendance report
-export const getAttendance = async (req, res) => {
-    try {
-        const employeeId = Number(req.user.id);
-        const { from, to } = req.query;
+export const getAttendance = asyncHandler(async (req, res) => {
+    const employeeId = Number(req.user.id);
+    const { from, to } = req.query;
 
-        if (!from || !to) {
-            return res.status(400).json({
-                success: false,
-                message: "From & To required",
-            });
+    if (!from || !to) throw new AppError("From & To required", 400);
+
+    const start = new Date(from);
+    const end = new Date(to);
+
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+
+    const data = await prisma.attendance.findMany({
+        where: {
+            employeeId,
+            date: {
+                gte: start,
+                lte: end,
+            },
+        },
+        orderBy: { date: "asc" },
+    });
+
+    const allDates = getDatesBetween(start, end);
+
+    const attendanceReport = allDates.map((date) => {
+        const record = data.find((d) => isSameDay(d.date, date));
+
+        if (!record) {
+            return {
+                date,
+                status: "ABSENT",
+                checkIn: null,
+                checkOut: null,
+                workingHours: 0,
+            };
         }
 
-        const start = new Date(from);
-        const end = new Date(to);
+        return {
+            date: record.date,
+            status: record.status,
+            checkIn: record.checkIn,
+            checkOut: record.checkOut,
+            workingHours: record.workingHours,
+        };
+    });
 
-        start.setHours(0, 0, 0, 0);
-        end.setHours(23, 59, 59, 999);
-
-        const data = await prisma.attendance.findMany({
-            where: {
-                employeeId,
-                date: {
-                    gte: start,
-                    lte: end,
-                },
-            },
-            orderBy: { date: "asc" },
-        });
-
-        const allDates = getDatesBetween(start, end);
-
-        const attendanceReport = allDates.map((date) => {
-            const record = data.find((d) => isSameDay(d.date, date));
-
-            if (!record) {
-                return {
-                    date,
-                    status: "ABSENT",
-                    checkIn: null,
-                    checkOut: null,
-                    workingHours: 0,
-                };
-            }
-
-            return {
-                date: record.date,
-                status: record.status,
-                checkIn: record.checkIn,
-                checkOut: record.checkOut,
-                workingHours: record.workingHours,
-            };
-        });
-
-        return res.status(200).json({
-            success: true,
-            message: "Attendance fetched successfully",
-            data: {
-                from,
-                to,
-                totalDays: attendanceReport.length,
-                attendance: attendanceReport,
-            },
-        });
-    } catch (error) {
-        console.error("getAttendance error", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-        });
-    }
-};
+    return res.status(200).json({
+        success: true,
+        message: "Attendance fetched successfully",
+        data: {
+            from,
+            to,
+            totalDays: attendanceReport.length,
+            attendance: attendanceReport,
+        },
+    });
+});
 
 // get today attendance
-export const getTodayAttendance = async (req, res) => {
-    try {
-        const userId = req.user.id;
+export const getTodayAttendance = asyncHandler(async (req, res) => {
+    const userId = req.user.id;
 
-        const start = new Date();
-        start.setHours(0, 0, 0, 0);
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
 
-        const end = new Date();
-        end.setHours(23, 59, 59, 999);
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
 
-        const attendance = await prisma.attendance.findFirst({
-            where: {
-                employeeId: userId,
-                date: {
-                    gte: start,
-                    lte: end,
-                },
+    const attendance = await prisma.attendance.findFirst({
+        where: {
+            employeeId: userId,
+            date: {
+                gte: start,
+                lte: end,
             },
-            select: {
-                id: true,
-                checkIn: true,
-                checkOut: true,
-                status: true,
-                workingHours: true,
-            },
-        });
+        },
+        select: {
+            id: true,
+            checkIn: true,
+            checkOut: true,
+            status: true,
+            workingHours: true,
+        },
+    });
 
-        if (!attendance) {
-            return res.status(200).json({
-                success: true,
-                data: {
-                    checkIn: null,
-                    checkOut: null,
-                    status: "ABSENT",
-                },
-                message: "No attendance found for today",
-            });
-        }
-
+    if (!attendance) {
         return res.status(200).json({
             success: true,
-            data: attendance,
-        });
-
-    } catch (error) {
-        console.error("getTodayAttendance error", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-        });
-    };
-};
-
-// get monthly summary
-export const getMonthlySummary = async (req, res) => {
-    try {
-        const { month } = req.query;
-        const employeeId = req.user.id;
-
-        if (!month) return res.status(400).json({
-            success: false,
-            message: "Please provide month",
-        });
-
-        const { startDate, endDate } = getMonthRange(month);
-        if (!startDate || !endDate) return res.status(400).json({
-            success: false,
-            message: "get monthRange method error",
-        });
-
-        const employee = await prisma.user.findUnique({
-            where: { id: employeeId },
-        });
-
-        if (!employee || employee.role !== "EMPLOYEE") return res.status(400).json({
-            success: false,
-            message: "Employee not found",
-        });
-
-        const attendance = await prisma.attendance.findMany({
-            where: {
-                employeeId: Number(employeeId),
-                date: {
-                    gte: startDate,
-                    lte: endDate,
-                },
+            data: {
+                checkIn: null,
+                checkOut: null,
+                status: "ABSENT",
             },
-            select: {
-                status: true,
-                workingHours: true,
-            },
-        });
-
-        let summary = {
-            PRESENT: 0,
-            HALF_DAY: 0,
-            ABSENT: 0,
-            totalWorkingHours: 0,
-        };
-
-        attendance.forEach(a => {
-            summary[a.status]++;
-            summary.totalWorkingHours += a.workingHours || 0;
-        });
-
-        summary.totalWorkingHours = Number(summary.totalWorkingHours.toFixed(2));
-
-        return res.status(200).json({
-            success: true,
-            message: "Your Monthly report fetched successfully",
-            month,
-            summary,
-        });
-
-    } catch (error) {
-        console.error("getMonthySummary error", error.message);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message
+            message: "No attendance found for today",
         });
     }
-};
+
+    return res.status(200).json({
+        success: true,
+        data: attendance,
+    });
+});
+
+// get monthly summary
+export const getMonthlySummary = asyncHandler(async (req, res) => {
+    const { month } = req.query;
+    const employeeId = req.user.id;
+
+    if (!month) throw new AppError("Please provide month", 400);
+
+    const { startDate, endDate } = getMonthRange(month);
+    if (!startDate || !endDate) throw new AppError("get monthRange method error", 400);
+
+    const employee = await prisma.user.findUnique({
+        where: { id: employeeId },
+    });
+
+    if (!employee || employee.role !== "EMPLOYEE") throw new AppError("Employee not found", 400);
+
+    const attendance = await prisma.attendance.findMany({
+        where: {
+            employeeId: Number(employeeId),
+            date: {
+                gte: startDate,
+                lte: endDate,
+            },
+        },
+        select: {
+            status: true,
+            workingHours: true,
+        },
+    });
+
+    let summary = {
+        PRESENT: 0,
+        HALF_DAY: 0,
+        ABSENT: 0,
+        totalWorkingHours: 0,
+    };
+
+    attendance.forEach(a => {
+        summary[a.status]++;
+        summary.totalWorkingHours += a.workingHours || 0;
+    });
+
+    summary.totalWorkingHours = Number(summary.totalWorkingHours.toFixed(2));
+
+    return res.status(200).json({
+        success: true,
+        message: "Your Monthly report fetched successfully",
+        month,
+        summary,
+    });
+});
 
 // change default password
-export const changeDefaultPassword = async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const { oldPassword, newPassword } = req.body;
-        console.log(oldPassword, newPassword)
+export const changeDefaultPassword = asyncHandler(async (req, res) => {
+    const userId = req.user.id;
+    const { oldPassword, newPassword } = req.body;
 
-        const employee = await prisma.user.findUnique({
-            where: { id: userId }
-        });
-        if (!oldPassword || !newPassword) return res.status(400).json({
-            success: false,
-            message: "Please provide all fields",
-        });
+    const employee = await prisma.user.findUnique({
+        where: { id: userId }
+    });
 
-        // verify old password
-        const verifyOldPassword = await argon2.verify(employee.password, oldPassword);
-        if (!verifyOldPassword) return res.status(400).json({
-            success: false,
-            message: "Old password is incorrect",
-        });
+    if (!oldPassword || !newPassword) throw new AppError("Please provide all fields", 400);
 
-        // check if newPassword is same password
-        const isPasswordSame = await argon2.verify(employee.password, newPassword);
-        if (isPasswordSame) return res.status(400).json({
-            success: false,
-            message: "New password cannot be same as old password",
-        });
+    const verifyOldPassword = await argon2.verify(employee.password, oldPassword);
+    if (!verifyOldPassword) throw new AppError("Old password is incorrect", 400);
 
-        const hashedPassword = await argon2.hash(newPassword);
+    const isPasswordSame = await argon2.verify(employee.password, newPassword);
+    if (isPasswordSame) throw new AppError("New password cannot be same as old password", 400);
 
-        const updatePassword = await prisma.user.update({
-            where: { id: userId },
-            data: {
-                password: hashedPassword,
-            },
-        });
+    const hashedPassword = await argon2.hash(newPassword);
 
-        return res.status(200).json({
-            success: true,
-            message: "Password updated successfully",
-        });
+    await prisma.user.update({
+        where: { id: userId },
+        data: {
+            password: hashedPassword,
+        },
+    });
 
+<<<<<<< HEAD
     } catch (error) {
         console.error("changeDefaultPassword error", error);
         return res.status(500).json({
@@ -550,3 +559,10 @@ export const registerFace = async (req, res) => {
         });
     }
 };
+=======
+    return res.status(200).json({
+        success: true,
+        message: "Password updated successfully",
+    });
+});
+>>>>>>> 700ea03f3dd7f59a80e1c8c0c2060e100b5212f0

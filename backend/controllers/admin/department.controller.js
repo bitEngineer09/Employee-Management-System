@@ -1,483 +1,355 @@
+import asyncHandler from '../../utils/asyncHandler.js';
+import AppError from '../../utils/AppError.js';
 import { prisma } from '../../utils/client.js';
 
 // create department
-export const createDepartment = async (req, res) => {
-    try {
-        const { name, description } = req.body;
-        if (!name) return res.status(400).json({
-            success: false,
-            message: "Department name is required",
-        });
+export const createDepartment = asyncHandler(async (req, res) => {
+    const { name, description } = req.body;
+    if (!name) throw new AppError("Department name is required", 400);
 
-        const isDepartmentExists = await prisma.department.findUnique({
-            where: { name },
-        });
+    const isDepartmentExists = await prisma.department.findUnique({
+        where: { name },
+    });
 
-        if (isDepartmentExists) return res.status(400).json({
-            success: false,
-            message: "Department already exists",
-        });
+    if (isDepartmentExists) throw new AppError("Department already exists", 400);
 
-        const department = await prisma.department.create({
-            data: {
-                name,
-                description,
-            },
-        });
+    const department = await prisma.department.create({
+        data: {
+            name,
+            description,
+        },
+    });
 
-        return res.status(201).json({
-            success: true,
-            message: "Department created successfully",
-            department
-        });
-
-    } catch (error) {
-        console.error("createDepartment error", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message,
-        });
-    }
-}
+    return res.status(201).json({
+        success: true,
+        message: "Department created successfully",
+        department
+    });
+});
 
 // get all departments
-export const getDepartments = async (req, res) => {
-    try {
-        const departments = await prisma.department.findMany({
-            select: {
-                id: true,
-                name: true,
-                description: true,
-                createdAt: true,
-                isActive: true,
-                users: {
-                    select: {
-                        id: true,
-                        isActive: true,
-                    },
+export const getDepartments = asyncHandler(async (req, res) => {
+    const departments = await prisma.department.findMany({
+        select: {
+            id: true,
+            name: true,
+            description: true,
+            createdAt: true,
+            isActive: true,
+            users: {
+                select: {
+                    id: true,
+                    isActive: true,
                 },
             },
-        });
+        },
+    });
 
-        if (departments.length === 0) {
-            return res.status(404).json({
-                success: false,
-                message: "No Departments found",
-            });
-        }
+    if (departments.length === 0) throw new AppError("No Departments found", 404);
 
-        const totalDepartments = departments.length;
-        const activeDepartments = departments.filter(dept => dept.isActive).length;
-        const inactiveDepartments = departments.filter(dept => !dept.isActive).length;
+    const totalDepartments = departments.length;
+    const activeDepartments = departments.filter(dept => dept.isActive).length;
+    const inactiveDepartments = departments.filter(dept => !dept.isActive).length;
 
-        const formattedDepartments = departments.map((dept) => {
-            const totalEmployees = dept.users.length;
-            const activeEmployees = dept.users.filter(u => u.isActive).length;
-            const inactiveEmployees = dept.users.filter(u => !u.isActive).length;
+    const formattedDepartments = departments.map((dept) => {
+        const totalEmployees = dept.users.length;
+        const activeEmployees = dept.users.filter(u => u.isActive).length;
+        const inactiveEmployees = dept.users.filter(u => !u.isActive).length;
 
-            return {
-                id: dept.id,
-                name: dept.name,
-                createdAt: dept.createdAt,
-                isActive: dept.isActive,
-                description: dept.description,
-                totalEmployees,
-                activeEmployees,
-                inactiveEmployees,
-            };
-        });
+        return {
+            id: dept.id,
+            name: dept.name,
+            createdAt: dept.createdAt,
+            isActive: dept.isActive,
+            description: dept.description,
+            totalEmployees,
+            activeEmployees,
+            inactiveEmployees,
+        };
+    });
 
-        return res.status(200).json({
-            success: true,
-            message: "Departments fetched successfully",
-            summary: {
-                totalDepartments,
-                activeDepartments,
-                inactiveDepartments,
-            },
-            departments: formattedDepartments,
-        });
-
-    } catch (error) {
-        console.error("getDepartments error", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message,
-        });
-    }
-}
+    return res.status(200).json({
+        success: true,
+        message: "Departments fetched successfully",
+        summary: {
+            totalDepartments,
+            activeDepartments,
+            inactiveDepartments,
+        },
+        departments: formattedDepartments,
+    });
+});
 
 // get department by id
-export const getDepartmentById = async (req, res) => {
-    try {
-        const departmentId = req.params.id;
-        if (!departmentId) {
-            return res.status(400).json({
-                success: false,
-                message: "Department id not provided",
-            });
-        }
+export const getDepartmentById = asyncHandler(async (req, res) => {
+    const departmentId = req.params.id;
+    if (!departmentId) throw new AppError("Department id not provided", 400);
 
-        const startOfDay = new Date();
-        startOfDay.setHours(0, 0, 0, 0);
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
 
-        const endOfDay = new Date();
-        endOfDay.setHours(23, 59, 59, 999);
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
 
-        const department = await prisma.department.findUnique({
-            where: { id: Number(departmentId) },
-            include: {
-                users: {
-                    select: {
-                        id: true,
-                        name: true,
-                        designation: true,
-                        email: true,
-                        phoneNumber: true,
-                        isActive: true,
-                        createdAt: true,
-                        monthlySalary: true,
-                        attendances: {
-                            where: {
-                                date: {
-                                    gte: startOfDay,
-                                    lte: endOfDay,
-                                },
+    const department = await prisma.department.findUnique({
+        where: { id: Number(departmentId) },
+        include: {
+            users: {
+                select: {
+                    id: true,
+                    name: true,
+                    designation: true,
+                    email: true,
+                    phoneNumber: true,
+                    isActive: true,
+                    createdAt: true,
+                    monthlySalary: true,
+                    attendances: {
+                        where: {
+                            date: {
+                                gte: startOfDay,
+                                lte: endOfDay,
                             },
-                            select: { status: true },
                         },
+                        select: { status: true },
                     },
                 },
             },
-        });
+        },
+    });
 
-        if (!department || !department.isActive) {
-            return res.status(404).json({
-                success: false,
-                message: "Department not found",
-            });
-        }
+    if (!department || !department.isActive) throw new AppError("Department not found", 404);
 
-        const totalEmployees = department.users.length;
-        const activeEmployees = department.users.filter(u => u.isActive).length;
-        const inactiveEmployees = department.users.filter(u => !u.isActive).length;
+    const totalEmployees = department.users.length;
+    const activeEmployees = department.users.filter(u => u.isActive).length;
+    const inactiveEmployees = department.users.filter(u => !u.isActive).length;
 
-        let present = 0;
-        let absent = 0;
-        let onLeave = 0;
+    let present = 0;
+    let absent = 0;
+    let onLeave = 0;
 
-        department.users.forEach(user => {
-            const status = user.attendances[0]?.status;
+    department.users.forEach(user => {
+        const status = user.attendances[0]?.status;
 
-            if (status === "PRESENT" || status === "HALF_DAY") present++;
-            else if (status === "ABSENT") absent++;
-            else if (status === "LEAVE_PAID" || status === "LEAVE_UNPAID") onLeave++;
-        });
+        if (status === "PRESENT" || status === "HALF_DAY") present++;
+        else if (status === "ABSENT") absent++;
+        else if (status === "LEAVE_PAID" || status === "LEAVE_UNPAID") onLeave++;
+    });
 
-        return res.status(200).json({
-            success: true,
-            department: {
-                id: department.id,
-                name: department.name,
-                createdAt: department.createdAt,
-                totalEmployees,
-                activeEmployees,
-                inactiveEmployees,
-                attendance: {
-                    present,
-                    absent,
-                    onLeave,
-                },
-                employees: department.users.map(emp => ({
-                    id: emp.id,
-                    name: emp.name,
-                    designation: emp.designation,
-                    email: emp.email,
-                    phone: emp.phoneNumber,
-                    salary: emp.monthlySalary,
-                    isActive: emp.isActive,
-                    joinedOn: emp.createdAt,
-                })),
+    return res.status(200).json({
+        success: true,
+        department: {
+            id: department.id,
+            name: department.name,
+            createdAt: department.createdAt,
+            totalEmployees,
+            activeEmployees,
+            inactiveEmployees,
+            attendance: {
+                present,
+                absent,
+                onLeave,
             },
-        });
-
-    } catch (error) {
-        console.error("getDepartmentById error", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message,
-        });
-    }
-};
+            employees: department.users.map(emp => ({
+                id: emp.id,
+                name: emp.name,
+                designation: emp.designation,
+                email: emp.email,
+                phone: emp.phoneNumber,
+                salary: emp.monthlySalary,
+                isActive: emp.isActive,
+                joinedOn: emp.createdAt,
+            })),
+        },
+    });
+});
 
 // update department
-export const updateDepartment = async (req, res) => {
-    try {
-        const departmentId = req.params.id;
-        const { name, description } = req.body;
+export const updateDepartment = asyncHandler(async (req, res) => {
+    const departmentId = req.params.id;
+    const { name, description } = req.body;
 
-        if (!departmentId) return res.status(400).json({
-            success: false,
-            message: "Id is not present",
-        });
+    if (!departmentId) throw new AppError("Id is not present", 400);
 
-        const isDepartmentExists = await prisma.department.findUnique({
-            where: { id: Number(departmentId) },
-        });
+    const isDepartmentExists = await prisma.department.findUnique({
+        where: { id: Number(departmentId) },
+    });
 
-        if (!isDepartmentExists) return res.status(400).json({
-            success: false,
-            message: "Department not found",
-        });
+    if (!isDepartmentExists) throw new AppError("Department not found", 400);
 
-        const updatedDepartment = await prisma.department.update({
-            where: { id: Number(departmentId) },
-            data: {
-                name,
-                description,
-            },
-        });
+    const updatedDepartment = await prisma.department.update({
+        where: { id: Number(departmentId) },
+        data: {
+            name,
+            description,
+        },
+    });
 
-        return res.status(200).json({
-            success: true,
-            message: "Department updated successfully",
-            updatedDepartment,
-        });
-
-
-    } catch (error) {
-        console.error("updateDepartment error", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message,
-        });
-    }
-}
+    return res.status(200).json({
+        success: true,
+        message: "Department updated successfully",
+        updatedDepartment,
+    });
+});
 
 // delete department
-export const deactivateDepartment = async (req, res) => {
-    try {
-        const departmentId = req.params.id;
-        if (!departmentId) return res.status(400).json({
-            success: false,
-            message: "Please provide department id",
-        });
+export const deactivateDepartment = asyncHandler(async (req, res) => {
+    const departmentId = req.params.id;
+    if (!departmentId) throw new AppError("Please provide department id", 400);
 
-        const isDepartmentExists = await prisma.department.findUnique({
-            where: { id: Number(departmentId) },
-        });
+    const isDepartmentExists = await prisma.department.findUnique({
+        where: { id: Number(departmentId) },
+    });
 
-        if (!isDepartmentExists) return res.status(400).json({
-            success: false,
-            message: "Department not found",
-        });
+    if (!isDepartmentExists) throw new AppError("Department not found", 400);
 
-        const employeeCount = await prisma.user.count({
-            where: {
-                departmentId: Number(departmentId),
-            },
-        });
+    const employeeCount = await prisma.user.count({
+        where: {
+            departmentId: Number(departmentId),
+        },
+    });
 
-        if (employeeCount > 0) return res.status(400).json({
-            success: false,
-            message: "Department has employees. Please check"
-        })
+    if (employeeCount > 0) throw new AppError("Department has employees. Please check", 400);
 
-        await prisma.department.update({
-            where: { id: Number(departmentId) },
-            data: { isActive: false },
-        });
+    await prisma.department.update({
+        where: { id: Number(departmentId) },
+        data: { isActive: false },
+    });
 
-        return res.status(200).json({
-            success: true,
-            message: "Department deactivated successfully",
-        });
+    return res.status(200).json({
+        success: true,
+        message: "Department deactivated successfully",
+    });
+});
 
-    } catch (error) {
-        console.error("deactivateDepartment error", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message,
-        });
-    }
-}
+// department attendance report
+export const departmentAttendanceReport = asyncHandler(async (req, res) => {
+    const departmentId = req.params.id;
+    const { from, to } = req.query;
 
-// department attendance report 
-export const departmentAttendanceReport = async (req, res) => {
-    try {
-        const departmentId = req.params.id;
-        const { from, to } = req.query;
+    if (!departmentId || !from || !to) throw new AppError("departmentId, from and to dates are required", 400);
 
-        if (!departmentId || !from || !to) {
-            return res.status(400).json({
-                success: false,
-                message: "departmentId, from and to dates are required",
-            });
-        }
+    const department = await prisma.department.findUnique({
+        where: { id: Number(departmentId) },
+    });
 
-        const department = await prisma.department.findUnique({
-            where: { id: Number(departmentId) },
-        });
+    if (!department || !department.isActive) throw new AppError("Department not found", 404);
 
-        if (!department || !department.isActive) {
-            return res.status(404).json({
-                success: false,
-                message: "Department not found",
-            });
-        }
-
-        // Fetch users with attendance
-        const users = await prisma.user.findMany({
-            where: {
-                departmentId: Number(departmentId),
-                isActive: true,
-            },
-            include: {
-                attendances: {
-                    where: {
-                        date: {
-                            gte: new Date(from),
-                            lte: new Date(to),
-                        },
+    const users = await prisma.user.findMany({
+        where: {
+            departmentId: Number(departmentId),
+            isActive: true,
+        },
+        include: {
+            attendances: {
+                where: {
+                    date: {
+                        gte: new Date(from),
+                        lte: new Date(to),
                     },
-                    orderBy: { date: "asc" },
                 },
+                orderBy: { date: "asc" },
             },
-        });
+        },
+    });
 
-        return res.status(200).json({
-            success: true,
-            department: department.name,
-            from,
-            to,
-            totalEmployees: users.length,
-            data: users,
-        });
-    } catch (error) {
-        console.error("departmentAttendanceReport error", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message,
-        });
-    }
-};
+    return res.status(200).json({
+        success: true,
+        department: department.name,
+        from,
+        to,
+        totalEmployees: users.length,
+        data: users,
+    });
+});
 
 // department attendance summary
-export const departmentAttendanceSummary = async (req, res) => {
-    try {
-        const departmentId = req.params.id;
-        const { from, to } = req.query;
+export const departmentAttendanceSummary = asyncHandler(async (req, res) => {
+    const departmentId = req.params.id;
+    const { from, to } = req.query;
 
-        if (!departmentId || !from || !to) {
-            return res.status(400).json({
-                success: false,
-                message: "departmentId, from and to are required",
-            });
-        }
+    if (!departmentId || !from || !to) throw new AppError("departmentId, from and to are required", 400);
 
-        const summary = await prisma.attendance.groupBy({
-            by: ["status"],
-            where: {
-                employee: {
-                    departmentId: Number(departmentId),
-                },
-                date: {
-                    gte: new Date(from),
-                    lte: new Date(to),
-                },
+    const summary = await prisma.attendance.groupBy({
+        by: ["status"],
+        where: {
+            employee: {
+                departmentId: Number(departmentId),
             },
-            _count: {
-                status: true,
+            date: {
+                gte: new Date(from),
+                lte: new Date(to),
             },
-        });
+        },
+        _count: {
+            status: true,
+        },
+    });
 
-        return res.status(200).json({
-            success: true,
-            departmentId,
-            from,
-            to,
-            summary,
-        });
-    } catch (error) {
-        console.error("departmentAttendanceSummary error", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message,
-        });
-    }
-};
+    return res.status(200).json({
+        success: true,
+        departmentId,
+        from,
+        to,
+        summary,
+    });
+});
 
-// department wise attendance summary
-export const departmentWiseTodayAttendance = async (req, res) => {
-    try {
-        const startOfDay = new Date();
-        startOfDay.setHours(0, 0, 0, 0);
+// department wise today attendance
+export const departmentWiseTodayAttendance = asyncHandler(async (req, res) => {
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
 
-        const endOfDay = new Date();
-        endOfDay.setHours(23, 59, 59, 999);
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
 
-        const departments = await prisma.department.findMany({
-            where: { isActive: true },
-            select: {
-                id: true,
-                name: true,
-                users: {
-                    where: {
-                        isActive: true,
-                        role: "EMPLOYEE",
-                    },
-                    select: {
-                        id: true,
-                        attendances: {
-                            where: {
-                                date: {
-                                    gte: startOfDay,
-                                    lte: endOfDay,
-                                },
+    const departments = await prisma.department.findMany({
+        where: { isActive: true },
+        select: {
+            id: true,
+            name: true,
+            users: {
+                where: {
+                    isActive: true,
+                    role: "EMPLOYEE",
+                },
+                select: {
+                    id: true,
+                    attendances: {
+                        where: {
+                            date: {
+                                gte: startOfDay,
+                                lte: endOfDay,
                             },
-                            select: {
-                                status: true,
-                            },
+                        },
+                        select: {
+                            status: true,
                         },
                     },
                 },
             },
+        },
+    });
+
+    const result = departments.map(dept => {
+        let present = 0;
+
+        dept.users.forEach(user => {
+            const status = user.attendances[0]?.status;
+            if (status === "PRESENT" || status === "HALF_DAY") {
+                present++;
+            }
         });
 
-        const result = departments.map(dept => {
-            let present = 0;
+        return {
+            department: dept.name,
+            total: dept.users.length,
+            present,
+        };
+    });
 
-            dept.users.forEach(user => {
-                const status = user.attendances[0]?.status;
-                if (status === "PRESENT" || status === "HALF_DAY") {
-                    present++;
-                }
-            });
-
-            return {
-                department: dept.name,
-                total: dept.users.length,
-                present,
-            };
-        });
-
-        return res.status(200).json({
-            success: true,
-            data: result,
-        });
-
-    } catch (error) {
-        console.error("departmentWiseTodayAttendance error", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-        });
-    }
-};
+    return res.status(200).json({
+        success: true,
+        data: result,
+    });
+});
