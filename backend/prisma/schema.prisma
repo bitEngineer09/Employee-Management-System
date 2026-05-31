@@ -44,12 +44,13 @@ enum LeaveType {
 
 // models
 model User {
-  id         Int     @id @default(autoincrement())
-  name       String
-  email      String  @unique(map: "User_email_key")
-  password   String
-  role       String  @default("EMPLOYEE")
-  employeeId String? @unique
+  id             Int     @id @default(autoincrement())
+  name           String
+  email          String  @unique(map: "User_email_key")
+  password       String
+  faceDescriptor Json?
+  role           String  @default("EMPLOYEE")
+  employeeId     String? @unique
 
   gender      Gender?
   dob         DateTime? @db.Date
@@ -103,8 +104,17 @@ model Attendance {
   employeeId Int
   date       DateTime
 
-  checkIn      DateTime?
-  checkOut     DateTime?
+  checkIn  DateTime?
+  checkOut DateTime?
+
+  checkInLat  Float?
+  checkInLng  Float?
+  checkOutLat Float?
+  checkOutLng Float?
+
+  checkInImage  String?
+  checkOutImage String?
+
   workingHours Float?
   status       AttendanceStatus
 
@@ -124,6 +134,11 @@ model AttendanceLog {
   action    AttendanceAction
   oldStatus AttendanceStatus?
   newStatus AttendanceStatus?
+
+  locationLat Float?
+  locationLng Float?
+
+  deviceInfo String?
 
   changedBy     Int?
   changedByUser User? @relation("changedBy", fields: [changedBy], references: [id])
@@ -200,6 +215,7 @@ model PasswordResetOtp {
   expiresAt DateTime
   used      Boolean  @default(false)
   createdAt DateTime @default(now())
+
   @@unique([email, otp])
   @@index([email])
 }

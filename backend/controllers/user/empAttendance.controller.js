@@ -9,9 +9,11 @@ import {
 } from "../../utils/attendanceRules.js";
 import { isSameDay } from '../../helpers/isSameDay.js';
 import { getDatesBetween } from '../../helpers/getDatesBetween.js';
+import { compareFaces } from '../../services/faceComparison.service.js';
+import { isWithinOffice } from '../../services/locationValidation.service.js';
 
 
-// check in
+// check in (with face recognition + geolocation validation)
 export const checkin = async (req, res) => {
     try {
         const userId = req.user?.id;
@@ -21,6 +23,61 @@ export const checkin = async (req, res) => {
             return res.status(403).json({
                 success: false,
                 message: "Only employees can mark attendance",
+            });
+        }
+
+        const { faceDescriptor, lat, lng, deviceInfo } = req.body;
+
+        // Validate required fields 
+        if (!faceDescriptor || !Array.isArray(faceDescriptor) || faceDescriptor.length !== 128) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid or missing face descriptor (expected 128-element array)",
+            });
+        }
+
+        if (lat === undefined || lng === undefined) {
+            return res.status(400).json({
+                success: false,
+                message: "Location (lat, lng) is required for check-in",
+            });
+        }
+
+        // Load user's stored face descriptor 
+        const user = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { faceDescriptor: true },
+        });
+
+        if (!user?.faceDescriptor) {
+            return res.status(400).json({
+                success: false,
+                message: "Face not registered. Please register your face first.",
+            });
+        }
+
+        // Face comparison
+        // Handle case where faceDescriptor might be stored as an object (Prisma's JSON) instead of array
+        const storedDescriptor = Array.isArray(user.faceDescriptor)
+            ? user.faceDescriptor
+            : Object.values(user.faceDescriptor);
+
+        const { match, distance } = compareFaces(storedDescriptor, faceDescriptor);
+        if (!match) {
+            return res.status(403).json({
+                success: false,
+                message: "Face verification failed. Please try again.",
+                distance,
+            });
+        }
+
+        // --- Location validation ---
+        const { valid, distanceMeters } = isWithinOffice(parseFloat(lat), parseFloat(lng));
+        if (!valid) {
+            return res.status(403).json({
+                success: false,
+                message: `You are not within office premises (${distanceMeters}m away).`,
+                distanceMeters,
             });
         }
 
@@ -45,14 +102,13 @@ export const checkin = async (req, res) => {
         }
 
         let status = "PRESENT";
-
         const officeStart = new Date(today);
         officeStart.setHours(OFFICE_START_HOUR, LATE_CHECKIN_MINUTES, 0, 0);
-
         if (now > officeStart) {
             status = "HALF_DAY";
         }
 
+        // --- Upsert attendance record with location ---
         const attendance = await prisma.attendance.upsert({
             where: {
                 employeeId_date: {
@@ -63,12 +119,29 @@ export const checkin = async (req, res) => {
             update: {
                 checkIn: now,
                 status,
+                checkInLat: parseFloat(lat),
+                checkInLng: parseFloat(lng),
             },
             create: {
                 employeeId: userId,
                 date: today,
                 checkIn: now,
                 status,
+                checkInLat: parseFloat(lat),
+                checkInLng: parseFloat(lng),
+            },
+        });
+
+        // --- Create attendance log entry ---
+        await prisma.attendanceLog.create({
+            data: {
+                attendanceId: attendance.id,
+                action: "CHECK_IN",
+                newStatus: status,
+                locationLat: parseFloat(lat),
+                locationLng: parseFloat(lng),
+                deviceInfo: deviceInfo || null,
+                changedBy: userId,
             },
         });
 
@@ -86,7 +159,7 @@ export const checkin = async (req, res) => {
     }
 };
 
-// check out
+// check out (with geolocation validation)
 export const checkout = async (req, res) => {
     try {
         const userId = req.user?.id;
@@ -99,9 +172,28 @@ export const checkout = async (req, res) => {
             });
         }
 
-        const now = new Date();
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const { lat, lng, deviceInfo } = req.body;
+
+        // Validate location 
+        if (lat === undefined || lng === undefined) {
+            return res.status(400).json({
+                success: false,
+                message: "Location (lat, lng) is required for check-out",
+            });
+        }
+
+        const { valid, distanceMeters } = isWithinOffice(parseFloat(lat), parseFloat(lng));
+        if (!valid) {
+            return res.status(403).json({
+                success: false,
+                message: `You are not within office premises (${distanceMeters}m away).`,
+                distanceMeters,
+            });
+        }
+
+        const now = new Date(); // stores actual check-out time for accurate working hours calculation
+        const today = new Date(); // normalize to today's date for lookup
+        today.setHours(0, 0, 0, 0); 
 
         const attendance = await prisma.attendance.findUnique({
             where: {
@@ -126,23 +218,39 @@ export const checkout = async (req, res) => {
             });
         }
 
-        const workingHours =
-            (now.getTime() - attendance.checkIn.getTime()) / 3600000;
+        
+        const workingHours = (now.getTime() - attendance.checkIn.getTime()) / 3600000;
 
         let finalStatus = "ABSENT";
-
         if (workingHours >= FULL_DAY_HOURS) {
             finalStatus = "PRESENT";
         } else if (workingHours >= HALF_DAY_HOURS) {
             finalStatus = "HALF_DAY";
         }
 
+        // Update attendance record with checkout location 
         const updatedAttendance = await prisma.attendance.update({
             where: { id: attendance.id },
             data: {
                 checkOut: now,
                 workingHours: Number(workingHours.toFixed(2)),
                 status: finalStatus,
+                checkOutLat: parseFloat(lat),
+                checkOutLng: parseFloat(lng),
+            },
+        });
+
+        //  Create attendance log entry
+        await prisma.attendanceLog.create({
+            data: {
+                attendanceId: attendance.id,
+                action: "CHECK_OUT",
+                oldStatus: attendance.status,
+                newStatus: finalStatus,
+                locationLat: parseFloat(lat),
+                locationLng: parseFloat(lng),
+                deviceInfo: deviceInfo || null,
+                changedBy: userId,
             },
         });
 
@@ -403,6 +511,38 @@ export const changeDefaultPassword = async (req, res) => {
 
     } catch (error) {
         console.error("changeDefaultPassword error", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+};
+
+// register face descriptor (called once per employee for initial face enrollment)
+export const registerFace = async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const { faceDescriptor } = req.body;
+
+        if (!faceDescriptor || !Array.isArray(faceDescriptor) || faceDescriptor.length !== 128) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid face descriptor. Expected a 128-element float array.",
+            });
+        }
+
+        await prisma.user.update({
+            where: { id: userId },
+            data: { faceDescriptor },
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Face registered successfully.",
+        });
+    } catch (error) {
+        console.error("registerFace error", error);
         return res.status(500).json({
             success: false,
             message: "Internal Server Error",

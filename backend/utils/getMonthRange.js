@@ -1,3 +1,4 @@
+// This function takes a month in the format "YYYY-MM" and returns the start and end dates of that month.
 export const getMonthRange = (month) => { // "2025 02"
     const [year, mon] = month.split("-");
 

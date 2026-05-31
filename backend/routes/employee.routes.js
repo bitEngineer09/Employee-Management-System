@@ -24,7 +24,8 @@ import {
     checkout,
     getAttendance,
     getMonthlySummary,
-    getTodayAttendance
+    getTodayAttendance,
+    registerFace,
 } from '../controllers/user/empAttendance.controller.js';
 
 // zod imports
@@ -45,6 +46,7 @@ router.patch("/attendance/check-out", checkout);
 router.get("/attendance", getAttendance);
 router.get("/attendance/summary", getMonthlySummary);
 router.get("/attendance/today", getTodayAttendance);
+router.post("/register-face", registerFace);
 
 // leave routes
 router.post("/leave", applyLeave);
