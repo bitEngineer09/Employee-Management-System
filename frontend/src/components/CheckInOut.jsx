@@ -6,7 +6,6 @@ import useAuth from '../hooks/Auth/useAuth';
 import CheckInOutInfoPanel from './CheckInOutInfoPanel';
 import FaceCheckIn from './FaceCheckIn/FaceCheckIn';
 import { ScanFace, AlertTriangle } from 'lucide-react';
-import CameraGuidePanel from './CameraGuidePanel';
 
 
 const CheckInOut = () => {
@@ -22,7 +21,7 @@ const CheckInOut = () => {
 
             {hasFace ? (
                 <div className="flex gap-6 flex-wrap justify-center">
-                    <CameraGuidePanel />
+
                     <FaceCheckIn
                         mode="checkin"
                         onSubmit={checkIn}

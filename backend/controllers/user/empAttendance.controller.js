@@ -9,146 +9,73 @@ import {
 } from "../../utils/attendanceRules.js";
 import { isSameDay } from '../../helpers/isSameDay.js';
 import { getDatesBetween } from '../../helpers/getDatesBetween.js';
-<<<<<<< HEAD
-import { compareFaces } from '../../services/faceComparison.service.js';
-import { isWithinOffice } from '../../services/locationValidation.service.js';
-
-
-// check in (with face recognition + geolocation validation)
-export const checkin = async (req, res) => {
-    try {
-        const userId = req.user?.id;
-        const role = req.user?.role;
-=======
 import asyncHandler from '../../utils/asyncHandler.js';
 import AppError from '../../utils/AppError.js';
+import { compareFaces } from '../../services/faceComparison.service.js';
+import { isWithinOffice } from '../../services/locationValidation.service.js';
 
 // check in
 export const checkin = asyncHandler(async (req, res) => {
     const userId = req.user?.id;
     const role = req.user?.role;
->>>>>>> 700ea03f3dd7f59a80e1c8c0c2060e100b5212f0
 
     if (role !== "EMPLOYEE") throw new AppError("Only employees can mark attendance", 403);
 
-<<<<<<< HEAD
-        const { faceDescriptor, lat, lng, deviceInfo } = req.body;
+    const { faceDescriptor, lat, lng, deviceInfo } = req.body;
 
-        // Validate required fields 
-        if (!faceDescriptor || !Array.isArray(faceDescriptor) || faceDescriptor.length !== 128) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid or missing face descriptor (expected 128-element array)",
-            });
-        }
-
-        if (lat === undefined || lng === undefined) {
-            return res.status(400).json({
-                success: false,
-                message: "Location (lat, lng) is required for check-in",
-            });
-        }
-
-        // Load user's stored face descriptor 
-        const user = await prisma.user.findUnique({
-            where: { id: userId },
-            select: { faceDescriptor: true },
+    // Validate required fields 
+    if (!faceDescriptor || !Array.isArray(faceDescriptor) || faceDescriptor.length !== 128) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid or missing face descriptor (expected 128-element array)",
         });
+    }
 
-        if (!user?.faceDescriptor) {
-            return res.status(400).json({
-                success: false,
-                message: "Face not registered. Please register your face first.",
-            });
-        }
-
-        // Face comparison
-        // Handle case where faceDescriptor might be stored as an object (Prisma's JSON) instead of array
-        const storedDescriptor = Array.isArray(user.faceDescriptor)
-            ? user.faceDescriptor
-            : Object.values(user.faceDescriptor);
-
-        const { match, distance } = compareFaces(storedDescriptor, faceDescriptor);
-        if (!match) {
-            return res.status(403).json({
-                success: false,
-                message: "Face verification failed. Please try again.",
-                distance,
-            });
-        }
-
-        // --- Location validation ---
-        const { valid, distanceMeters } = isWithinOffice(parseFloat(lat), parseFloat(lng));
-        if (!valid) {
-            return res.status(403).json({
-                success: false,
-                message: `You are not within office premises (${distanceMeters}m away).`,
-                distanceMeters,
-            });
-        }
-
-        const now = new Date();
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const existing = await prisma.attendance.findUnique({
-            where: {
-                employeeId_date: {
-                    employeeId: userId,
-                    date: today,
-                },
-            },
+    if (lat === undefined || lng === undefined) {
+        return res.status(400).json({
+            success: false,
+            message: "Location (lat, lng) is required for check-in",
         });
+    }
 
-        if (existing?.checkIn) {
-            return res.status(400).json({
-                success: false,
-                message: "Already checked in today",
-            });
-        }
+    // Load user's stored face descriptor 
+    const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { faceDescriptor: true },
+    });
 
-        let status = "PRESENT";
-        const officeStart = new Date(today);
-        officeStart.setHours(OFFICE_START_HOUR, LATE_CHECKIN_MINUTES, 0, 0);
-        if (now > officeStart) {
-            status = "HALF_DAY";
-        }
-
-        // --- Upsert attendance record with location ---
-        const attendance = await prisma.attendance.upsert({
-            where: {
-                employeeId_date: {
-                    employeeId: userId,
-                    date: today,
-                },
-            },
-            update: {
-                checkIn: now,
-                status,
-                checkInLat: parseFloat(lat),
-                checkInLng: parseFloat(lng),
-            },
-            create: {
-                employeeId: userId,
-                date: today,
-                checkIn: now,
-                status,
-                checkInLat: parseFloat(lat),
-                checkInLng: parseFloat(lng),
-            },
+    if (!user?.faceDescriptor) {
+        return res.status(400).json({
+            success: false,
+            message: "Face not registered. Please register your face first.",
         });
+    }
 
-        // --- Create attendance log entry ---
-        await prisma.attendanceLog.create({
-            data: {
-                attendanceId: attendance.id,
-                action: "CHECK_IN",
-                newStatus: status,
-                locationLat: parseFloat(lat),
-                locationLng: parseFloat(lng),
-                deviceInfo: deviceInfo || null,
-                changedBy: userId,
-=======
+    // Face comparison
+    // Handle case where faceDescriptor might be stored as an object (Prisma's JSON) instead of array
+    const storedDescriptor = Array.isArray(user.faceDescriptor)
+        ? user.faceDescriptor
+        : Object.values(user.faceDescriptor);
+
+    const { match, distance } = compareFaces(storedDescriptor, faceDescriptor);
+    if (!match) {
+        return res.status(403).json({
+            success: false,
+            message: "Face verification failed. Please try again.",
+            distance,
+        });
+    }
+
+    // --- Location validation ---
+    const { valid, distanceMeters } = isWithinOffice(parseFloat(lat), parseFloat(lng));
+    if (!valid) {
+        return res.status(403).json({
+            success: false,
+            message: `You are not within office premises (${distanceMeters}m away).`,
+            distanceMeters,
+        });
+    }
+
     const now = new Date();
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -158,22 +85,25 @@ export const checkin = asyncHandler(async (req, res) => {
             employeeId_date: {
                 employeeId: userId,
                 date: today,
->>>>>>> 700ea03f3dd7f59a80e1c8c0c2060e100b5212f0
             },
         },
     });
 
-    if (existing?.checkIn) throw new AppError("Already checked in today", 400);
+    if (existing?.checkIn) {
+        return res.status(400).json({
+            success: false,
+            message: "Already checked in today",
+        });
+    }
 
     let status = "PRESENT";
-
     const officeStart = new Date(today);
     officeStart.setHours(OFFICE_START_HOUR, LATE_CHECKIN_MINUTES, 0, 0);
-
     if (now > officeStart) {
         status = "HALF_DAY";
     }
 
+    // --- Upsert attendance record with location ---
     const attendance = await prisma.attendance.upsert({
         where: {
             employeeId_date: {
@@ -184,12 +114,29 @@ export const checkin = asyncHandler(async (req, res) => {
         update: {
             checkIn: now,
             status,
+            checkInLat: parseFloat(lat),
+            checkInLng: parseFloat(lng),
         },
         create: {
             employeeId: userId,
             date: today,
             checkIn: now,
             status,
+            checkInLat: parseFloat(lat),
+            checkInLng: parseFloat(lng),
+        },
+    });
+
+    // --- Create attendance log entry ---
+    await prisma.attendanceLog.create({
+        data: {
+            attendanceId: attendance.id,
+            action: "CHECK_IN",
+            newStatus: status,
+            locationLat: parseFloat(lat),
+            locationLng: parseFloat(lng),
+            deviceInfo: deviceInfo || null,
+            changedBy: userId,
         },
     });
 
@@ -200,22 +147,14 @@ export const checkin = asyncHandler(async (req, res) => {
     });
 });
 
-<<<<<<< HEAD
 // check out (with geolocation validation)
 export const checkout = async (req, res) => {
     try {
         const userId = req.user?.id;
         const role = req.user?.role;
-=======
-// check out
-export const checkout = asyncHandler(async (req, res) => {
-    const userId = req.user?.id;
-    const role = req.user?.role;
->>>>>>> 700ea03f3dd7f59a80e1c8c0c2060e100b5212f0
 
-    if (role !== "EMPLOYEE") throw new AppError("Only employees can mark attendance", 403);
+        if (role !== "EMPLOYEE") throw new AppError("Only employees can mark attendance", 403);
 
-<<<<<<< HEAD
         const { lat, lng, deviceInfo } = req.body;
 
         // Validate location 
@@ -237,28 +176,22 @@ export const checkout = asyncHandler(async (req, res) => {
 
         const now = new Date(); // stores actual check-out time for accurate working hours calculation
         const today = new Date(); // normalize to today's date for lookup
-        today.setHours(0, 0, 0, 0); 
-=======
-    const now = new Date();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
->>>>>>> 700ea03f3dd7f59a80e1c8c0c2060e100b5212f0
+        today.setHours(0, 0, 0, 0);
 
-    const attendance = await prisma.attendance.findUnique({
-        where: {
-            employeeId_date: {
-                employeeId: userId,
-                date: today,
+        const attendance = await prisma.attendance.findUnique({
+            where: {
+                employeeId_date: {
+                    employeeId: userId,
+                    date: today,
+                },
             },
-        },
-    });
+        });
 
-    if (!attendance || !attendance.checkIn) throw new AppError("No check-in found for today", 400);
+        if (!attendance || !attendance.checkIn) throw new AppError("No check-in found for today", 400);
 
-    if (attendance.checkOut) throw new AppError("Already checked out", 400);
+        if (attendance.checkOut) throw new AppError("Already checked out", 400);
 
-<<<<<<< HEAD
-        
+
         const workingHours = (now.getTime() - attendance.checkIn.getTime()) / 3600000;
 
         let finalStatus = "ABSENT";
@@ -305,17 +238,6 @@ export const checkout = asyncHandler(async (req, res) => {
             success: false,
             message: "Internal Server Error",
         });
-=======
-    const workingHours =
-        (now.getTime() - attendance.checkIn.getTime()) / 3600000;
-
-    let finalStatus = "ABSENT";
-
-    if (workingHours >= FULL_DAY_HOURS) {
-        finalStatus = "PRESENT";
-    } else if (workingHours >= HALF_DAY_HOURS) {
-        finalStatus = "HALF_DAY";
->>>>>>> 700ea03f3dd7f59a80e1c8c0c2060e100b5212f0
     }
 
     const updatedAttendance = await prisma.attendance.update({
@@ -332,7 +254,7 @@ export const checkout = asyncHandler(async (req, res) => {
         message: `Checked out successfully (${finalStatus})`,
         attendance: updatedAttendance,
     });
-});
+};
 
 // get attendance report
 export const getAttendance = asyncHandler(async (req, res) => {
@@ -500,13 +422,21 @@ export const changeDefaultPassword = asyncHandler(async (req, res) => {
         where: { id: userId }
     });
 
-    if (!oldPassword || !newPassword) throw new AppError("Please provide all fields", 400);
+    if (!oldPassword || !newPassword) {
+        throw new AppError("Please provide all fields", 400);
+    }
 
     const verifyOldPassword = await argon2.verify(employee.password, oldPassword);
-    if (!verifyOldPassword) throw new AppError("Old password is incorrect", 400);
+
+    if (!verifyOldPassword) {
+        throw new AppError("Old password is incorrect", 400);
+    }
 
     const isPasswordSame = await argon2.verify(employee.password, newPassword);
-    if (isPasswordSame) throw new AppError("New password cannot be same as old password", 400);
+
+    if (isPasswordSame) {
+        throw new AppError("New password cannot be same as old password", 400);
+    }
 
     const hashedPassword = await argon2.hash(newPassword);
 
@@ -517,16 +447,11 @@ export const changeDefaultPassword = asyncHandler(async (req, res) => {
         },
     });
 
-<<<<<<< HEAD
-    } catch (error) {
-        console.error("changeDefaultPassword error", error);
-        return res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-            error: error.message,
-        });
-    }
-};
+    return res.status(200).json({
+        success: true,
+        message: "Password updated successfully",
+    });
+});
 
 // register face descriptor (called once per employee for initial face enrollment)
 export const registerFace = async (req, res) => {
@@ -559,10 +484,3 @@ export const registerFace = async (req, res) => {
         });
     }
 };
-=======
-    return res.status(200).json({
-        success: true,
-        message: "Password updated successfully",
-    });
-});
->>>>>>> 700ea03f3dd7f59a80e1c8c0c2060e100b5212f0
