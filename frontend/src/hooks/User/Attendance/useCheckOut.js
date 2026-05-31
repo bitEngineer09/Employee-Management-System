@@ -5,11 +5,11 @@ import { checkOutApi } from "../../../api/attendance.api";
 
 const useCheckOut = () => {
     const queryClient = useQueryClient();
-    const { mutate, isLoading, error } = useMutation({
-        mutationFn: checkOutApi,
+    const { mutate, isPending, error } = useMutation({
+        mutationFn: (payload) => checkOutApi(payload),
         onSuccess: () => {
             queryClient.invalidateQueries(["todayAttendance"]);
-            toast.success("Checked-out success");
+            toast.success("Checked-out successfully!");
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Something went wrong");
@@ -18,7 +18,7 @@ const useCheckOut = () => {
     });
     return {
         checkOut: mutate,
-        isLoading,
+        isLoading: isPending,
         error,
     };
 };

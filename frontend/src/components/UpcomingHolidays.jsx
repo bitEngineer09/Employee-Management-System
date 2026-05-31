@@ -32,7 +32,7 @@ const UpcomingHolidays = () => {
   }
 
   return (
-    <div className="w-full rounded-xl mt-7">
+    <div className="w-full rounded-xl mt-18">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div

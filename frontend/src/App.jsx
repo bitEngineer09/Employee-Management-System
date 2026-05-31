@@ -19,10 +19,12 @@ import Attendance from './pages/User/Attendance';
 import Salary from './pages/User/Salary';
 import Profile from './pages/Profile';
 import ForgotPassword from './pages/ForgotPassword';
+import RegisterFacePage from './pages/RegisterFacePage';
 
 // routes
 import ProtectedRoute from './components/Routes/ProtectedRoute';
 import PublicRoute from './components/Routes/PublicRoute';
+import FaceGuard from './components/Routes/FaceGuard';
 
 // components
 import DepartmentDetail from './components/Departments/DepartmentDetails';
@@ -42,26 +44,31 @@ const App = () => {
     <>
       <Routes>
         <Route element={<ProtectedRoute />}>
-          <Route element={<MainLayout />}>
-            {
-              ROLE === "ADMIN"
-                ? <>
-                  <Route path="/" element={<AdminDashboard />} />
-                  <Route path="/admin/emp" element={<Employee />} />
-                  <Route path="/admin/dept" element={<Department />} />
-                  <Route path="/admin/department/:id" element={<DepartmentDetail />} />
-                  <Route path="/admin/emp/:id" element={<EmployeeDetail />} />
-                  <Route path="/admin/leave" element={<LeaveAdmin />} />
-                  <Route path="/admin/payroll" element={<Payroll />} />
-                </>
-                : <>
-                  <Route path="/" element={<Attendance />} />
-                  <Route path="/emp/leave" element={<Leave />} />
-                  <Route path="/emp/salary" element={<Salary />} />
-                </>
-            }
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/profile" element={<Profile />} />
+          {/* Face registration — protected but NOT behind FaceGuard (employee must reach it) */}
+          <Route path="/register-face" element={<RegisterFacePage />} />
+
+          <Route element={<FaceGuard />}>
+            <Route element={<MainLayout />}>
+              {
+                ROLE === "ADMIN"
+                  ? <>
+                    <Route path="/" element={<AdminDashboard />} />
+                    <Route path="/admin/emp" element={<Employee />} />
+                    <Route path="/admin/dept" element={<Department />} />
+                    <Route path="/admin/department/:id" element={<DepartmentDetail />} />
+                    <Route path="/admin/emp/:id" element={<EmployeeDetail />} />
+                    <Route path="/admin/leave" element={<LeaveAdmin />} />
+                    <Route path="/admin/payroll" element={<Payroll />} />
+                  </>
+                  : <>
+                    <Route path="/" element={<Attendance />} />
+                    <Route path="/emp/leave" element={<Leave />} />
+                    <Route path="/emp/salary" element={<Salary />} />
+                  </>
+              }
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/profile" element={<Profile />} />
+            </Route>
           </Route>
         </Route>
 

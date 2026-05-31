@@ -42,7 +42,7 @@ const AttendanceTable = () => {
     };
 
     return (
-        <div className="mt-11">
+        <div className="my-18">
             {/* Header */}
             <div className="flex items-center justify-between gap-4 mb-6">
                 <h2 className="text-xl font-semibold text-(--text-primary)">

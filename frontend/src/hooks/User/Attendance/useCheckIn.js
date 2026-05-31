@@ -4,11 +4,11 @@ import { checkInApi } from '../../../api/attendance.api'
 
 const useCheckIn = () => {
     const queryClient = useQueryClient();
-    const { mutate, isLoading, error } = useMutation({
-        mutationFn: checkInApi,
+    const { mutate, isPending, error } = useMutation({
+        mutationFn: (payload) => checkInApi(payload),
         onSuccess: () => {
             queryClient.invalidateQueries(["todayAttendance"]);
-            toast.success("Checked-in success");
+            toast.success("Checked-in successfully!");
         },
         onError: (error) => {
             toast.error(error?.response?.data?.message || "Something went wrong");
@@ -17,7 +17,7 @@ const useCheckIn = () => {
     });
     return {
         checkIn: mutate,
-        isLoading,
+        isLoading: isPending,
         error,
     };
 };

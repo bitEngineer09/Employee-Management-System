@@ -45,7 +45,7 @@ const Attendance = () => {
         <p className=" mt-1">Welcome to the employee panel. Here you can put your attendance, check attendances, view reports, etc</p>
       </header>
 
-      {/* check-in / check-out button */}
+      {/* check-in / check-out */}
       <CheckInOut />
 
       {/* Today attendance stats cards */}

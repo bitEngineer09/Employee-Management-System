@@ -13,11 +13,11 @@ const MonthlyAttendanceSummaryCard = () => {
 
 
     return (
-        <div className="mt-8">
+        <div className="mt-8 border border-(--border-primary) rounded-xl p-3">
 
             {/* Header */}
-            <div className="flex items-center justify-between gap-4 mb-6">
-                <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between gap-4 mb-6 border border-(--border-primary) rounded-lg px-4 py-2">
+                <div className="flex items-center gap-2 ">
                     <h2 className="text-xl font-semibold text-white">
                         Monthly Attendance Summary
                     </h2>
