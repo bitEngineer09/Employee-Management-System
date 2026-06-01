@@ -18,6 +18,8 @@ const CreateDepartmentPopup = ({ createDept, setCreateDept }) => {
             name: formData.name,
             description: formData.description,
         });
+
+        setCreateDept(false);
     };
 
     const handleChange = (e) => {

@@ -19,6 +19,8 @@ const CreateHolidayPopup = ({ createHldy, setCreateHldy }) => {
             name: formData.name,
             date: formData.date,
         });
+
+        setCreateHldy(false);
     };
 
     const handleChange = (e) => {

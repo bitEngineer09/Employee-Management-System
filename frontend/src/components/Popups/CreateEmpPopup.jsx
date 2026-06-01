@@ -30,6 +30,8 @@ const CreateEmpPopup = ({ setCreateEmp }) => {
             designation: formData.designation,
             monthlySalary: formData.monthlySalary,
         });
+
+        setCreateEmp(false);
     };
 
     const handleChange = (e) => {
