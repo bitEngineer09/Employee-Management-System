@@ -23,16 +23,6 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(session({
-    secret: "my_secret",
-    resave: true,
-    saveUninitialized: true,
-    cookie: {
-        httpOnly: true,
-        secure: false,
-        sameSite: "Lax"
-    },
-}));
 app.use(requestIp.mw());
 app.use(cors({
     origin: "http://localhost:5173",
@@ -48,6 +38,7 @@ app.use("/api/department", departmentRouter);
 
 startAutoAbsentCron(); // start cron
 
+// global error handling middleware
 app.use(errorMiddleware);
 
 app.listen(PORT, () => {

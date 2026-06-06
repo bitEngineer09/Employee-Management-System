@@ -1,16 +1,16 @@
-import { refreshTheTokens, verifyToken } from "../services/auth.services.js";
+import { refreshTheTokens, verifyAccessToken } from "../services/auth.services.js";
 import { prisma } from "../utils/client.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
 export const isAuth = asyncHandler(async (req, res, next) => {
     const accessToken = req.cookies?.access_token;
     const refreshToken = req.cookies?.refresh_token;
-
+    
     req.user = null;
 
     if (accessToken) {
         try {
-            const decoded = verifyToken(accessToken);
+            const decoded = verifyAccessToken(accessToken);
 
             const session = await prisma.session.findUnique({
                 where: { id: decoded.sessionId }

@@ -11,7 +11,7 @@ export const createSession = async ({ ip, userAgent, userId }) => {
 export const createAccessToken = ({ id, name, email, role, sessionId }) => {
     return jwt.sign(
         { id, name, email, role, sessionId },
-        process.env.JWT_SECRET,
+        process.env.JWT_ACCESS_SECRET,
         { expiresIn: "1h" }
     );
 }
@@ -19,13 +19,18 @@ export const createAccessToken = ({ id, name, email, role, sessionId }) => {
 export const createRefreshToken = (sessionId) => {
     return jwt.sign(
         { sessionId },
-        process.env.JWT_SECRET,
+        process.env.JWT_REFRESH_SECRET,
         { expiresIn: "30d" }
     );
 }
 
-export const verifyToken = (token) => {
-    return jwt.verify(token, process.env.JWT_SECRET);
+
+export const verifyAccessToken = (token) => {
+    return jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+}
+
+export const verifyRefreshToken = (token) => {
+    return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
 }
 
 
@@ -74,7 +79,8 @@ export const authenticate = async (req, res, user) => {
 // REFRESH THE TOKENS
 export const refreshTheTokens = async (refreshToken) => {
     try {
-        const decodedToken = verifyToken(refreshToken);
+        const decodedToken = verifyRefreshToken(refreshToken);
+        // console.log("Decoded refresh token:", decodedToken);
         if (!decodedToken) throw new Error("Invalid session")
 
         const currentSession = await prisma.session.findUnique({

@@ -37,7 +37,7 @@ export const adminAttendance = asyncHandler(async (req, res) => {
 })
 
 // get employee attendance report 
-export const getEmpAttendance = async (req, res) => {
+export const getEmpAttendance = asyncHandler(async (req, res) => {
     const { employeeId, from, to } = req.query;
     if (!employeeId || !from || !to) throw new AppError("Please provide all fields", 400);
 
@@ -70,7 +70,7 @@ export const getEmpAttendance = async (req, res) => {
         },
         data: attendanceReport,
     });
-};
+})
 
 // get monthly attendance summary 
 export const getMonthlyAttendanceSummary = asyncHandler(async (req, res) => {

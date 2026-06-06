@@ -41,8 +41,8 @@ const Department = () => {
       <div>
         {/* header */}
         <header className='flex justify-between'>
-          <p className='flex items-center gap-2 text-(--text-secondary) text-3xl font-medium'>
-            <div
+          <div className='flex items-center gap-2 text-(--text-secondary) text-3xl font-medium'>
+            <p
               className="
               w-11 h-11 
               text-(--blue-light)
@@ -51,9 +51,9 @@ const Department = () => {
               border border-(--blue-primary)
               ">
               <Building size={24} />
-            </div>
+            </p>
             Department Records
-          </p>
+          </div>
 
           {/* Create Department */}
           <button

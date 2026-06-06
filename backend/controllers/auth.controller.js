@@ -103,12 +103,13 @@ export const forgotPassword = asyncHandler(async (req, res) => {
     if (!user) throw new AppError("User not found", 400);
 
     const otp = generateOtp();
+    const hashedOtp = await argon2.hash(otp);
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min
 
     await prisma.passwordResetOtp.create({
         data: {
             email,
-            otp,
+            otp: hashedOtp,
             expiresAt,
         },
     });
@@ -126,10 +127,10 @@ export const resetPassword = asyncHandler(async (req, res) => {
     const { email, otp, newPassword } = req.body;
     if (!email || !otp || !newPassword) throw new AppError("Please provide all fields", 400);
 
+    // find the latest unused otp for the email
     const otpRecord = await prisma.passwordResetOtp.findFirst({
         where: {
             email,
-            otp,
             used: false,
             expiresAt: {
                 gt: new Date(),
@@ -138,6 +139,10 @@ export const resetPassword = asyncHandler(async (req, res) => {
     });
 
     if (!otpRecord) throw new AppError("Invalid or expired OTP", 400);
+
+    const isValidOtp = await argon2.verify(otpRecord.otp, otp);
+
+    if (!isValidOtp) throw new AppError("Invalid or expired OTP", 400);
 
     const hashedPassword = await argon2.hash(newPassword);
 

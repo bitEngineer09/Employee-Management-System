@@ -66,8 +66,8 @@ const Payroll = () => {
 
     return (
         <div>
-            <p className="flex items-center gap-2 text-(--text-secondary) text-3xl font-medium mb-5">
-                <div
+            <div className="flex items-center gap-2 text-(--text-secondary) text-3xl font-medium mb-5">
+                <p
                     className="
                     w-11 h-11 
                     text-(--blue-light)
@@ -76,9 +76,9 @@ const Payroll = () => {
                     border border-(--blue-primary)
                     ">
                     <IndianRupee size={24} />
-                </div>
+                </p>
                 Payroll
-            </p>
+            </div>
 
             {/* preview section */}
             <div className="mb-8">

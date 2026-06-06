@@ -148,104 +148,82 @@ export const checkin = asyncHandler(async (req, res) => {
 });
 
 // check out (with geolocation validation)
-export const checkout = async (req, res) => {
-    try {
-        const userId = req.user?.id;
-        const role = req.user?.role;
+export const checkout = asyncHandler(async (req, res) => {
 
-        if (role !== "EMPLOYEE") throw new AppError("Only employees can mark attendance", 403);
+    const userId = req.user?.id;
+    const role = req.user?.role;
 
-        const { lat, lng, deviceInfo } = req.body;
+    if (role !== "EMPLOYEE") throw new AppError("Only employees can mark attendance", 403);
 
-        // Validate location 
-        if (lat === undefined || lng === undefined) {
-            return res.status(400).json({
-                success: false,
-                message: "Location (lat, lng) is required for check-out",
-            });
-        }
+    const { lat, lng, deviceInfo } = req.body;
 
-        const { valid, distanceMeters } = isWithinOffice(parseFloat(lat), parseFloat(lng));
-        if (!valid) {
-            return res.status(403).json({
-                success: false,
-                message: `You are not within office premises (${distanceMeters}m away).`,
-                distanceMeters,
-            });
-        }
-
-        const now = new Date(); // stores actual check-out time for accurate working hours calculation
-        const today = new Date(); // normalize to today's date for lookup
-        today.setHours(0, 0, 0, 0);
-
-        const attendance = await prisma.attendance.findUnique({
-            where: {
-                employeeId_date: {
-                    employeeId: userId,
-                    date: today,
-                },
-            },
-        });
-
-        if (!attendance || !attendance.checkIn) throw new AppError("No check-in found for today", 400);
-
-        if (attendance.checkOut) throw new AppError("Already checked out", 400);
-
-
-        const workingHours = (now.getTime() - attendance.checkIn.getTime()) / 3600000;
-
-        let finalStatus = "ABSENT";
-        if (workingHours >= FULL_DAY_HOURS) {
-            finalStatus = "PRESENT";
-        } else if (workingHours >= HALF_DAY_HOURS) {
-            finalStatus = "HALF_DAY";
-        }
-
-        // Update attendance record with checkout location 
-        const updatedAttendance = await prisma.attendance.update({
-            where: { id: attendance.id },
-            data: {
-                checkOut: now,
-                workingHours: Number(workingHours.toFixed(2)),
-                status: finalStatus,
-                checkOutLat: parseFloat(lat),
-                checkOutLng: parseFloat(lng),
-            },
-        });
-
-        //  Create attendance log entry
-        await prisma.attendanceLog.create({
-            data: {
-                attendanceId: attendance.id,
-                action: "CHECK_OUT",
-                oldStatus: attendance.status,
-                newStatus: finalStatus,
-                locationLat: parseFloat(lat),
-                locationLng: parseFloat(lng),
-                deviceInfo: deviceInfo || null,
-                changedBy: userId,
-            },
-        });
-
-        return res.status(200).json({
-            success: true,
-            message: `Checked out successfully (${finalStatus})`,
-            attendance: updatedAttendance,
-        });
-    } catch (error) {
-        console.error("checkout error", error);
-        return res.status(500).json({
+    // Validate location 
+    if (lat === undefined || lng === undefined) {
+        return res.status(400).json({
             success: false,
-            message: "Internal Server Error",
+            message: "Location (lat, lng) is required for check-out",
         });
     }
 
+    const { valid, distanceMeters } = isWithinOffice(parseFloat(lat), parseFloat(lng));
+    if (!valid) {
+        return res.status(403).json({
+            success: false,
+            message: `You are not within office premises (${distanceMeters}m away).`,
+            distanceMeters,
+        });
+    }
+
+    const now = new Date(); // stores actual check-out time for accurate working hours calculation
+    const today = new Date(); // normalize to today's date for lookup
+    today.setHours(0, 0, 0, 0);
+
+    const attendance = await prisma.attendance.findUnique({
+        where: {
+            employeeId_date: {
+                employeeId: userId,
+                date: today,
+            },
+        },
+    });
+
+    if (!attendance || !attendance.checkIn) throw new AppError("No check-in found for today", 400);
+
+    if (attendance.checkOut) throw new AppError("Already checked out", 400);
+
+
+    const workingHours = (now.getTime() - attendance.checkIn.getTime()) / 3600000;
+
+    let finalStatus = "ABSENT";
+    if (workingHours >= FULL_DAY_HOURS) {
+        finalStatus = "PRESENT";
+    } else if (workingHours >= HALF_DAY_HOURS) {
+        finalStatus = "HALF_DAY";
+    }
+
+    // Update attendance record with checkout location 
     const updatedAttendance = await prisma.attendance.update({
         where: { id: attendance.id },
         data: {
             checkOut: now,
             workingHours: Number(workingHours.toFixed(2)),
             status: finalStatus,
+            checkOutLat: parseFloat(lat),
+            checkOutLng: parseFloat(lng),
+        },
+    });
+
+    //  Create attendance log entry
+    await prisma.attendanceLog.create({
+        data: {
+            attendanceId: attendance.id,
+            action: "CHECK_OUT",
+            oldStatus: attendance.status,
+            newStatus: finalStatus,
+            locationLat: parseFloat(lat),
+            locationLng: parseFloat(lng),
+            deviceInfo: deviceInfo || null,
+            changedBy: userId,
         },
     });
 
@@ -254,7 +232,7 @@ export const checkout = async (req, res) => {
         message: `Checked out successfully (${finalStatus})`,
         attendance: updatedAttendance,
     });
-};
+})
 
 // get attendance report
 export const getAttendance = asyncHandler(async (req, res) => {
@@ -454,33 +432,24 @@ export const changeDefaultPassword = asyncHandler(async (req, res) => {
 });
 
 // register face descriptor (called once per employee for initial face enrollment)
-export const registerFace = async (req, res) => {
-    try {
-        const userId = req.user?.id;
-        const { faceDescriptor } = req.body;
+export const registerFace = asyncHandler(async (req, res) => {
+    const userId = req.user?.id;
+    const { faceDescriptor } = req.body;
 
-        if (!faceDescriptor || !Array.isArray(faceDescriptor) || faceDescriptor.length !== 128) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid face descriptor. Expected a 128-element float array.",
-            });
-        }
-
-        await prisma.user.update({
-            where: { id: userId },
-            data: { faceDescriptor },
-        });
-
-        return res.status(200).json({
-            success: true,
-            message: "Face registered successfully.",
-        });
-    } catch (error) {
-        console.error("registerFace error", error);
-        return res.status(500).json({
+    if (!faceDescriptor || !Array.isArray(faceDescriptor) || faceDescriptor.length !== 128) {
+        return res.status(400).json({
             success: false,
-            message: "Internal Server Error",
-            error: error.message,
+            message: "Invalid face descriptor. Expected a 128-element float array.",
         });
     }
-};
+
+    await prisma.user.update({
+        where: { id: userId },
+        data: { faceDescriptor },
+    });
+
+    return res.status(200).json({
+        success: true,
+        message: "Face registered successfully.",
+    });
+})

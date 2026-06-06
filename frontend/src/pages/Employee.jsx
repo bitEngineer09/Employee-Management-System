@@ -86,8 +86,8 @@ const Employee = () => {
   return (
     <div className='relative'>
       <div className='flex items-center justify-between'>
-        <p className='flex items-center gap-2 text-(--text-secondary) text-3xl font-medium'>
-          <div
+        <div className='flex items-center gap-2 text-(--text-secondary) text-3xl font-medium'>
+          <p
             className="
             w-11 h-11 
             text-(--blue-light)
@@ -96,9 +96,9 @@ const Employee = () => {
             border border-(--blue-primary)
             ">
             <User size={24} />
-          </div>
+          </p>
           Employee Records
-        </p>
+        </div>
 
         {/* Create Employee */}
         <button

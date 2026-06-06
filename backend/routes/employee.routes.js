@@ -31,11 +31,12 @@ import {
 // zod imports
 import { validate } from '../middlewares/zodValidator.js';
 import { changeDefaultPasswordSchema } from '../validators/auth.zod.js';
+import { forgotPasswordLimiter } from '../utils/forgotPasswordLimiter.js';
 
 const router = express.Router();
 
 // password routes
-router.post("/forgot-password", forgotPassword);
+router.post("/forgot-password", forgotPasswordLimiter, forgotPassword);
 router.post("/reset-password", resetPassword);
 
 router.use(isAuth, requireAuth);
