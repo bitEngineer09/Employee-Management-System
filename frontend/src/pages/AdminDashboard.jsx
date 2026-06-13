@@ -35,6 +35,7 @@ const AdminDashboard = () => {
   // today employees attendance
   const { todayEmployeesAttendance } = useTodayEmployeesAttendance();
   const todayEmployees = todayEmployeesAttendance?.data;
+  // console.log("todayEmployees", todayEmployees);
 
   // current user
   const { currentUser } = useAuth();

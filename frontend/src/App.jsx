@@ -32,6 +32,7 @@ import EmployeeDetail from './components/EmployeeDetail';
 
 // hooks
 import useAuth from './hooks/Auth/useAuth';
+import AttendanceReport from './pages/AttendanceReport';
 
 
 const App = () => {
@@ -59,6 +60,7 @@ const App = () => {
                     <Route path="/admin/emp/:id" element={<EmployeeDetail />} />
                     <Route path="/admin/leave" element={<LeaveAdmin />} />
                     <Route path="/admin/payroll" element={<Payroll />} />
+                    <Route path="/attendance-report" element={<AttendanceReport />} />
                   </>
                   : <>
                     <Route path="/" element={<Attendance />} />

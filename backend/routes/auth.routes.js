@@ -18,9 +18,11 @@ import {
     newPasswordSchema
 } from '../validators/auth.zod.js';
 
+
 // middlewares
 import { isAuth } from '../middlewares/isAuth.js';
 import { requireAuth } from '../middlewares/requireAuth.js';
+import { forgotPasswordLimiter } from '../utils/forgotPasswordLimiter.js';
 
 const router = express.Router();
 
@@ -28,7 +30,7 @@ router.post("/signup", validate(registerSchema), signupController);
 router.post("/login", validate(loginSchema), loginController);
 router.post("/logout", logoutController);
 
-router.post("/forgot-password", forgotPassword);
+router.post("/forgot-password", forgotPasswordLimiter, forgotPassword);
 router.post("/reset-password", validate(newPasswordSchema), resetPassword);
 
 router.get("/me", isAuth, requireAuth, getUserInfo);

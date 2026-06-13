@@ -222,49 +222,8 @@ export const deactivateDepartment = asyncHandler(async (req, res) => {
     });
 });
 
-// department attendance report
-export const departmentAttendanceReport = asyncHandler(async (req, res) => {
-    const departmentId = req.params.id;
-    const { from, to } = req.query;
-
-    if (!departmentId || !from || !to) throw new AppError("departmentId, from and to dates are required", 400);
-
-    const department = await prisma.department.findUnique({
-        where: { id: Number(departmentId) },
-    });
-
-    if (!department || !department.isActive) throw new AppError("Department not found", 404);
-
-    const users = await prisma.user.findMany({
-        where: {
-            departmentId: Number(departmentId),
-            isActive: true,
-        },
-        include: {
-            attendances: {
-                where: {
-                    date: {
-                        gte: new Date(from),
-                        lte: new Date(to),
-                    },
-                },
-                orderBy: { date: "asc" },
-            },
-        },
-    });
-
-    return res.status(200).json({
-        success: true,
-        department: department.name,
-        from,
-        to,
-        totalEmployees: users.length,
-        data: users,
-    });
-});
-
 // department attendance summary
-export const departmentAttendanceSummary = asyncHandler(async (req, res) => {
+export const getMonthlyDepartmentAttendanceSummary = asyncHandler(async (req, res) => {
     const departmentId = req.params.id;
     const { from, to } = req.query;
 

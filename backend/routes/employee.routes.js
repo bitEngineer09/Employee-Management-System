@@ -4,9 +4,6 @@ import express from 'express';
 import { isAuth } from '../middlewares/isAuth.js';
 import { requireAuth } from '../middlewares/requireAuth.js';
 
-// auth 
-import { forgotPassword, resetPassword } from '../controllers/auth.controller.js';
-
 // payslip
 import { generatePayslipPDF, getPaySlip } from '../controllers/user/payslip.controller.js';
 
@@ -31,13 +28,8 @@ import {
 // zod imports
 import { validate } from '../middlewares/zodValidator.js';
 import { changeDefaultPasswordSchema } from '../validators/auth.zod.js';
-import { forgotPasswordLimiter } from '../utils/forgotPasswordLimiter.js';
 
 const router = express.Router();
-
-// password routes
-router.post("/forgot-password", forgotPasswordLimiter, forgotPassword);
-router.post("/reset-password", resetPassword);
 
 router.use(isAuth, requireAuth);
 

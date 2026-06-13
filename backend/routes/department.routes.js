@@ -2,8 +2,6 @@ import express from 'express';
 import {
     createDepartment,
     deactivateDepartment,
-    departmentAttendanceReport,
-    departmentAttendanceSummary,
     departmentWiseTodayAttendance,
     getDepartmentById,
     getDepartments,
@@ -18,18 +16,16 @@ const router = express.Router();
 
 router.use(isAuth, requireAuth, isAdmin);
 
-router.post("/create", createDepartment);
-router.get("/get-all", getDepartments);
-router.get("/get/:id", getDepartmentById);
-router.patch("/update/:id", updateDepartment);
-router.delete("/deactivate/:id", deactivateDepartment);
-
 // department attendance routes
-router.get("/attendance/report/:id", departmentAttendanceReport);
-router.get("/attendance/summary/:id", departmentAttendanceSummary);
-router.get("/department-attendance", departmentWiseTodayAttendance);
+router.get("/attendance", departmentWiseTodayAttendance);
 
 // department dashboard routes
 router.get("/admin-dept-stats", getDepartmentStats);
+
+router.post("/", createDepartment);
+router.get("/", getDepartments);
+router.get("/:id", getDepartmentById);
+router.patch("/:id", updateDepartment);
+router.delete("/:id", deactivateDepartment);
 
 export default router;

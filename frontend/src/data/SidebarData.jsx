@@ -51,6 +51,13 @@ export const sidebarAdminContent = [
         style:
             "border-2 border-transparent bg-slate-700/10 hover:border-slate-600 text-slate-400",
     },
+    {
+        name: "Attendace Report",
+        icon: <User />,
+        path: "/attendance-report",
+        style:
+            "border-2 border-transparent bg-fuchsia-700/10 hover:border-fuchsia-600 text-fuchsia-400",
+    },
 ];
 
 // sidebar for user

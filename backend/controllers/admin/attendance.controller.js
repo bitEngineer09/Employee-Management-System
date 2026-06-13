@@ -36,44 +36,8 @@ export const adminAttendance = asyncHandler(async (req, res) => {
     res.json({ message: "Attendance updated", updated });
 })
 
-// get employee attendance report 
-export const getEmpAttendance = asyncHandler(async (req, res) => {
-    const { employeeId, from, to } = req.query;
-    if (!employeeId || !from || !to) throw new AppError("Please provide all fields", 400);
-
-    const employee = await prisma.user.findUnique({
-        where: { id: Number(employeeId) },
-    });
-
-    if (!employee || employee.role !== "EMPLOYEE") throw new AppError("Employee not found", 400);
-
-    const attendanceReport = await prisma.attendance.findMany({
-        where: {
-            employeeId: Number(employeeId),
-            date: {
-                gte: new Date(from),
-                lte: new Date(to),
-            },
-        },
-        include: {
-            attendanceLogs: true,
-        },
-        orderBy: { date: "asc" },
-    });
-
-    return res.status(200).json({
-        success: true,
-        employee: {
-            id: employee.id,
-            name: employee.name,
-            employeeId: employee.employeeId,
-        },
-        data: attendanceReport,
-    });
-})
-
 // get monthly attendance summary 
-export const getMonthlyAttendanceSummary = asyncHandler(async (req, res) => {
+export const getMonthlyEmployeeAttendanceSummary = asyncHandler(async (req, res) => {
     const { employeeId, month } = req.query;
     if (!employeeId || !month) throw new AppError("Please provide all fields", 400);
 

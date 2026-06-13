@@ -4,7 +4,6 @@ configDotenv();
 
 import requestIp from 'request-ip';
 import cookieParser from 'cookie-parser';
-import session from 'express-session';
 import cors from 'cors';
 
 import { startAutoAbsentCron } from './cron/autoAbsent.cron.js';
@@ -33,7 +32,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/employee", employeeRouter);
 app.use("/api/department", departmentRouter);
-// app.use("/api/department", departmentRouter);
 
 
 startAutoAbsentCron(); // start cron

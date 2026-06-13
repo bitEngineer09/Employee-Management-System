@@ -15,8 +15,7 @@ import {
 // attendance
 import {
     adminAttendance,
-    getEmpAttendance,
-    getMonthlyAttendanceSummary,
+    getMonthlyEmployeeAttendanceSummary,
     getTodayEmployeesAttendance,
 } from "../controllers/admin/attendance.controller.js";
 
@@ -44,19 +43,20 @@ import { getDashboardStats } from "../controllers/admin/dashboardStats.controlle
 import { isAuth } from "../middlewares/isAuth.js";
 import { requireAuth } from "../middlewares/requireAuth.js";
 import { isAdmin } from "../middlewares/isAdmin.js";
+import { getMonthlyDepartmentAttendanceSummary } from "../controllers/admin/department.controller.js";
 
 
 const router = express.Router();
 
 // get holiday
-router.get("/holiday", getHolidays);
+router.get("/holidays", getHolidays);
 router.get("/employees/search", searchEmployees);
 
 router.use(isAuth, requireAuth, isAdmin);
 
 // employee routes
 router.post("/employee", createEmployee);
-router.get("/employees", getAllEmployees);
+router.get("/employee", getAllEmployees);
 router.get("/employee/:id", getEmployeeById);
 router.put("/employee/:id", updateEmployee);
 router.patch("/employee/:id/status", updateEmployeeStatus);
@@ -64,14 +64,14 @@ router.patch("/employee/:id", deactivateEmployee);
 router.delete("/employee/:id", permanentDeleteEmployee);
 
 // attendance routes
-router.patch("/attendance/:id", adminAttendance);
-router.get("/empAttendance", getEmpAttendance);
-router.get("/attendance/summary", getMonthlyAttendanceSummary);
+// router.patch("/attendance/:id", adminAttendance);
+router.get("/attendance/employee-summary", getMonthlyEmployeeAttendanceSummary);
 router.get("/attendance/today-employees", getTodayEmployeesAttendance);
+router.get("/attendance/department-summary/:id", getMonthlyDepartmentAttendanceSummary);
 
 // holiday routes
-router.post("/holiday", createHoliday);
-router.delete("/holiday/:id", deleteHoliday);
+router.post("/holidays", createHoliday);
+router.delete("/holidays/:id", deleteHoliday);
 
 // leave routes
 router.get("/leaves", getAllLeaves);
@@ -83,6 +83,6 @@ router.post("/payroll/generate", generatePayroll);
 router.post("/payroll/regenerate", regeneratePayroll);
 
 // dashboard routes
-router.get("/admin-stats", getDashboardStats);
+router.get("/stats", getDashboardStats);
 
 export default router;

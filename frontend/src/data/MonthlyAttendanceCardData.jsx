@@ -14,7 +14,7 @@ export const getMonthlyAttendanceCardData = (data) => [
         name: "Half Day",
         value: data?.HALF_DAY || 0,
         icon: <AlertTriangle size={28} />,
-       color: "bg-amber-600/30 text-amber-400",
+        color: "bg-amber-600/30 text-amber-400",
         bgColor: "bg-amber-600/20",
         hover: "hover:border-amber-700 hover:scale-105",
         border: "border-amber-600",

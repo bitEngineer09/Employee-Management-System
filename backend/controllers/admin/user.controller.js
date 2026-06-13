@@ -160,7 +160,7 @@ export const getEmployeeById = asyncHandler(async (req, res) => {
 // update emp data
 export const updateEmployee = asyncHandler(async (req, res) => {
     const empId = req.params.id;
-    console.log(empId)
+    // console.log(empId)
 
     if (!empId) throw new AppError("Employee id not provided", 400);
 
