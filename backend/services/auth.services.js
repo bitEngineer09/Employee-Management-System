@@ -20,10 +20,9 @@ export const createRefreshToken = (sessionId) => {
     return jwt.sign(
         { sessionId },
         process.env.JWT_REFRESH_SECRET,
-        { expiresIn: "30d" }
+        { expiresIn: "7d" }
     );
 }
-
 
 export const verifyAccessToken = (token) => {
     return jwt.verify(token, process.env.JWT_ACCESS_SECRET);
@@ -71,7 +70,7 @@ export const authenticate = async (req, res, user) => {
         httpOnly: true,
         secure: false,
         sameSite: "Lax",
-        maxAge: 30 * 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 }
 
@@ -97,19 +96,35 @@ export const refreshTheTokens = async (refreshToken) => {
                 id: currentSession.userId
             }
         });
+
         if (!user) throw new Error("Invalid session");
+
+        await prisma.session.update({
+            where: {
+                id: currentSession.id
+            },
+            data: {
+                valid: false
+            }
+        });
+
+        const newSession = await createSession({
+            ip: currentSession.ip,
+            userAgent: currentSession.userAgent,
+            userId: user.id,
+        });
 
         const userInfo = {
             id: user.id,
             name: user.name,
             email: user.email,
-            role: user.role, 
-            sessionId: currentSession.id,
+            role: user.role,
+            sessionId: newSession.id,
         }
 
         const newAccessToken = createAccessToken(userInfo);
 
-        const newRefreshToken = createRefreshToken(currentSession.id);
+        const newRefreshToken = createRefreshToken(newSession.id);
 
         return { newAccessToken, newRefreshToken, user: userInfo };
 
@@ -123,6 +138,6 @@ export const refreshTheTokens = async (refreshToken) => {
 export const clearSession = async (sessionId) => {
     return await prisma.session.update({
         where: { id: sessionId },
-        data: {valid: false}, // soft delete
+        data: { valid: false }, // soft delete
     });
 }

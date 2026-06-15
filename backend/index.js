@@ -5,6 +5,7 @@ configDotenv();
 import requestIp from 'request-ip';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import errorMiddleware from './middlewares/error.middleware.js';
 
 import { startAutoAbsentCron } from './cron/autoAbsent.cron.js';
 
@@ -13,7 +14,6 @@ import authRouter from './routes/auth.routes.js';
 import adminRouter from './routes/admin.routes.js';
 import employeeRouter from './routes/employee.routes.js';
 import departmentRouter from './routes/department.routes.js';
-import errorMiddleware from './utils/error.middleware.js';
 
 
 const app = express();
