@@ -10,8 +10,8 @@ const useResetPassword = () => {
             toast.success("Password reset successfully");
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || error?.response?.data?.errors[0]?.message || "Something went wrong");
-            console.error("useChangeDefaultPassword error", error?.response?.data?.errors[0]?.message);
+            toast.error(error?.response?.data?.errors[0]?.message || "Something went wrong");
+            console.error("useResetPassword error", error);
         },
     });
     return {

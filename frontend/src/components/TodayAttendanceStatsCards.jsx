@@ -4,7 +4,7 @@ const TodayAttendanceStatsCards = ({ name, bgColor, hover, value, color, icon })
     return (
         <div
             className={`
-                    w-71 h-32
+                    w-full h-32
                     border-2 border-transparent
                     flex items-center justify-between
                     text-(--text-secondary)

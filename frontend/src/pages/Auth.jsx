@@ -54,7 +54,7 @@ const Auth = () => {
   const { signup, isLoading: signupLoading, error: signupError } = useSignup();
 
   return (
-    <div className='flex h-screen items-center justify-center bg-auth-gradient px-4'>
+    <div className='flex min-h-screen items-center justify-center bg-auth-gradient p-8'>
       <div className="border border-(--border-primary) rounded-xl p-5 bg-login-card w-full max-w-md">
         <h1 className="text-2xl sm:text-3xl text-(--text-primary) font-semibold">
           {newUser ? "Create" : "Login to"} your Account
@@ -127,17 +127,20 @@ const Auth = () => {
           {(loginError || signupError) && (
             <div
               className="
-              border border-red-500
-              bg-red-700/20
-              text-(--text-primary)
-              rounded-md my-3
-              p-2 text-center
-              ">
-              {
-                loginError?.response?.data?.message ||
-                signupError?.response?.data?.message ||
-                "Something went wrong"
-              }
+                border border-red-500
+                bg-red-700/20
+                text-(--text-primary)
+                rounded-md my-3
+                p-2">
+              <ul className="list-disc pl-5 space-y-1">
+                {(
+                  loginError?.response?.data?.errors ||
+                  signupError?.response?.data?.errors ||
+                  []
+                ).map((err, index) => (
+                  <li key={index}>{err.message}</li>
+                ))}
+              </ul>
             </div>
           )}
 

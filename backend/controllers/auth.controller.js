@@ -16,10 +16,6 @@ export const signupController = asyncHandler(async (req, res) => {
         adminCode,
     } = req.body;
 
-    if (!name || !email || !password || !confirmPassword || !adminCode) {
-        throw new AppError("Please provide all fields", 400);
-    }
-
     if (adminCode !== process.env.ADMIN_CODE) throw new AppError("Admin Code not Matched", 400);
 
     const isAdminExists = await prisma.user.findUnique({
@@ -59,7 +55,6 @@ export const signupController = asyncHandler(async (req, res) => {
 // user login
 export const loginController = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
-    if (!email || !password) throw new AppError("Please provide all fields", 400);
 
     const user = await prisma.user.findUnique({
         where: { email }
@@ -94,7 +89,6 @@ export const logoutController = asyncHandler(async (req, res) => {
 // forgot password
 export const forgotPassword = asyncHandler(async (req, res) => {
     const { email } = req.body;
-    if (!email) throw new AppError("Email is required", 400);
 
     const user = await prisma.user.findUnique({
         where: { email },
@@ -125,7 +119,6 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 // reset password
 export const resetPassword = asyncHandler(async (req, res) => {
     const { email, otp, newPassword } = req.body;
-    if (!email || !otp || !newPassword) throw new AppError("Please provide all fields", 400);
 
     // find the latest unused otp for the email
     const otpRecord = await prisma.passwordResetOtp.findFirst({

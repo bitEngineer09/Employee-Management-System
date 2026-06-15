@@ -117,11 +117,19 @@ const SettingsPage = () => {
 
           {/* Error */}
           {error && (
-            <p className="text-red-500 bg-red-700/10 text-sm mt-2 border rounded-xl p-3">
-              {error?.response?.data?.message ||
-                error?.response?.data?.errors?.[0]?.message ||
-                "Something went wrong"}
-            </p>
+            <div className="text-red-500 bg-red-700/10 text-sm mt-2 border rounded-xl p-3">
+              {error?.response?.data?.errors?.length ? (
+                <ul className="list-disc pl-5">
+                  {error.response.data.errors.map((err, index) => (
+                    <li key={index}>{err.message}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>
+                  {error?.response?.data?.message || "Something went wrong"}
+                </p>
+              )}
+            </div>
           )}
 
           {/* Submit Button */}

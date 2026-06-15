@@ -53,24 +53,22 @@ const Attendance = () => {
         <h2 className="text-xl font-semibold text-(--text-primary)">
           Today's Attendance
         </h2>
-        <div className='w-full grid grid-cols-4 gap-50 mt-3 '>
-          {
-            todayAttendanceData.map((stat, index) => {
-              const { name, value, icon, color, bgColor, hover } = stat;
-              return (
-                <TodayAttendanceStatsCards
-                  key={index}
-                  index={index}
-                  name={name}
-                  value={value}
-                  icon={icon}
-                  color={color}
-                  bgColor={bgColor}
-                  hover={hover}
-                />
-              )
-            })
-          }
+        <div className='w-full grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mt-3'>
+          {todayAttendanceData.map((stat, index) => {
+            const { name, value, icon, color, bgColor, hover } = stat;
+            return (
+              <TodayAttendanceStatsCards
+                key={index}
+                index={index}
+                name={name}
+                value={value}
+                icon={icon}
+                color={color}
+                bgColor={bgColor}
+                hover={hover}
+              />
+            )
+          })}
         </div>
       </div>
 

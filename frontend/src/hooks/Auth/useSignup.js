@@ -12,8 +12,8 @@ const useSignup = () => {
             navigate("/auth");
         },
         onError: (error) => {
-            toast.error(error?.response?.data?.message || "Something went wrong");
-            console.error("useLogin error", error?.response?.data || error);
+            toast.error(error?.response?.data?.message || error?.response?.data?.errors[0]?.message || "Something went wrong");
+            console.error("useSignup error", error);
         },
     });
     return {
